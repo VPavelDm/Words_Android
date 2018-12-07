@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/main_graph" app:startDestination="@id/wordFragment">
+
+    <fragment android:id="@+id/wordFragment"
+              android:name="com.itechart.vpaveldm.words.uiLayer.word.WordFragment"
+              android:label="WordFragment"/>
+
+    <fragment android:id="@+id/searchFragment"
+              android:name="com.itechart.vpaveldm.words.uiLayer.search.SearchFragment"
+              android:label="SearchFragment"/>
+
+</navigation>
