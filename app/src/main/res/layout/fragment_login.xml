@@ -1,61 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <EditText
-            android:id="@+id/loginET"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/login_side_margin"
-            android:layout_marginTop="128dp"
-            android:layout_marginEnd="@dimen/login_side_margin"
-            android:hint="@string/title_enter_login"
-            android:inputType="textEmailAddress"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill"/>
+        android:id="@+id/loginET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/login_side_margin"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="@dimen/login_side_margin"
+        android:hint="@string/title_enter_login"
+        android:inputType="textEmailAddress"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill" />
 
     <EditText
-            android:id="@+id/passwordET"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/login_side_margin"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="@dimen/login_side_margin"
-            android:hint="@string/title_enter_password"
-            android:inputType="textPassword"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loginET"
-            tools:ignore="Autofill"/>
-
-    <Button
-            android:id="@+id/loginButton"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/title_sign_in"
-            app:layout_constraintEnd_toEndOf="@id/passwordET"
-            app:layout_constraintStart_toStartOf="@id/passwordET"
-            app:layout_constraintTop_toBottomOf="@id/passwordET"/>
+        android:id="@+id/passwordET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/login_side_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/login_side_margin"
+        android:hint="@string/title_enter_password"
+        android:inputType="textPassword"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginET"
+        tools:ignore="Autofill" />
 
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/title_sign_up"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+        android:id="@+id/errorTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:minLines="1"
+        android:maxLines="2"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/passwordET"
+        app:layout_constraintStart_toStartOf="@id/passwordET"
+        app:layout_constraintTop_toBottomOf="@id/passwordET" />
+
+    <Button
+        android:id="@+id/loginButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_sign_in"
+        app:layout_constraintEnd_toEndOf="@id/passwordET"
+        app:layout_constraintStart_toStartOf="@id/passwordET"
+        app:layout_constraintTop_toBottomOf="@id/errorTV" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/title_sign_up"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

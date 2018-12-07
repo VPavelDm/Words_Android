@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity(), ILoginFragmentListener {
         super.onStart()
         if (auth.currentUser == null) {
             navController.navigate(R.id.action_wordFragment_to_loginFragment)
+        } else {
+            // Call this method 'cause you don't need display login fragment
+            destroy()
         }
     }
 

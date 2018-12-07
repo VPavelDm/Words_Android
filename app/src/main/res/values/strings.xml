@@ -6,4 +6,5 @@
     <string name="title_enter_password">Пароль</string>
     <string name="title_sign_up">Еще нет аккаунта? "<b>"Зарегистрируйтесь."</b>"</string>
     <string name="title_sign_in">Вход</string>
+    <string name="error_message_empty_login_or_password_field">Введите логин и пароль</string>
 </resources>
