@@ -2,4 +2,8 @@
     <string name="app_name">Words</string>
     <string name="title_home">Home</string>
     <string name="title_search">Search</string>
+    <string name="title_enter_login">Логин</string>
+    <string name="title_enter_password">Пароль</string>
+    <string name="title_sign_up">Еще нет аккаунта? "<b>"Зарегистрируйтесь."</b>"</string>
+    <string name="title_sign_in">Вход</string>
 </resources>

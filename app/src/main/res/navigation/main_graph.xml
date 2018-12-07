@@ -5,10 +5,16 @@
 
     <fragment android:id="@+id/wordFragment"
               android:name="com.itechart.vpaveldm.words.uiLayer.word.WordFragment"
-              android:label="WordFragment"/>
+              android:label="WordFragment">
+        <action android:id="@+id/action_wordFragment_to_loginFragment" app:destination="@id/loginFragment"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+    </fragment>
 
     <fragment android:id="@+id/searchFragment"
               android:name="com.itechart.vpaveldm.words.uiLayer.search.SearchFragment"
               android:label="SearchFragment"/>
+    <fragment android:id="@+id/loginFragment" android:name="com.itechart.vpaveldm.words.uiLayer.login.LoginFragment"
+              android:label="LoginFragment">
+    </fragment>
 
 </navigation>
