@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
-import kotlinx.android.synthetic.main.fragment_login.view.*
+import com.itechart.vpaveldm.words.adapterLayer.login.LoginViewModel
+import com.itechart.vpaveldm.words.adapterLayer.login.ViewModelFactory
+import com.itechart.vpaveldm.words.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
 
     private lateinit var listener: ILoginFragmentListener
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: FragmentLoginBinding
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -31,22 +34,11 @@ class LoginFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_login, container, false)
-        view.loginButton.setOnClickListener { button ->
-            val login = view.loginET.text.toString()
-            val password = view.passwordET.text.toString()
-            if (login.isEmpty() || password.isEmpty()) {
-                view.errorTV.text = context?.getString(R.string.error_message_empty_login_or_password_field) ?: ""
-                view.errorTV.visibility = View.VISIBLE
-                return@setOnClickListener
-            }
-            auth.signInWithEmailAndPassword(login, password)
-                    .addOnSuccessListener { _ ->
-                        Navigation.findNavController(button).popBackStack()
-                    }
-
-        }
-        return view
+        binding = FragmentLoginBinding.inflate(inflater, container, false)
+        val navController = Navigation.findNavController(activity!!, R.id.nav_host_fragment)
+        val viewModel = ViewModelFactory(navController).create(LoginViewModel::class.java)
+        binding.handler = viewModel
+        return binding.root
     }
 
     override fun onDestroyView() {

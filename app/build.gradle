@@ -21,6 +21,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -39,4 +42,6 @@ dependencies {
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha08'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha08'
     implementation 'com.google.firebase:firebase-auth:16.1.0'
+    //ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:1.1.1"
 }
