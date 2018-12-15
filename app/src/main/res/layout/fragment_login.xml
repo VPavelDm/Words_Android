@@ -17,6 +17,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/loginButton"
+            app:layout_constraintEnd_toEndOf="@id/loginButton"
+            app:layout_constraintStart_toStartOf="@id/loginButton"
+            app:layout_constraintTop_toTopOf="@id/loginButton"/>
+
         <EditText
             android:id="@+id/loginET"
             android:layout_width="0dp"
@@ -70,8 +80,9 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="@{handler.progressBarVisible? false : true}"
             android:onClick="@{(view) -> handler.signIn(view.context, loginET.getText().toString(), passwordET.getText().toString())}"
-            android:text="@string/title_sign_in"
+            android:text='@{handler.progressBarVisible ? "" : @string/title_sign_in}'
             app:layout_constraintEnd_toEndOf="@id/passwordET"
             app:layout_constraintStart_toStartOf="@id/passwordET"
             app:layout_constraintTop_toBottomOf="@id/errorTV"/>
