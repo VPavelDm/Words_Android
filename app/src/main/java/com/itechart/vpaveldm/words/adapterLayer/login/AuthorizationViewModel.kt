@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
 
-class LoginViewModel(private val navController: NavController) : ViewModel() {
+class AuthorizationViewModel(private val navController: NavController) : ViewModel() {
 
     val error = ObservableField<String>()
     val progressBarVisible = ObservableBoolean(false)
@@ -33,13 +33,36 @@ class LoginViewModel(private val navController: NavController) : ViewModel() {
                 }
     }
 
+    fun signUp(context: Context, login: String, password: String, confirmPassword: String) {
+        progressBarVisible.set(true)
+        if (login.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            error.set(context.getString(R.string.error_message_empty_login_or_password_field_or_confirm_password))
+            progressBarVisible.set(false)
+            return
+        }
+        if (password != confirmPassword) {
+            error.set(context.getString(R.string.error_password_does_not_confirm))
+            progressBarVisible.set(false)
+            return
+        }
+        auth.createUserWithEmailAndPassword(login, password)
+                .addOnSuccessListener {
+                    navController.popBackStack()
+                    progressBarVisible.set(false)
+                }
+                .addOnFailureListener {
+                    error.set(it.localizedMessage)
+                    progressBarVisible.set(false)
+                }
+    }
+
 }
 
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory(private val navController: NavController) : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoginViewModel(navController) as T
+        return AuthorizationViewModel(navController) as T
     }
 
 }

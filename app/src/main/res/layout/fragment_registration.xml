@@ -4,12 +4,11 @@
     <data>
 
         <import type="android.view.View"/>
-        <import type="androidx.navigation.Navigation"/>
-        <import type="com.itechart.vpaveldm.words.R"/>
 
         <variable
             name="handler"
             type="com.itechart.vpaveldm.words.adapterLayer.login.AuthorizationViewModel"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -61,6 +60,22 @@
             app:layout_constraintTop_toBottomOf="@id/loginET"
             tools:ignore="Autofill"/>
 
+        <EditText
+            android:id="@+id/confirmPasswordET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_confirm_password"
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/passwordET"
+            tools:ignore="Autofill"/>
+
         <TextView
             android:id="@+id/errorTV"
             android:layout_width="0dp"
@@ -75,7 +90,7 @@
             android:visibility="@{(handler.error == null || handler.error.isEmpty()) ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="@id/passwordET"
             app:layout_constraintStart_toStartOf="@id/passwordET"
-            app:layout_constraintTop_toBottomOf="@id/passwordET"/>
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordET"/>
 
         <Button
             android:id="@+id/loginButton"
@@ -83,19 +98,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="@{handler.progressBarVisible? false : true}"
-            android:onClick="@{(view) -> handler.signIn(view.context, loginET.getText().toString(), passwordET.getText().toString())}"
-            android:text='@{handler.progressBarVisible ? "" : @string/title_sign_in}'
+            android:onClick="@{(view) -> handler.signUp(view.context, loginET.getText().toString(), passwordET.getText().toString(), confirmPasswordET.getText().toString())}"
+            android:text='@{handler.progressBarVisible ? "" : @string/title_sign_up}'
             app:layout_constraintEnd_toEndOf="@id/passwordET"
             app:layout_constraintStart_toStartOf="@id/passwordET"
-            app:layout_constraintTop_toBottomOf="@id/errorTV"/>
+            app:layout_constraintTop_toBottomOf="@id/errorTV"
+            tools:text="@string/title_sign_up"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/title_do_not_have_an_account"
+            android:text="@string/title_have_an_account"
             android:textSize="12sp"
-            android:onClick="@{(view) -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_registrationFragment)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
