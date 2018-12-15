@@ -47,7 +47,7 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
         }
         auth.createUserWithEmailAndPassword(login, password)
                 .addOnSuccessListener {
-                    navController.popBackStack()
+                    navController.popBackStack(R.id.loginFragment, true)
                     progressBarVisible.set(false)
                 }
                 .addOnFailureListener {
