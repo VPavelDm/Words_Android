@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="@{handler.progressBarVisible? false : true}"
-            android:onClick="@{(view) -> handler.signIn(view.context, loginET.getText().toString(), passwordET.getText().toString())}"
+            android:onClick="@{() -> handler.signIn(loginET.getText().toString(), passwordET.getText().toString())}"
             android:text="@string/title_sign_in"
             android:visibility="@{handler.progressBarVisible? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="@id/passwordET"

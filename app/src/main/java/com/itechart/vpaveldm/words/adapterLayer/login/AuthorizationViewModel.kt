@@ -2,58 +2,53 @@ package com.itechart.vpaveldm.words.adapterLayer.login
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import android.content.Context
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.dataLayer.authorization.AuthorizationModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class AuthorizationViewModel(private val navController: NavController) : ViewModel() {
 
     val error = ObservableField<String>()
     val progressBarVisible = ObservableBoolean(false)
-    private val auth = FirebaseAuth.getInstance()
+    private val authModel = AuthorizationModel()
+    private val disposables = CompositeDisposable()
 
-    fun signIn(context: Context, login: String, password: String) {
-        progressBarVisible.set(true)
-        if (login.isEmpty() || password.isEmpty()) {
-            error.set(context.getString(R.string.error_message_empty_login_or_password_field))
-            progressBarVisible.set(false)
-            return
-        }
-        auth.signInWithEmailAndPassword(login, password)
-                .addOnSuccessListener {
-                    navController.popBackStack()
-                    progressBarVisible.set(false)
-                }
-                .addOnFailureListener {
-                    error.set(it.localizedMessage)
-                    progressBarVisible.set(false)
-                }
+    fun signIn(login: String, password: String) {
+        val disposable = authModel.signIn(login, password)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({
+                navController.popBackStack()
+            }, { error ->
+                this.error.set(error.localizedMessage)
+            })
+        disposables.add(disposable)
     }
 
-    fun signUp(context: Context, login: String, password: String, confirmPassword: String) {
-        progressBarVisible.set(true)
-        if (login.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            error.set(context.getString(R.string.error_message_empty_login_or_password_field_or_confirm_password))
-            progressBarVisible.set(false)
-            return
-        }
-        if (password != confirmPassword) {
-            error.set(context.getString(R.string.error_password_does_not_confirm))
-            progressBarVisible.set(false)
-            return
-        }
-        auth.createUserWithEmailAndPassword(login, password)
-                .addOnSuccessListener {
-                    navController.popBackStack(R.id.loginFragment, true)
-                    progressBarVisible.set(false)
-                }
-                .addOnFailureListener {
-                    error.set(it.localizedMessage)
-                    progressBarVisible.set(false)
-                }
+    fun signUp(login: String, password: String, confirmPassword: String) {
+        val disposable = authModel.signUp(login, password, confirmPassword)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({
+                navController.popBackStack(R.id.loginFragment, true)
+            }, {
+                error.set(it.localizedMessage)
+            })
+        disposables.add(disposable)
+    }
+
+    override fun onCleared() {
+        disposables.clear()
+        super.onCleared()
     }
 
 }

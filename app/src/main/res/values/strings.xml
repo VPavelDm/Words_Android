@@ -9,7 +9,4 @@
     <string name="title_sign_up">Зарегистрироваться</string>
     <string name="title_sign_in">Вход</string>
     <string name="title_confirm_password">Подтвердите пароль</string>
-    <string name="error_message_empty_login_or_password_field">Введите логин и пароль</string>
-    <string name="error_message_empty_login_or_password_field_or_confirm_password">Введите логин, пароль и подтверждение пароля</string>
-    <string name="error_password_does_not_confirm">Пароли не совпадают</string>
 </resources>
