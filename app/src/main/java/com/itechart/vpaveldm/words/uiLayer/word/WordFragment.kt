@@ -3,10 +3,12 @@ package com.itechart.vpaveldm.words.uiLayer.word
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
+import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
 
 class WordFragment: Fragment() {
 
@@ -21,7 +23,13 @@ class WordFragment: Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_word, container, false)
+        val binding = FragmentWordBinding.inflate(inflater, container, false)
+        binding.wordRecyclerView.apply {
+            adapter = WordAdapter()
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+        }
+        return binding.root
     }
 
     override fun onResume() {
