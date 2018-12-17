@@ -100,7 +100,8 @@
             android:layout_height="wrap_content"
             android:enabled="@{handler.progressBarVisible? false : true}"
             android:onClick="@{(view) -> handler.signUp(view.context, loginET.getText().toString(), passwordET.getText().toString(), confirmPasswordET.getText().toString())}"
-            android:text='@{handler.progressBarVisible ? "" : @string/title_sign_up}'
+            android:text="@string/title_sign_up"
+            android:visibility="@{handler.progressBarVisible? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="@id/passwordET"
             app:layout_constraintStart_toStartOf="@id/passwordET"
             app:layout_constraintTop_toBottomOf="@id/errorTV"
