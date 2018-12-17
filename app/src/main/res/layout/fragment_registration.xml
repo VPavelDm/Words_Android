@@ -4,6 +4,7 @@
     <data>
 
         <import type="android.view.View"/>
+        <import type="androidx.navigation.Navigation"/>
 
         <variable
             name="handler"
@@ -111,6 +112,7 @@
             android:layout_marginBottom="8dp"
             android:text="@string/title_have_an_account"
             android:textSize="12sp"
+            android:onClick="@{(view) -> Navigation.findNavController(view).popBackStack()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
