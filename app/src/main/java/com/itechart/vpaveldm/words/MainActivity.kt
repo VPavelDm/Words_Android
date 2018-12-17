@@ -33,6 +33,14 @@ class MainActivity : AppCompatActivity(), IAuthorization {
         }
     }
 
+    override fun onBackPressed() {
+        if (navController.currentDestination == navController.graph.findNode(R.id.loginFragment) && auth.currentUser == null) {
+            finishAndRemoveTask()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun authorized() {
         navigation.visibility = View.VISIBLE
     }
