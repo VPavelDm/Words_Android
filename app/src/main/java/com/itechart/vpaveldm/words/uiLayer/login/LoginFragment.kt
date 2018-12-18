@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.navigation.Navigation
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.login.AuthorizationViewModel
@@ -22,6 +23,14 @@ class LoginFragment : Fragment() {
         val viewModel = ViewModelProviders.of(this, ViewModelFactory(navController)).get(AuthorizationViewModel::class.java)
         binding.handler = viewModel
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.loginButton.setOnClickListener {
+            binding.loginET.onEditorAction(EditorInfo.IME_ACTION_DONE)
+            binding.passwordET.onEditorAction(EditorInfo.IME_ACTION_DONE)
+        }
     }
 
 }

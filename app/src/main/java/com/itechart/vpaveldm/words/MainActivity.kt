@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.google.firebase.auth.FirebaseAuth
+import com.itechart.vpaveldm.words.core.hideKeyboard
 import com.itechart.vpaveldm.words.uiLayer.word.IAuthorization
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -43,5 +44,6 @@ class MainActivity : AppCompatActivity(), IAuthorization {
 
     override fun authorized() {
         navigation.visibility = View.VISIBLE
+        hideKeyboard(currentFocus)
     }
 }

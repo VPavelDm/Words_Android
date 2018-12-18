@@ -1,5 +1,7 @@
 package com.itechart.vpaveldm.words.uiLayer.word
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,9 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
+import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
+import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
 
-class WordFragment: Fragment() {
+class WordFragment : Fragment() {
 
     private lateinit var listener: IAuthorization
 
@@ -22,19 +26,32 @@ class WordFragment: Fragment() {
         listener = activity as IAuthorization
     }
 
+    private lateinit var binding: FragmentWordBinding
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentWordBinding.inflate(inflater, container, false)
+        binding = FragmentWordBinding.inflate(inflater, container, false)
         binding.wordRecyclerView.apply {
             adapter = WordAdapter()
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
         }
+        val viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
+        binding.handler = viewModel
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
         listener.authorized()
+        binding.handler?.let {
+            it.words.observe(this, Observer { words ->
+                words?.let {
+                    val adapter = binding.wordRecyclerView.adapter as? WordAdapter
+                    adapter?.swapData(it)
+                }
+            })
+            it.subscribeOnUpdate()
+        }
     }
 
 }

@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.word.Word
+import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
 class WordAdapter : RecyclerView.Adapter<WordAdapter.WordHolder>() {
 
-    val words: List<Word> = listOf()
+    private var words: List<Word> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent)
@@ -23,10 +24,16 @@ class WordAdapter : RecyclerView.Adapter<WordAdapter.WordHolder>() {
         holder.bind(word)
     }
 
+    fun swapData(words: List<Word>) {
+        this.words = words
+        notifyDataSetChanged()
+    }
 
     class WordHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(word: Word) {
-
+            itemView.wordTV.text = word.word
+            itemView.translateTV.text = word.translate
+            itemView.transcriptionTV.text = word.transcription
         }
     }
 

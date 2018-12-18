@@ -41,10 +41,12 @@ dependencies {
     //Navigation component
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha08'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha08'
-    implementation 'com.google.firebase:firebase-auth:16.1.0'
     //ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
     //RxKotlin and RxAndroid
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    //Firebase
+    implementation 'com.google.firebase:firebase-auth:16.1.0'
+    implementation 'com.google.firebase:firebase-database:16.0.5'
 }
