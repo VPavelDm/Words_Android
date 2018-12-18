@@ -1,82 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout>
 
-    <EditText
-        android:id="@+id/enterWordET"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="128dp"
-        android:layout_marginEnd="32dp"
-        android:hint="@string/title_enter_word"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill" />
+    <data>
 
-    <EditText
-        android:id="@+id/enterTranscriptionET"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:hint="@string/title_enter_transcription"
-        android:inputType="text"
-        app:layout_constraintEnd_toStartOf="@id/transcriptionLoadButton"
-        app:layout_constraintStart_toStartOf="@id/enterWordET"
-        app:layout_constraintTop_toBottomOf="@id/enterWordET"
-        tools:ignore="Autofill" />
+        <import type="android.view.View" />
 
-    <EditText
-        android:id="@+id/enterTranslateET"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:hint="@string/title_enter_translate"
-        android:inputType="text"
-        app:layout_constraintEnd_toStartOf="@id/translateLoadButton"
-        app:layout_constraintStart_toStartOf="@id/enterWordET"
-        app:layout_constraintTop_toBottomOf="@id/enterTranscriptionET"
-        tools:ignore="Autofill" />
+        <variable
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordViewModel" />
+    </data>
 
-    <ImageButton
-        android:id="@+id/transcriptionLoadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="8dp"
-        android:src="@drawable/ic_file_download_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/enterTranscriptionET"
-        app:layout_constraintEnd_toEndOf="@id/enterWordET"
-        app:layout_constraintStart_toEndOf="@id/enterTranscriptionET"
-        app:layout_constraintTop_toTopOf="@id/enterTranscriptionET"
-        tools:ignore="ContentDescription" />
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/translateLoadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="8dp"
-        android:src="@drawable/ic_file_download_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/enterTranslateET"
-        app:layout_constraintEnd_toEndOf="@id/enterWordET"
-        app:layout_constraintStart_toEndOf="@id/enterTranslateET"
-        app:layout_constraintTop_toTopOf="@id/enterTranslateET"
-        tools:ignore="ContentDescription" />
+        <EditText
+            android:id="@+id/enterWordET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="128dp"
+            android:layout_marginEnd="32dp"
+            android:hint="@string/title_enter_word"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill" />
 
-    <Button
-        android:id="@+id/addWordButton"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_add"
-        app:layout_constraintEnd_toEndOf="@id/translateLoadButton"
-        app:layout_constraintStart_toStartOf="@id/enterTranslateET"
-        app:layout_constraintTop_toBottomOf="@id/enterTranslateET" />
+        <EditText
+            android:id="@+id/enterTranscriptionET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="@string/title_enter_transcription"
+            android:inputType="text"
+            app:layout_constraintEnd_toStartOf="@id/transcriptionLoadButton"
+            app:layout_constraintStart_toStartOf="@id/enterWordET"
+            app:layout_constraintTop_toBottomOf="@id/enterWordET"
+            tools:ignore="Autofill" />
 
-</android.support.constraint.ConstraintLayout>
+        <EditText
+            android:id="@+id/enterTranslateET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="@string/title_enter_translate"
+            android:inputType="text"
+            app:layout_constraintEnd_toStartOf="@id/translateLoadButton"
+            app:layout_constraintStart_toStartOf="@id/enterWordET"
+            app:layout_constraintTop_toBottomOf="@id/enterTranscriptionET"
+            tools:ignore="Autofill" />
+
+        <ImageButton
+            android:id="@+id/transcriptionLoadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:src="@drawable/ic_file_download_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@id/enterTranscriptionET"
+            app:layout_constraintEnd_toEndOf="@id/enterWordET"
+            app:layout_constraintStart_toEndOf="@id/enterTranscriptionET"
+            app:layout_constraintTop_toTopOf="@id/enterTranscriptionET"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/translateLoadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:src="@drawable/ic_file_download_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@id/enterTranslateET"
+            app:layout_constraintEnd_toEndOf="@id/enterWordET"
+            app:layout_constraintStart_toEndOf="@id/enterTranslateET"
+            app:layout_constraintTop_toTopOf="@id/enterTranslateET"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/addWordButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="@{!handler.progressBarVisible}"
+            android:onClick="@{() -> handler.addWord(enterWordET.getText().toString(), enterTranscriptionET.getText().toString(), enterTranslateET.getText().toString())}"
+            android:text="@string/title_add"
+            android:visibility="@{handler.progressBarVisible ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/translateLoadButton"
+            app:layout_constraintStart_toStartOf="@id/enterTranslateET"
+            app:layout_constraintTop_toBottomOf="@id/enterTranslateET" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/addWordButton"
+            app:layout_constraintEnd_toEndOf="@id/addWordButton"
+            app:layout_constraintStart_toStartOf="@id/addWordButton"
+            app:layout_constraintTop_toTopOf="@id/addWordButton" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

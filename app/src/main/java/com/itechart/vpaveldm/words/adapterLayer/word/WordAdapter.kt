@@ -13,7 +13,7 @@ class WordAdapter : RecyclerView.Adapter<WordAdapter.WordHolder>() {
     private var words: List<Word> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent, false)
         return WordHolder(view)
     }
 
