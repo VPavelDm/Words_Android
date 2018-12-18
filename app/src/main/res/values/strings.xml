@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Words</string>
-    <string name="title_home">Home</string>
-    <string name="title_search">Search</string>
+    <string name="title_home">Слова</string>
+    <string name="title_search">Поиск</string>
     <string name="title_enter_login">Логин</string>
     <string name="title_enter_password">Пароль</string>
     <string name="title_do_not_have_an_account">Еще нет аккаунта? "<b>"Зарегистрируйтесь."</b>"</string>
@@ -9,5 +9,8 @@
     <string name="title_sign_up">Зарегистрироваться</string>
     <string name="title_sign_in">Вход</string>
     <string name="title_confirm_password">Подтвердите пароль</string>
-    <string name="title_add">Add</string>
+    <string name="title_add">Добавить</string>
+    <string name="title_enter_word">Введите слово</string>
+    <string name="title_enter_transcription">Введите транскрипцию</string>
+    <string name="title_enter_translate">Введите перевод</string>
 </resources>
