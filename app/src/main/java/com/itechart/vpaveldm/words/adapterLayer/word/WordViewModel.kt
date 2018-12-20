@@ -12,10 +12,10 @@ class WordViewModel: ViewModel() {
 
     private val wordManager = WordManager()
     private val disposables = CompositeDisposable()
-    private val wordsObservable = MutableLiveData<List<Word>>()
+    private val wordsObservable = MutableLiveData<Word>()
 
     val progressBarVisible = ObservableBoolean(false)
-    val words: LiveData<List<Word>> = wordsObservable
+    val words: LiveData<Word> = wordsObservable
 
     fun subscribeOnUpdate() {
         val disposable = wordManager.subscribeOnWordUpdating()

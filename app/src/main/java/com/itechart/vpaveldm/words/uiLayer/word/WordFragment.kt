@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
-import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
 
 class WordFragment : Fragment() {
@@ -43,14 +42,14 @@ class WordFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         listener.authorized()
-        binding.handler?.let {
-            it.words.observe(this, Observer { words ->
-                words?.let {
+        binding.handler?.let { viewModel ->
+            viewModel.words.observe(this, Observer { word ->
+                word?.let {
                     val adapter = binding.wordRecyclerView.adapter as? WordAdapter
-                    adapter?.swapData(it)
+                    adapter?.addWord(it)
                 }
             })
-            it.subscribeOnUpdate()
+            viewModel.subscribeOnUpdate()
         }
     }
 

@@ -1,28 +1,36 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 
 class WordManager {
 
-    private var listener: ValueEventListener? = null
+    private var listener: ChildEventListener? = null
     private val wordsRef = FirebaseDatabase.getInstance().getReference("user").child("words")
 
-    fun subscribeOnWordUpdating(): Observable<List<Word>> = Observable.create<List<Word>> { subscriber ->
+    fun subscribeOnWordUpdating(): Observable<Word> = Observable.create<Word> { subscriber ->
         removeListener()
-        listener = wordsRef.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                subscriber.tryOnError(error.toException())
+        listener = wordsRef.addChildEventListener(object : ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
             }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val words = snapshot.children.mapNotNull { it.getValue(Word::class.java) }
-                subscriber.onNext(words)
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+            }
+
+            override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
+                val word = snapshot.getValue(Word::class.java) ?: return
+                subscriber.onNext(word)
             }
 
         })

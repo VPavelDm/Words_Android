@@ -24,9 +24,9 @@ class WordAdapter : RecyclerView.Adapter<WordAdapter.WordHolder>() {
         holder.bind(word)
     }
 
-    fun swapData(words: List<Word>) {
-        this.words = words
-        notifyDataSetChanged()
+    fun addWord(word: Word) {
+        words += word
+        notifyItemInserted(words.size - 1)
     }
 
     class WordHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
