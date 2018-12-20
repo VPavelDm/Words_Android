@@ -17,22 +17,33 @@ class AddWordViewModel : ViewModel() {
     private val disposables = CompositeDisposable()
 
     val translateObservable = ObservableField<String>("")
+    val wordObservable = ObservableField<String>("")
+    val transcriptionObservable = ObservableField<String>("")
+
     val addWordProgressBarVisible = ObservableBoolean(false)
     val translateProgressBarVisible = ObservableBoolean(false)
     val transcriptionProgressBarVisible = ObservableBoolean(false)
 
-    fun addWord(word: String, translate: String, transcription: String) {
-        val newWord = Word(word, translate, transcription)
+    fun addWord() {
+        val newWord = Word(
+                word = wordObservable.get() ?: "",
+                translate = translateObservable.get() ?: "",
+                transcription = transcriptionObservable.get() ?: "")
         val disposable = wordManager.addWord(newWord)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { addWordProgressBarVisible.set(true) }
                 .doOnEvent { addWordProgressBarVisible.set(false) }
-                .subscribe()
+                .subscribe {
+                    wordObservable.set("")
+                    translateObservable.set("")
+                    transcriptionObservable.set("")
+                }
         disposables.add(disposable)
     }
 
-    fun loadTranslate(word: String) {
+    fun loadTranslate() {
+        val word = wordObservable.get() ?: ""
         val disposable = yandexTranslateManager.getTranslate(word)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
