@@ -62,8 +62,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:onClick="@{() -> handler.loadTranscription()}"
             android:padding="8dp"
             android:src="@drawable/ic_file_download_black_24dp"
+            android:visibility="@{handler.transcriptionProgressBarVisible ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/enterTranscriptionET"
             app:layout_constraintEnd_toEndOf="@id/enterWordET"
             app:layout_constraintStart_toEndOf="@id/enterTranscriptionET"
@@ -117,6 +119,16 @@
             app:layout_constraintEnd_toEndOf="@id/translateLoadButton"
             app:layout_constraintStart_toStartOf="@id/translateLoadButton"
             app:layout_constraintTop_toTopOf="@id/translateLoadButton" />
+
+        <ProgressBar
+            android:id="@+id/transcriptionProgressBar"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:visibility="@{handler.transcriptionProgressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/transcriptionLoadButton"
+            app:layout_constraintEnd_toEndOf="@id/transcriptionLoadButton"
+            app:layout_constraintStart_toStartOf="@id/transcriptionLoadButton"
+            app:layout_constraintTop_toTopOf="@id/transcriptionLoadButton" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

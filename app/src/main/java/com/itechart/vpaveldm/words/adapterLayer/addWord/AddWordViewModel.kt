@@ -57,6 +57,21 @@ class AddWordViewModel : ViewModel() {
         disposables.add(disposable)
     }
 
+    fun loadTranscription() {
+        val word = wordObservable.get() ?: ""
+        val disposable = yandexTranslateManager.getTranscription(word)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { transcriptionProgressBarVisible.set(true) }
+                .doOnEvent { _, _ -> transcriptionProgressBarVisible.set(false) }
+                .subscribe({ transcription ->
+                    transcriptionObservable.set(transcription)
+                }, {
+                    //TODO: Handle error
+                })
+        disposables.add(disposable)
+    }
+
     override fun onCleared() {
         super.onCleared()
         disposables.clear()

@@ -13,5 +13,6 @@
     <string name="title_enter_word">Введите слово</string>
     <string name="title_enter_transcription">Введите транскрипцию</string>
     <string name="title_enter_translate">Введите перевод</string>
-    <string name="yandex_api_key">trnsl.1.1.20180612T074102Z.764e033bcf9c41d5.31f4cc9bada282d09a89fb14561d84e3ff50c5e5</string>
+    <string name="yandex_translate_api_key">trnsl.1.1.20180612T074102Z.764e033bcf9c41d5.31f4cc9bada282d09a89fb14561d84e3ff50c5e5</string>
+    <string name="yandex_dictionary_api_key">dict.1.1.20181010T070000Z.16b824adde570294.88d60c64a344f4c7ede04647219b095c4575d1ea</string>
 </resources>
