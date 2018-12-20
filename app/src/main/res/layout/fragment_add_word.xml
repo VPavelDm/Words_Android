@@ -49,6 +49,7 @@
             android:layout_marginTop="4dp"
             android:hint="@string/title_enter_translate"
             android:inputType="text"
+            android:text="@{handler.translateObservable}"
             app:layout_constraintEnd_toStartOf="@id/translateLoadButton"
             app:layout_constraintStart_toStartOf="@id/enterWordET"
             app:layout_constraintTop_toBottomOf="@id/enterTranscriptionET"
@@ -72,7 +73,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:onClick="@{() -> handler.loadTranslate(enterWordET.getText().toString())}"
             android:padding="8dp"
+            android:visibility="@{handler.translateProgressBarVisible ? View.INVISIBLE : View.VISIBLE}"
             android:src="@drawable/ic_file_download_black_24dp"
             app:layout_constraintBottom_toBottomOf="@id/enterTranslateET"
             app:layout_constraintEnd_toEndOf="@id/enterWordET"
@@ -85,23 +88,33 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="@{!handler.progressBarVisible}"
+            android:enabled="@{!handler.addWordProgressBarVisible}"
             android:onClick="@{() -> handler.addWord(enterWordET.getText().toString(), enterTranscriptionET.getText().toString(), enterTranslateET.getText().toString())}"
             android:text="@string/title_add"
-            android:visibility="@{handler.progressBarVisible ? View.GONE : View.VISIBLE}"
+            android:visibility="@{handler.addWordProgressBarVisible ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="@id/translateLoadButton"
             app:layout_constraintStart_toStartOf="@id/enterTranslateET"
             app:layout_constraintTop_toBottomOf="@id/enterTranslateET" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/addWordProgressBar"
             android:layout_width="@dimen/progress_bar_size"
             android:layout_height="@dimen/progress_bar_size"
-            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}"
+            android:visibility="@{handler.addWordProgressBarVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/addWordButton"
             app:layout_constraintEnd_toEndOf="@id/addWordButton"
             app:layout_constraintStart_toStartOf="@id/addWordButton"
             app:layout_constraintTop_toTopOf="@id/addWordButton" />
+
+        <ProgressBar
+            android:id="@+id/translateProgressBar"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:visibility="@{handler.translateProgressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/translateLoadButton"
+            app:layout_constraintEnd_toEndOf="@id/translateLoadButton"
+            app:layout_constraintStart_toStartOf="@id/translateLoadButton"
+            app:layout_constraintTop_toTopOf="@id/translateLoadButton" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
