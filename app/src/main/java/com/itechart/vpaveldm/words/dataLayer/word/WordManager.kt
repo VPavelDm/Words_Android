@@ -1,12 +1,10 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 
 class WordManager {
 
@@ -49,6 +47,20 @@ class WordManager {
                 .addOnSuccessListener { subscriber.onComplete() }
                 .addOnFailureListener { subscriber.tryOnError(it) }
 
+    }
+
+    fun getWordCount(): Single<Long> = Single.create { subscriber ->
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val wordsRef = usersRef.child(userID).child(userWords)
+        wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                subscriber.onSuccess(snapshot.childrenCount)
+            }
+        })
     }
 
     private fun removeListener() {

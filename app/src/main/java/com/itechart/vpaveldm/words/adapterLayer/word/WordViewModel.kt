@@ -8,19 +8,30 @@ import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.disposables.CompositeDisposable
 
-class WordViewModel: ViewModel() {
+class WordViewModel : ViewModel() {
 
     private val wordManager = WordManager()
     private val disposables = CompositeDisposable()
     private val wordsObservable = MutableLiveData<Word>()
 
     val progressBarVisible = ObservableBoolean(false)
+    val emptyWordsTextViewVisible = ObservableBoolean(false)
     val words: LiveData<Word> = wordsObservable
 
     init {
+        wordManager.getWordCount()
+                .filter { it == 0L }
+                .doOnSuccess {
+                    progressBarVisible.set(false)
+                    emptyWordsTextViewVisible.set(true)
+                }
+                .subscribe()
         val disposable = wordManager.subscribeOnWordUpdating()
                 .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEach { progressBarVisible.set(false) }
+                .doOnEach {
+                    progressBarVisible.set(false)
+                    emptyWordsTextViewVisible.set(false)
+                }
                 .subscribe { wordsObservable.value = it }
         disposables.add(disposable)
     }
