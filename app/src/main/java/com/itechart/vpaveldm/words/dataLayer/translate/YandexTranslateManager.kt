@@ -21,6 +21,8 @@ class YandexTranslateManager {
                         if (response.isSuccessful) {
                             val translate = response.body()?.text?.first() ?: ""
                             subscriber.onSuccess(translate)
+                        } else {
+                            subscriber.onError(Error(response.message()))
                         }
                     }
 
@@ -37,7 +39,8 @@ class YandexTranslateManager {
 
                     override fun onResponse(call: Call<TranscriptionResponse>, response: Response<TranscriptionResponse>) {
                         if (response.isSuccessful) {
-                            val transcription = response.body()?.objects?.first()?.transcription ?: ""
+                            val transcription = response.body()?.objects?.first()?.transcription
+                                    ?: ""
                             subscriber.onSuccess("[$transcription]")
                         } else {
                             subscriber.onError(Error(response.message()))
