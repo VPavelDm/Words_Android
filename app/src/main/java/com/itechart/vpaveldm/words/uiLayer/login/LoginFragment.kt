@@ -15,22 +15,12 @@ import com.itechart.vpaveldm.words.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
 
-    private lateinit var binding: FragmentLoginBinding
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentLoginBinding.inflate(inflater, container, false)
+        val binding = FragmentLoginBinding.inflate(inflater, container, false)
         val navController = Navigation.findNavController(activity!!, R.id.nav_host_fragment)
         val viewModel = ViewModelProviders.of(this, ViewModelFactory(navController)).get(AuthorizationViewModel::class.java)
         binding.handler = viewModel
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.loginButton.setOnClickListener {
-            binding.loginET.onEditorAction(EditorInfo.IME_ACTION_DONE)
-            binding.passwordET.onEditorAction(EditorInfo.IME_ACTION_DONE)
-        }
     }
 
 }
