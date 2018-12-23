@@ -34,5 +34,9 @@
         android:id="@+id/addWordFragment"
         android:name="com.itechart.vpaveldm.words.uiLayer.addWord.AddWordFragment"
         android:label="AddWordFragment" />
+    <fragment
+        android:id="@+id/studyWordFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.studyWord.StudyWordFragment"
+        android:label="StudyWordFragment" />
 
 </navigation>

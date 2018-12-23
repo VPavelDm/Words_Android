@@ -12,6 +12,11 @@
         android:title="@string/title_search" />
 
     <item
+        android:id="@+id/studyWordFragment"
+        android:icon="@drawable/ic_check_black_24dp"
+        android:title="@string/titile_study"/>
+
+    <item
         android:id="@+id/addWordFragment"
         android:icon="@drawable/ic_add_black_24dp"
         android:title="@string/title_add" />
