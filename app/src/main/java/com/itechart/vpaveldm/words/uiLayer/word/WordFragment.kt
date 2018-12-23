@@ -26,6 +26,18 @@ class WordFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentWordBinding
+    private lateinit var viewModel: WordViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
+        viewModel.words.observe(this, Observer { word ->
+            word?.let {
+                val adapter = binding.wordRecyclerView.adapter as? WordAdapter
+                adapter?.addWord(it)
+            }
+        })
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWordBinding.inflate(inflater, container, false)
@@ -34,7 +46,6 @@ class WordFragment : Fragment() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
         }
-        val viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
         binding.handler = viewModel
         return binding.root
     }
@@ -42,15 +53,6 @@ class WordFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         listener.authorized()
-        binding.handler?.let { viewModel ->
-            viewModel.words.observe(this, Observer { word ->
-                word?.let {
-                    val adapter = binding.wordRecyclerView.adapter as? WordAdapter
-                    adapter?.addWord(it)
-                }
-            })
-            viewModel.subscribeOnUpdate()
-        }
     }
 
 }

@@ -17,7 +17,7 @@ class WordViewModel: ViewModel() {
     val progressBarVisible = ObservableBoolean(false)
     val words: LiveData<Word> = wordsObservable
 
-    fun subscribeOnUpdate() {
+    init {
         val disposable = wordManager.subscribeOnWordUpdating()
                 .doOnSubscribe { progressBarVisible.set(true) }
                 .doOnEach { progressBarVisible.set(false) }
