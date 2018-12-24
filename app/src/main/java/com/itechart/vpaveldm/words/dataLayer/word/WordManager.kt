@@ -63,6 +63,26 @@ class WordManager {
         })
     }
 
+    fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val wordsRef = usersRef.child(userID).child(userWords)
+        wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val words = arrayListOf<Word>()
+                for (wordSnapshot in snapshot.children) {
+                    val word = wordSnapshot.getValue(Word::class.java) ?: continue
+                    words += word
+                }
+                subscriber.onSuccess(words)
+            }
+
+        })
+    }
+
     private fun removeListener() {
         listener?.let { usersRef.removeEventListener(it) }
     }
