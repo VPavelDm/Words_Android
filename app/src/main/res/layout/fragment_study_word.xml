@@ -148,7 +148,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/knowWordBtn"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
                         app:layout_constraintStart_toEndOf="@id/knowAnswer"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/doNotKnowWordBtn"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
