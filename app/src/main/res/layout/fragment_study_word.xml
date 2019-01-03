@@ -26,11 +26,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/emptyWordsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_add_words"
+            android:visibility="@{handler.emptyWordsTextViewVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <android.support.v7.widget.CardView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="16dp"
-            android:visibility="@{handler.progressBarVisible ? View.INVISIBLE : View.VISIBLE}"
+            android:visibility="@{(handler.progressBarVisible || handler.emptyWordsTextViewVisible) ? View.INVISIBLE : View.VISIBLE}"
             app:cardCornerRadius="8sp"
             app:cardElevation="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -131,6 +142,7 @@
                         android:id="@+id/knowAnswer"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:onClick="@{() -> handler.knowWord()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/doNotKnowAnswer"
                         app:layout_constraintStart_toStartOf="parent"
@@ -169,6 +181,7 @@
                         android:id="@+id/doNotKnowAnswer"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:onClick="@{() -> handler.doNotKnowWord()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/knowAnswer"
