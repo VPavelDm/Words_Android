@@ -18,17 +18,17 @@ class StudyWordViewModel : ViewModel() {
     val progressBarVisible = ObservableBoolean(false)
     val word = ObservableField<String>("")
 
-    fun getWordsToStudy() {
+    init {
         val disposable = wordManager.getWordsToStudy()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { _, _ -> progressBarVisible.set(false) }
-                .subscribe({ words ->
-                    initWords(words)
-                }, { _ ->
-                    // TODO: Add error handling
-                })
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { _, _ -> progressBarVisible.set(false) }
+            .subscribe({ words ->
+                initWords(words)
+            }, { _ ->
+                // TODO: Add error handling
+            })
         disposables.add(disposable)
     }
 

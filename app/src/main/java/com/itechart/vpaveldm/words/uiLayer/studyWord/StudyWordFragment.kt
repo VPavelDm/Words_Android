@@ -20,9 +20,4 @@ class StudyWordFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.handler?.getWordsToStudy()
-    }
-
 }
