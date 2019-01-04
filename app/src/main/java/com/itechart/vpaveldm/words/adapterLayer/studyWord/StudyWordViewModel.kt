@@ -20,8 +20,10 @@ class StudyWordViewModel : ViewModel() {
 
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
-    val updateWordProgressBar = ObservableBoolean(false)
+    val updateWordProgressBarVisible = ObservableBoolean(false)
+    val transcriptionVisible = ObservableBoolean(true)
     val word = ObservableField<String>("")
+    val transcription = ObservableField<String>("")
 
     var delegate: WeakReference<IStudyWordDelegate>? = null
 
@@ -58,6 +60,11 @@ class StudyWordViewModel : ViewModel() {
         }
     }
 
+    fun showAnswer() {
+        word.set(words.first().translate)
+        transcriptionVisible.set(false)
+    }
+
     private fun initWords(words: List<Word>) {
         if (words.isNotEmpty()) {
             this.words = ArrayList(words)
@@ -69,8 +76,8 @@ class StudyWordViewModel : ViewModel() {
         val disposable = wordManager.updateWord(word)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { updateWordProgressBar.set(true) }
-                .doOnEvent { updateWordProgressBar.set(false) }
+                .doOnSubscribe { updateWordProgressBarVisible.set(true) }
+                .doOnEvent { updateWordProgressBarVisible.set(false) }
                 .subscribe({
                     callback()
                 }, { _ ->
@@ -83,8 +90,11 @@ class StudyWordViewModel : ViewModel() {
         if (words.size > 0) {
             if (!isFirst) delegate?.get()?.cardClicked {
                 word.set(words.first().word)
+                transcription.set(words.first().transcription)
+                transcriptionVisible.set(true)
             } else {
                 word.set(words.first().word)
+                transcription.set(words.first().transcription)
             }
         } else {
             emptyWordsTextViewVisible.set(true)
