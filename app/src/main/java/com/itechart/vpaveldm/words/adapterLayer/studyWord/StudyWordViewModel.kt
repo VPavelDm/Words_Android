@@ -20,6 +20,7 @@ class StudyWordViewModel : ViewModel() {
 
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
+    val updateWordProgressBar = ObservableBoolean(false)
     val word = ObservableField<String>("")
 
     var delegate: WeakReference<IStudyWordDelegate>? = null
@@ -68,8 +69,8 @@ class StudyWordViewModel : ViewModel() {
         val disposable = wordManager.updateWord(word)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { progressBarVisible.set(false) }
+                .doOnSubscribe { updateWordProgressBar.set(true) }
+                .doOnEvent { updateWordProgressBar.set(false) }
                 .subscribe({
                     callback()
                 }, { _ ->
