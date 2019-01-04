@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.core.extension.moveToEndAt
+import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,13 +39,22 @@ class StudyWordViewModel : ViewModel() {
     }
 
     fun knowWord() {
-        words.removeAt(0)
-        updateCard(false)
+        val word = words.removeAt(0)
+        val newWord = word.copy(
+                date = word.date.plusDays(word.count + 1),
+                count = word.count + 1
+        )
+        updateWord(newWord) {
+            updateCard(false)
+        }
     }
 
     fun doNotKnowWord() {
-        words.moveToEndAt(index = 0)
-        updateCard(false)
+        val word = words.moveToEndAt(index = 0)
+        val newWord = word.copy(count = 0)
+        updateWord(newWord) {
+            updateCard(false)
+        }
     }
 
     private fun initWords(words: List<Word>) {
@@ -52,6 +62,20 @@ class StudyWordViewModel : ViewModel() {
             this.words = ArrayList(words)
         }
         updateCard(true)
+    }
+
+    private fun updateWord(word: Word, callback: () -> Unit) {
+        val disposable = wordManager.updateWord(word)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
+                .subscribe({
+                    callback()
+                }, { _ ->
+                    //TODO: Handle error
+                })
+        disposables.add(disposable)
     }
 
     private fun updateCard(isFirst: Boolean) {

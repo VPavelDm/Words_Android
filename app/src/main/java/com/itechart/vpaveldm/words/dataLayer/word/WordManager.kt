@@ -2,6 +2,7 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -16,21 +17,10 @@ class WordManager {
         removeListener()
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         val wordsRef = usersRef.child(userID).child(userWords)
-        listener = wordsRef.addChildEventListener(object : ChildEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-            }
-
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-            }
-
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-            }
-
-            override fun onChildRemoved(p0: DataSnapshot) {
-            }
+        listener = wordsRef.addChildEventListener(object : DelegateChildEventListener() {
 
             override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
-                val word = snapshot.getValue(Word::class.java) ?: return
+                val word = convert(snapshot) ?: return
                 subscriber.onNext(word)
             }
 
@@ -47,6 +37,17 @@ class WordManager {
                 .addOnSuccessListener { subscriber.onComplete() }
                 .addOnFailureListener { subscriber.tryOnError(it) }
 
+    }
+
+    fun updateWord(word: Word): Completable = Completable.create { subscriber ->
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        usersRef
+                .child(userID)
+                .child(userWords)
+                .child(word.key)
+                .setValue(word)
+                .addOnSuccessListener { subscriber.onComplete() }
+                .addOnFailureListener { subscriber.tryOnError(it) }
     }
 
     fun getWordCount(): Single<Long> = Single.create { subscriber ->
@@ -74,7 +75,7 @@ class WordManager {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val words = arrayListOf<Word>()
                 for (wordSnapshot in snapshot.children) {
-                    val word = wordSnapshot.getValue(Word::class.java) ?: continue
+                    val word = convert(wordSnapshot) ?: continue
                     words += word
                 }
                 subscriber.onSuccess(words)
@@ -85,6 +86,14 @@ class WordManager {
 
     private fun removeListener() {
         listener?.let { usersRef.removeEventListener(it) }
+    }
+
+    private fun convert(snapshot: DataSnapshot): Word? {
+        val word = snapshot.getValue(Word::class.java) ?: return null
+        snapshot.key?.let {
+            word.key = it
+            return word
+        } ?: return null
     }
 
 }
