@@ -2,10 +2,12 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
+import com.itechart.vpaveldm.words.core.extension.resetTime
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.*
+import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 
 class WordManager {
 
@@ -66,7 +68,8 @@ class WordManager {
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef.child(userID).child(userWords)
+        val currentDate = Date().resetTime().time.toDouble()
+        val wordsRef = usersRef.child(userID).child(userWords).orderByChild("date/time").endAt(currentDate)
         wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
