@@ -38,6 +38,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.CardView
+            android:id="@+id/wordCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="16dp"

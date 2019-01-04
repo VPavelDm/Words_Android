@@ -9,6 +9,7 @@ import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.lang.ref.WeakReference
 
 class StudyWordViewModel : ViewModel() {
 
@@ -19,6 +20,8 @@ class StudyWordViewModel : ViewModel() {
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
     val word = ObservableField<String>("")
+
+    var delegate: WeakReference<IStudyWordDelegate>? = null
 
     init {
         val disposable = wordManager.getWordsToStudy()
@@ -36,27 +39,35 @@ class StudyWordViewModel : ViewModel() {
 
     fun knowWord() {
         words.removeAt(0)
-        updateCard()
+        updateCard(false)
     }
 
     fun doNotKnowWord() {
         words.moveToEndAt(index = 0)
-        updateCard()
+        updateCard(false)
     }
 
     private fun initWords(words: List<Word>) {
         if (words.isNotEmpty()) {
             this.words = ArrayList(words)
-            updateCard()
         }
+        updateCard(true)
     }
 
-    private fun updateCard() {
+    private fun updateCard(isFirst: Boolean) {
         if (words.size > 0) {
-            word.set(words.first().word)
+            if (!isFirst) delegate?.get()?.cardClicked {
+                word.set(words.first().word)
+            } else {
+                word.set(words.first().word)
+            }
         } else {
             emptyWordsTextViewVisible.set(true)
         }
     }
 
+}
+
+interface IStudyWordDelegate {
+    fun cardClicked(callback: () -> Unit)
 }
