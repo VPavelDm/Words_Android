@@ -63,12 +63,14 @@
                     android:layout_weight="3"
                     android:ellipsize="end"
                     android:lines="4"
+                    android:paddingStart="18dp"
                     android:paddingTop="18dp"
+                    android:paddingEnd="18dp"
                     android:paddingBottom="18dp"
                     android:text="@{handler.word}"
                     android:textAlignment="center"
                     android:textSize="24sp"
-                    tools:text="Hello world! 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 111111112 2222 222 2 22222222222222222222 22222222 22222222222 2222221" />
+                    tools:text="Hello world!" />
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -109,6 +111,15 @@
                         app:layout_constraintStart_toEndOf="@id/keyboardAnswer"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:ignore="ContentDescription" />
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{handler.updateWordProgressBar ? View.VISIBLE : View.INVISIBLE}"
+                        app:layout_constraintBottom_toBottomOf="@id/showAnswer"
+                        app:layout_constraintEnd_toEndOf="@id/showAnswer"
+                        app:layout_constraintStart_toStartOf="@id/showAnswer"
+                        app:layout_constraintTop_toTopOf="@id/showAnswer" />
 
                     <View
                         android:id="@+id/secondSeparator"
@@ -220,12 +231,6 @@
                 </android.support.constraint.ConstraintLayout>
 
             </LinearLayout>
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="@{handler.updateWordProgressBar ? View.VISIBLE : View.INVISIBLE}" />
 
             <View
                 android:layout_width="match_parent"
