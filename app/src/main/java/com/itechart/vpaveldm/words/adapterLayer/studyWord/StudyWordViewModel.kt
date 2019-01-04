@@ -66,8 +66,10 @@ class StudyWordViewModel : ViewModel() {
     }
 
     fun showAnswer() {
-        word.set(words.first().translate)
-        transcriptionVisible.set(false)
+        delegate?.get()?.showTranslateClicked {
+            word.set(words.first().translate)
+            transcriptionVisible.set(false)
+        }
     }
 
     private fun initWords(words: List<Word>) {
@@ -110,4 +112,5 @@ class StudyWordViewModel : ViewModel() {
 
 interface IStudyWordDelegate {
     fun cardClicked(callback: () -> Unit)
+    fun showTranslateClicked(callback: () -> Unit)
 }
