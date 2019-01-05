@@ -9,36 +9,22 @@ class Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        initTranslateService()
-        initTranscriptionService()
-        translateApiKey = getString(R.string.yandex_translate_api_key)
-        transcriptionApiKey = getString(R.string.yandex_dictionary_api_key)
+        initDictionaryService()
+        dictionaryApiKey = getString(R.string.yandex_dictionary_api_key)
     }
 
-    private fun initTranslateService() {
-        val retrofit = Retrofit.Builder()
-                .baseUrl("https://translate.yandex.net/api/v1.5/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        translateService = retrofit.create(YandexService::class.java)
-    }
-
-    private fun initTranscriptionService() {
+    private fun initDictionaryService() {
         val retrofit = Retrofit.Builder()
                 .baseUrl("https://dictionary.yandex.net/api/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-        transcriptionService = retrofit.create(YandexService::class.java)
+        dictionaryService = retrofit.create(YandexService::class.java)
     }
 
     companion object {
-        lateinit var translateService: YandexService
+        lateinit var dictionaryService: YandexService
             private set
-        lateinit var transcriptionService: YandexService
-            private set
-        lateinit var translateApiKey: String
-            private set
-        lateinit var transcriptionApiKey: String
+        lateinit var dictionaryApiKey: String
             private set
     }
 

@@ -7,15 +7,15 @@ import retrofit2.http.Query
 
 
 interface YandexService {
-    @GET("tr.json/translate?lang=en-ru")
-    fun getTranslate(@Query("text") word: String, @Query("key") apiKey: String): Call<Translate>
 
     @GET("dicservice.json/lookup?lang=en-ru")
-    fun getTranscription(@Query("text") word: String, @Query("key") apiKey: String): Call<TranscriptionResponse>
+    fun getWordDescription(@Query("text") word: String, @Query("key") apiKey: String): Call<WordDescriptionResponse>
 }
 
-class Translate(val text: List<String>)
+class WordDescriptionResponse(@SerializedName("def") val objects: List<WordDescription>)
 
-class TranscriptionResponse(@SerializedName("def") val objects: List<Transcription>)
+class WordDescription(@SerializedName("ts") val transcription: String, @SerializedName("tr") val translates: List<WordTranslate>)
 
-class Transcription(@SerializedName("ts") val transcription: String)
+class WordTranslate(val text: String, @SerializedName("syn") val synonyms: List<Synonym>?)
+
+class Synonym(val text: String)

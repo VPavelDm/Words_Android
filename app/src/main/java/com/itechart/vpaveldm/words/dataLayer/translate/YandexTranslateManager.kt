@@ -9,17 +9,23 @@ import retrofit2.Response
 class YandexTranslateManager {
 
     fun getTranslate(word: String): Single<List<String>> = Single.create { subscriber ->
-        Application.translateService.getTranslate(word, apiKey = Application.translateApiKey)
-                .enqueue(object : Callback<Translate> {
-
-                    override fun onFailure(call: Call<Translate>, t: Throwable) {
-                        subscriber.onError(t)
+        Application.dictionaryService.getWordDescription(word, apiKey = Application.dictionaryApiKey)
+                .enqueue(object : Callback<WordDescriptionResponse> {
+                    override fun onFailure(call: Call<WordDescriptionResponse>, t: Throwable) {
+                        subscriber.tryOnError(t)
                     }
 
-                    override fun onResponse(call: Call<Translate>, response: Response<Translate>) {
+                    override fun onResponse(call: Call<WordDescriptionResponse>, response: Response<WordDescriptionResponse>) {
                         if (response.isSuccessful) {
-                            val translate = response.body()?.text?.first() ?: ""
-                            subscriber.onSuccess(listOf(translate))
+                            val wordDescriptions = response.body()?.objects ?: return
+                            val translates = wordDescriptions.flatMap { wordDescription ->
+                                wordDescription.translates.map { translate ->
+                                    translate.text
+                                }.union(wordDescription.translates.flatMap { translate ->
+                                    translate.synonyms?.map { it.text } ?: listOf()
+                                })
+                            }
+                            subscriber.onSuccess(translates)
                         } else {
                             subscriber.onError(Error(response.message()))
                         }
@@ -29,14 +35,14 @@ class YandexTranslateManager {
     }
 
     fun getTranscription(word: String): Single<String> = Single.create { subscriber ->
-        Application.transcriptionService.getTranscription(word, apiKey = Application.transcriptionApiKey)
-                .enqueue(object : Callback<TranscriptionResponse> {
+        Application.dictionaryService.getWordDescription(word, apiKey = Application.dictionaryApiKey)
+                .enqueue(object : Callback<WordDescriptionResponse> {
 
-                    override fun onFailure(call: Call<TranscriptionResponse>, t: Throwable) {
+                    override fun onFailure(call: Call<WordDescriptionResponse>, t: Throwable) {
                         subscriber.onError(t)
                     }
 
-                    override fun onResponse(call: Call<TranscriptionResponse>, response: Response<TranscriptionResponse>) {
+                    override fun onResponse(call: Call<WordDescriptionResponse>, response: Response<WordDescriptionResponse>) {
                         if (response.isSuccessful) {
                             val transcriptions = response.body()?.objects ?: return
                             if (transcriptions.isNotEmpty()) {
