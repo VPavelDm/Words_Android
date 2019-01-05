@@ -9,6 +9,7 @@ import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.lang.ref.WeakReference
 
 class AddWordViewModel : ViewModel() {
 
@@ -23,6 +24,8 @@ class AddWordViewModel : ViewModel() {
     val addWordProgressBarVisible = ObservableBoolean(false)
     val translateProgressBarVisible = ObservableBoolean(false)
     val transcriptionProgressBarVisible = ObservableBoolean(false)
+
+    var delegate: WeakReference<IAddWordDelegate>? = null
 
     fun addWord() {
         val newWord = Word(
@@ -49,8 +52,8 @@ class AddWordViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { translateProgressBarVisible.set(true) }
                 .doOnEvent { _, _ -> translateProgressBarVisible.set(false) }
-                .subscribe({ translate ->
-                    translateObservable.set(translate)
+                .subscribe({ translates ->
+                    delegate?.get()?.translatesLoaded(translates)
                 }, {
                     //TODO: Handle error
                 })
@@ -77,4 +80,8 @@ class AddWordViewModel : ViewModel() {
         disposables.clear()
     }
 
+}
+
+interface IAddWordDelegate {
+    fun translatesLoaded(translates: List<String>)
 }

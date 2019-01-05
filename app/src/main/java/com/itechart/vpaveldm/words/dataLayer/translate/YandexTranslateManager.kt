@@ -5,11 +5,10 @@ import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Error
 
 class YandexTranslateManager {
 
-    fun getTranslate(word: String): Single<String> = Single.create { subscriber ->
+    fun getTranslate(word: String): Single<List<String>> = Single.create { subscriber ->
         Application.translateService.getTranslate(word, apiKey = Application.translateApiKey)
                 .enqueue(object : Callback<Translate> {
 
@@ -20,7 +19,7 @@ class YandexTranslateManager {
                     override fun onResponse(call: Call<Translate>, response: Response<Translate>) {
                         if (response.isSuccessful) {
                             val translate = response.body()?.text?.first() ?: ""
-                            subscriber.onSuccess(translate)
+                            subscriber.onSuccess(listOf(translate))
                         } else {
                             subscriber.onError(Error(response.message()))
                         }

@@ -18,5 +18,7 @@
     <string name="title_add_words">Добавьте слова</string>
     <string name="title_know_word">Я вспомнил\nэто слово</string>
     <string name="title_do_not_know_word">Я не вспомнил\nэто слово</string>
-    <string name="titile_study">Учить</string>
+    <string name="title_study">Учить</string>
+    <string name="title_cancel">Отмена</string>
+    <string name="title_choose_translate">Выберите перевод</string>
 </resources>

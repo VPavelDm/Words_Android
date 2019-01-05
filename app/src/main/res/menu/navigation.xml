@@ -14,7 +14,7 @@
     <item
         android:id="@+id/studyWordFragment"
         android:icon="@drawable/ic_check_black_24dp"
-        android:title="@string/titile_study"/>
+        android:title="@string/title_study"/>
 
     <item
         android:id="@+id/addWordFragment"
