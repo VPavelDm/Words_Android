@@ -39,9 +39,13 @@ class YandexTranslateManager {
 
                     override fun onResponse(call: Call<TranscriptionResponse>, response: Response<TranscriptionResponse>) {
                         if (response.isSuccessful) {
-                            val transcription = response.body()?.objects?.first()?.transcription
-                                    ?: ""
-                            subscriber.onSuccess("[$transcription]")
+                            val transcriptions = response.body()?.objects ?: return
+                            if (transcriptions.isNotEmpty()) {
+                                val transcription = transcriptions.first().transcription
+                                subscriber.onSuccess("[$transcription]")
+                            } else {
+                                subscriber.onSuccess("[]")
+                            }
                         } else {
                             subscriber.onError(Error(response.message()))
                         }
