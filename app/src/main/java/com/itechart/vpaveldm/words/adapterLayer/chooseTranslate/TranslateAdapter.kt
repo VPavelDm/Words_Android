@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import com.itechart.vpaveldm.words.R
 import kotlinx.android.synthetic.main.recycler_item_translate.view.*
 
-class TranslateAdapter(private val translates: List<String>) : RecyclerView.Adapter<TranslateAdapter.TranslateViewHolder>() {
+class TranslateAdapter(private val translates: List<String>, private val listener: ITranslateClick)
+    : RecyclerView.Adapter<TranslateAdapter.TranslateViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): TranslateViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_translate, parent, false)
@@ -20,6 +21,15 @@ class TranslateAdapter(private val translates: List<String>) : RecyclerView.Adap
         holder.itemView.translateTV.text = translates[position]
     }
 
-    class TranslateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class TranslateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener {
+                listener.translateClicked(itemView.translateTV.text.toString())
+            }
+        }
+    }
+}
 
+interface ITranslateClick {
+    fun translateClicked(translate: String)
 }
