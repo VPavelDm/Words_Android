@@ -20,19 +20,21 @@ class WordViewModel : ViewModel() {
 
     init {
         wordManager.getWordCount()
-                .filter { it == 0L }
-                .doOnSuccess {
-                    progressBarVisible.set(false)
-                    emptyWordsTextViewVisible.set(true)
-                }
-                .subscribe()
+            .filter { it == 0L }
+            .doOnSuccess {
+                // This will be called if there aren't any words
+                progressBarVisible.set(false)
+                emptyWordsTextViewVisible.set(true)
+            }
+            .subscribe()
         val disposable = wordManager.subscribeOnWordUpdating()
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEach {
-                    progressBarVisible.set(false)
-                    emptyWordsTextViewVisible.set(false)
-                }
-                .subscribe { wordsObservable.value = it }
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEach {
+                // This won't be called if there aren't any words
+                progressBarVisible.set(false)
+                emptyWordsTextViewVisible.set(false)
+            }
+            .subscribe { wordsObservable.value = it }
         disposables.add(disposable)
     }
 
