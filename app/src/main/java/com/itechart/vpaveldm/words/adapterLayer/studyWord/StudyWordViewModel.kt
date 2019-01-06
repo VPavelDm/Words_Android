@@ -23,9 +23,8 @@ class StudyWordViewModel : ViewModel() {
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
     val updateWordProgressBarVisible = ObservableBoolean(false)
-    val transcriptionVisible = ObservableBoolean(true)
-    val word = ObservableField<String>("")
-    val transcription = ObservableField<String>("")
+    val translateVisible = ObservableBoolean(false)
+    val word = ObservableField<Word>(Word())
 
     var delegate: WeakReference<IStudyWordDelegate>? = null
 
@@ -66,9 +65,11 @@ class StudyWordViewModel : ViewModel() {
     }
 
     fun showAnswer() {
-        delegate?.get()?.showTranslateClicked {
-            word.set(words.first().translate)
-            transcriptionVisible.set(false)
+        // If first click on the card
+        if (!translateVisible.get()) {
+            delegate?.get()?.showTranslateClicked {
+                translateVisible.set(true)
+            }
         }
     }
 
@@ -96,12 +97,10 @@ class StudyWordViewModel : ViewModel() {
     private fun updateCard(isFirst: Boolean) {
         if (words.size > 0) {
             if (!isFirst) delegate?.get()?.cardClicked {
-                word.set(words.first().word)
-                transcription.set(words.first().transcription)
-                transcriptionVisible.set(true)
+                word.set(words.first())
+                translateVisible.set(false)
             } else {
-                word.set(words.first().word)
-                transcription.set(words.first().transcription)
+                word.set(words.first())
             }
         } else {
             emptyWordsTextViewVisible.set(true)

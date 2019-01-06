@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -61,116 +60,77 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
                     android:layout_weight="3"
+                    android:onClick="@{() -> handler.showAnswer()}"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/wordTV"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:gravity="bottom"
-                        android:lines="2"
                         android:paddingStart="18dp"
+                        android:paddingTop="18dp"
                         android:paddingEnd="18dp"
-                        android:text="@{handler.word}"
+                        android:text="@{handler.word.word}"
                         android:textAlignment="center"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toTopOf="@id/transcriptionTV"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        tools:text="Hello world 11 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1!" />
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:text="Hello world my dear friend. My name is Paul, I am from Minsk" />
 
                     <TextView
                         android:id="@+id/transcriptionTV"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:gravity="top"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lines="1"
                         android:paddingStart="18dp"
                         android:paddingEnd="18dp"
-                        android:text="@{handler.transcription}"
+                        android:paddingBottom="10dp"
+                        android:text="@{handler.word.transcription}"
                         android:textAlignment="center"
                         android:textSize="18sp"
-                        android:visibility='@{handler.transcriptionVisible ? View.VISIBLE : View.INVISIBLE}'
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@id/wordTV"
-                        app:layout_constraintStart_toStartOf="@id/wordTV"
+                        app:layout_constraintBottom_toTopOf="@id/translateSeparator"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/wordTV"
                         tools:text="[Hello]" />
 
-                </android.support.constraint.ConstraintLayout>
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="8dp"
-                    android:layout_weight="2"
-                    android:background="@drawable/background_border"
-                    android:visibility='@{handler.transcriptionVisible ? View.VISIBLE : View.INVISIBLE}'>
-
-                    <ImageButton
-                        android:id="@+id/keyboardAnswer"
+                    <View
+                        android:id="@+id/translateSeparator"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_keyboard_black_24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/showAnswer"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="#7F000000"
+                        android:visibility="@{handler.translateVisible ? View.VISIBLE : View.INVISIBLE}"
+                        app:layout_constraintBottom_toTopOf="@id/translateTV"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="ContentDescription" />
+                        app:layout_constraintTop_toBottomOf="@id/transcriptionTV" />
 
-                    <View
-                        android:id="@+id/firstSeparator"
-                        android:layout_width="1dp"
-                        android:layout_height="0dp"
-                        android:background="#7F000000"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/keyboardAnswer"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageButton
-                        android:id="@+id/showAnswer"
+                    <TextView
+                        android:id="@+id/translateTV"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:background="@android:color/transparent"
-                        android:onClick="@{() -> handler.showAnswer()}"
-                        android:src="@drawable/ic_remove_red_eye_black_24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/chooseAnswer"
-                        app:layout_constraintStart_toEndOf="@id/keyboardAnswer"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="ContentDescription" />
-
-                    <ProgressBar
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="@{handler.updateWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}"
-                        app:layout_constraintBottom_toBottomOf="@id/showAnswer"
-                        app:layout_constraintEnd_toEndOf="@id/showAnswer"
-                        app:layout_constraintStart_toStartOf="@id/showAnswer"
-                        app:layout_constraintTop_toTopOf="@id/showAnswer" />
-
-                    <View
-                        android:id="@+id/secondSeparator"
-                        android:layout_width="1dp"
-                        android:layout_height="0dp"
-                        android:background="#7F000000"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/showAnswer"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageButton
-                        android:id="@+id/chooseAnswer"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_four_boxes"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:paddingStart="18dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="18dp"
+                        android:paddingBottom="18dp"
+                        android:text="@{handler.word.translate}"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:visibility="@{handler.translateVisible ? View.VISIBLE : View.INVISIBLE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/showAnswer"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="ContentDescription" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/translateSeparator"
+                        tools:text="Привет" />
 
                 </android.support.constraint.ConstraintLayout>
 
@@ -178,7 +138,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginBottom="20dp"
-                    android:layout_weight="3">
+                    android:layout_weight="1">
 
                     <android.support.constraint.ConstraintLayout
                         android:id="@+id/knowAnswer"

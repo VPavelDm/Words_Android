@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
-import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.studyWord.IStudyWordDelegate
@@ -40,14 +39,16 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
     }
 
     override fun showTranslateClicked(callback: () -> Unit) {
-        val animation = AnimationUtils.loadAnimation(context, R.anim.anim_rotate_card)
+        val animation = AnimationUtils.loadAnimation(context, R.anim.anim_fade_in)
+        val separatorAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_fade_in)
         animation.setAnimationListener(object : AnimationListener() {
-            override fun onAnimationRepeat(animation: Animation?) {
+            override fun onAnimationEnd(animation: Animation?) {
                 super.onAnimationRepeat(animation)
                 callback()
             }
         })
-        binding.wordCard.startAnimation(animation)
+        binding.translateSeparator.startAnimation(separatorAnimation)
+        binding.translateTV.startAnimation(animation)
     }
 
 }
