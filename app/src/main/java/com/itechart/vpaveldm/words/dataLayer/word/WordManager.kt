@@ -69,22 +69,27 @@ class WordManager {
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         val currentDate = Date().resetTime().time.toDouble()
-        val wordsRef = usersRef.child(userID).child(userWords).orderByChild("date/time").endAt(currentDate)
-        wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+        usersRef
+                .child(userID)
+                .child(userWords)
+                .orderByChild("date/time")
+                .endAt(currentDate)
+                .limitToFirst(10)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
 
-            }
+                    }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val words = arrayListOf<Word>()
-                for (wordSnapshot in snapshot.children) {
-                    val word = convert(wordSnapshot) ?: continue
-                    words += word
-                }
-                subscriber.onSuccess(words)
-            }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val words = arrayListOf<Word>()
+                        for (wordSnapshot in snapshot.children) {
+                            val word = convert(wordSnapshot) ?: continue
+                            words += word
+                        }
+                        subscriber.onSuccess(words)
+                    }
 
-        })
+                })
     }
 
     private fun removeListener() {

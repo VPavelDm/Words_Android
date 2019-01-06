@@ -29,17 +29,7 @@ class StudyWordViewModel : ViewModel() {
     var delegate: WeakReference<IStudyWordDelegate>? = null
 
     init {
-        val disposable = wordManager.getWordsToStudy()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { _, _ -> progressBarVisible.set(false) }
-                .subscribe({ words ->
-                    initWords(words)
-                }, { _ ->
-                    // TODO: Add error handling
-                })
-        disposables.add(disposable)
+        getWords()
     }
 
     fun knowWord() {
@@ -76,8 +66,10 @@ class StudyWordViewModel : ViewModel() {
     private fun initWords(words: List<Word>) {
         if (words.isNotEmpty()) {
             this.words = ArrayList(words)
+            updateCard(true)
+        } else {
+            emptyWordsTextViewVisible.set(true)
         }
-        updateCard(true)
     }
 
     private fun updateWord(word: Word, callback: () -> Unit) {
@@ -103,8 +95,22 @@ class StudyWordViewModel : ViewModel() {
                 word.set(words.first())
             }
         } else {
-            emptyWordsTextViewVisible.set(true)
+            getWords()
         }
+    }
+
+    private fun getWords() {
+        val disposable = wordManager.getWordsToStudy()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { _, _ -> progressBarVisible.set(false) }
+                .subscribe({ words ->
+                    initWords(words)
+                }, { _ ->
+                    // TODO: Add error handling
+                })
+        disposables.add(disposable)
     }
 
 }
