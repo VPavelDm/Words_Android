@@ -50,6 +50,27 @@
                             <option name="y" value="280" />
                           </Point>
                         </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_registrationFragment_to_registrationFragment2">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="registrationFragment2">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="771" />
+                            <option name="y" value="280" />
+                          </Point>
+                        </option>
                       </LayoutPositions>
                     </value>
                   </entry>
@@ -65,7 +86,7 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="studyWordFragment2">
+                  <entry key="studyWordFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">

@@ -17,6 +17,7 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
     val progressBarVisible = ObservableBoolean(false)
     private val authModel = AuthorizationModel()
     private val disposables = CompositeDisposable()
+    private var nickname: String = ""
 
     fun signIn(login: String, password: String) {
         val disposable = authModel.signIn(login, password)
@@ -32,8 +33,13 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
         disposables.add(disposable)
     }
 
+    fun signUp(nickname: String) {
+        this.nickname = nickname
+        navController.navigate(R.id.action_registrationFragment_to_registrationFragment2)
+    }
+
     fun signUp(login: String, password: String, confirmPassword: String) {
-        val disposable = authModel.signUp(login, password, confirmPassword)
+        val disposable = authModel.signUp(login, password, confirmPassword, nickname)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { progressBarVisible.set(true) }
