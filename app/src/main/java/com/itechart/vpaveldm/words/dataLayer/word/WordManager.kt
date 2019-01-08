@@ -75,7 +75,7 @@ class WordManager {
             .child(userWords)
             .orderByKey()
             .startAt(fromKey ?: "")
-            .limitToFirst(count)
+            .limitToFirst(if (fromKey == null) count else count + 1)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                     subscriber.onError(error.toException())

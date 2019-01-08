@@ -15,11 +15,9 @@ class WordPositionalDataSource : PositionalDataSource<Word>() {
 
     @SuppressLint("CheckResult")
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<Word>) {
-        Log.i("myAppTAG", "loadRange: startPosition = ${params.startPosition}, loadSize = ${params.loadSize}")
         wordManager.getWords(fromKey = lastWord?.key, count = params.loadSize)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ words ->
-                Log.i("myAppTAG", "loadRange: wordsLoaded, thread: ${Thread.currentThread().name}}")
                 if (words.isNotEmpty()) {
                     lastWord = words.last()
                 }
@@ -31,10 +29,6 @@ class WordPositionalDataSource : PositionalDataSource<Word>() {
 
     @SuppressLint("CheckResult")
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<Word>) {
-        Log.i(
-            "myAppTAG",
-            "loadInitial: startPosition = ${params.requestedStartPosition}, loadSize = ${params.requestedLoadSize}"
-        )
         wordManager.getWords(count = params.requestedLoadSize)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
