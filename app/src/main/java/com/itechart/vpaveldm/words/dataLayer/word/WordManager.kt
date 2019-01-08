@@ -70,20 +70,19 @@ class WordManager {
 
     fun getWords(fromWord: Word? = null, count: Int): Single<List<Word>> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val startOfEpoch = Date(0).time.toDouble()
         usersRef
             .child(userID)
             .child(userWords)
             .orderByChild("date/time")
-            .startAt(fromWord?.date?.time?.toDouble() ?: startOfEpoch)
-            .limitToFirst(if (fromWord == null) count else count + 1)
+            .endAt(fromWord?.date?.time?.toDouble() ?: Date().time.toDouble())
+            .limitToLast(if (fromWord == null) count else count + 1)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                     subscriber.onError(error.toException())
                 }
 
                 override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }
+                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }.reversed()
                     Log.i("myAppTAG", "word count = ${words.size}")
                     subscriber.onSuccess(words)
                 }
