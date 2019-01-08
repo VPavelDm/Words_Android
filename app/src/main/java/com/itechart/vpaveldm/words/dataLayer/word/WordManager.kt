@@ -20,7 +20,12 @@ class WordManager {
     fun subscribeOnWordUpdating(): Observable<Word> = Observable.create<Word> { subscriber ->
         removeListener()
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef.child(userID).child(userWords)
+        val wordsRef = usersRef
+            .child(userID)
+            .child(userWords)
+            .orderByChild("date/time")
+            .startAt(Date().time.toDouble())
+
         listener = wordsRef.addChildEventListener(object : DelegateChildEventListener() {
 
             override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
@@ -82,7 +87,8 @@ class WordManager {
                 }
 
                 override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }.reversed()
+                    val words =
+                        wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }.reversed()
                     Log.i("myAppTAG", "word count = ${words.size}")
                     subscriber.onSuccess(words)
                 }

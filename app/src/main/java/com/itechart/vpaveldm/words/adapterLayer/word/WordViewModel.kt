@@ -27,14 +27,7 @@ class WordViewModel : ViewModel() {
                 emptyWordsTextViewVisible.set(true)
             }
             .subscribe()
-        val disposable = wordManager.subscribeOnWordUpdating()
-            .doOnSubscribe { progressBarVisible.set(true) }
-            .doOnEach {
-                // This won't be called if there aren't any words
-                progressBarVisible.set(false)
-                emptyWordsTextViewVisible.set(false)
-            }
-            .subscribe { wordsObservable.value = it }
+        val disposable = wordManager.subscribeOnWordUpdating().subscribe { wordsObservable.value = it }
         disposables.add(disposable)
     }
 
