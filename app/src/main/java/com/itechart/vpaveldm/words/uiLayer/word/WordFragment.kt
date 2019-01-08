@@ -1,6 +1,5 @@
 package com.itechart.vpaveldm.words.uiLayer.word
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -31,18 +30,12 @@ class WordFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
-        viewModel.words.observe(this, Observer { word ->
-            word?.let {
-                val adapter = binding.wordRecyclerView.adapter as? WordAdapter
-                adapter?.addWord(it)
-            }
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWordBinding.inflate(inflater, container, false)
         binding.wordRecyclerView.apply {
-            adapter = WordAdapter()
+            adapter = WordAdapter.create()
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
         }

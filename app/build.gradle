@@ -39,8 +39,8 @@ dependencies {
     //Recycler view
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     //Navigation component
-    implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha08'
-    implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha08'
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha09'
+    implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha09'
     //ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
     //RxKotlin and RxAndroid
@@ -52,4 +52,6 @@ dependencies {
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    //Paging library
+    implementation "android.arch.paging:runtime:1.0.1"
 }
