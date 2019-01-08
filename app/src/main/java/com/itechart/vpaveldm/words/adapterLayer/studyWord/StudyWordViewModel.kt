@@ -103,7 +103,10 @@ class StudyWordViewModel : ViewModel() {
         val disposable = wordManager.getWordsToStudy()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnSubscribe {
+                    progressBarVisible.set(true)
+                    translateVisible.set(false)
+                }
                 .doOnEvent { _, _ -> progressBarVisible.set(false) }
                 .subscribe({ words ->
                     initWords(words)
