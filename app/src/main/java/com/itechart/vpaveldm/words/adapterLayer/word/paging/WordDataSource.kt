@@ -15,7 +15,7 @@ class WordPositionalDataSource : PositionalDataSource<Word>() {
 
     @SuppressLint("CheckResult")
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<Word>) {
-        wordManager.getWords(fromKey = lastWord?.key, count = params.loadSize)
+        wordManager.getWords(fromWord = lastWord, count = params.loadSize)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ words ->
                 if (words.isNotEmpty()) {

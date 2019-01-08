@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
-import com.itechart.vpaveldm.words.core.extension.resetTime
 import java.util.*
 
 @IgnoreExtraProperties
@@ -12,6 +11,6 @@ data class Word(
         val word: String = "",
         val transcription: String = "",
         val translate: String= "",
-        val date: Date = Date().resetTime(),
+        val date: Date = Date(),
         val count: Int = 0
 )

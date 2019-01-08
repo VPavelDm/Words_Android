@@ -3,6 +3,7 @@ package com.itechart.vpaveldm.words.dataLayer.word
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -67,22 +68,22 @@ class WordManager {
         })
     }
 
-    fun getWords(fromKey: String? = null, count: Int): Single<List<Word>> = Single.create { subscriber ->
-        Log.i("myAppTAG", "fromKey = $fromKey")
+    fun getWords(fromWord: Word? = null, count: Int): Single<List<Word>> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val startOfEpoch = Date(0).time.toDouble()
         usersRef
             .child(userID)
             .child(userWords)
-            .orderByKey()
-            .startAt(fromKey ?: "")
-            .limitToFirst(if (fromKey == null) count else count + 1)
+            .orderByChild("date/time")
+            .startAt(fromWord?.date?.time?.toDouble() ?: startOfEpoch)
+            .limitToFirst(if (fromWord == null) count else count + 1)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                     subscriber.onError(error.toException())
                 }
 
                 override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromKey }
+                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }
                     Log.i("myAppTAG", "word count = ${words.size}")
                     subscriber.onSuccess(words)
                 }
@@ -92,7 +93,7 @@ class WordManager {
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val currentDate = Date().resetTime().time.toDouble()
+        val currentDate = Date().plusDays(1).resetTime().time.toDouble()
         usersRef
             .child(userID)
             .child(userWords)
