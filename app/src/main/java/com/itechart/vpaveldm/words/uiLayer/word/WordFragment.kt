@@ -12,11 +12,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
 import com.itechart.vpaveldm.words.adapterLayer.word.paging.WordSourceFactory
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
+import kotlinx.android.synthetic.main.activity_main.view.*
 import java.util.concurrent.Executors
 
 class WordFragment : Fragment() {
@@ -37,12 +39,6 @@ class WordFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
-        viewModel.words.observe(this, Observer { word ->
-            word?.let {
-                val dataSource = adapter.currentList?.dataSource
-                dataSource?.invalidate()
-            }
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
