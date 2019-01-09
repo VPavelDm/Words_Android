@@ -1,6 +1,5 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.itechart.vpaveldm.words.core.extension.plusDays
@@ -71,29 +70,6 @@ class WordManager {
                 subscriber.onSuccess(snapshot.childrenCount)
             }
         })
-    }
-
-    fun getWords(fromWord: Word? = null, count: Int): Single<List<Word>> = Single.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        usersRef
-            .child(userID)
-            .child(userWords)
-            .orderByChild("date/time")
-            .endAt(fromWord?.date?.time?.toDouble() ?: Date().time.toDouble())
-            .limitToLast(if (fromWord == null) count else count + 1)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                    subscriber.onError(error.toException())
-                }
-
-                override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words =
-                        wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.key != fromWord?.key }.reversed()
-                    Log.i("myAppTAG", "word count = ${words.size}")
-                    subscriber.onSuccess(words)
-                }
-
-            })
     }
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->

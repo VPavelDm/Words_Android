@@ -2,8 +2,10 @@ package com.itechart.vpaveldm.words.adapterLayer.word
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
+import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class WordViewModel : ViewModel() {
 
@@ -22,7 +24,11 @@ class WordViewModel : ViewModel() {
                 emptyWordsTextViewVisible.set(true)
             }
             .subscribe()
-        val disposable = wordManager.subscribeOnWordUpdating().subscribe()
+        val disposable = wordManager.subscribeOnWordUpdating()
+            .observeOn(Schedulers.newThread())
+            .subscribe { word ->
+                Application.wordDao.addWord(word)
+            }
         disposables.add(disposable)
     }
 

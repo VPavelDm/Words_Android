@@ -12,13 +12,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
-import com.itechart.vpaveldm.words.adapterLayer.word.paging.WordSourceFactory
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
-import kotlinx.android.synthetic.main.activity_main.view.*
 import java.util.concurrent.Executors
 
 class WordFragment : Fragment() {
@@ -46,7 +44,10 @@ class WordFragment : Fragment() {
         binding.wordRecyclerView.apply {
             adapter = this@WordFragment.adapter
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
+            val linearLayoutManager = LinearLayoutManager(context)
+            linearLayoutManager.reverseLayout = true
+            linearLayoutManager.stackFromEnd = true
+            layoutManager = linearLayoutManager
         }
         binding.handler = viewModel
         initPageList()
@@ -59,7 +60,7 @@ class WordFragment : Fragment() {
     }
 
     private fun initPageList() {
-        val sourceFactory = WordSourceFactory()
+        val sourceFactory = Application.wordDao.getWords()
         val config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(10)
