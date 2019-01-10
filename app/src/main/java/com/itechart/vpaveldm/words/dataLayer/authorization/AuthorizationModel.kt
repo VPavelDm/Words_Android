@@ -3,6 +3,7 @@ package com.itechart.vpaveldm.words.dataLayer.authorization
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
+import com.itechart.vpaveldm.words.dataLayer.user.User
 import io.reactivex.Completable
 
 class AuthorizationModel {

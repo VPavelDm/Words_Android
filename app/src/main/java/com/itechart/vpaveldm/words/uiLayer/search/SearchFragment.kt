@@ -5,9 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SearchView
+import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.SearchViewModel
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.UserAdapter
 import com.itechart.vpaveldm.words.databinding.FragmentSearchBinding
@@ -15,10 +15,16 @@ import com.itechart.vpaveldm.words.databinding.FragmentSearchBinding
 class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
+    private lateinit var viewModel: SearchViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
         binding.handler = viewModel
         viewModel.users.observe(this, Observer { users ->
             users?.let {
@@ -32,6 +38,24 @@ class SearchFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.search, menu)
+        val searchItem = menu?.findItem(R.id.search_users)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { viewModel.findUsers(query) }
+                return true
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+                return false
+            }
+
+        })
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
 }
