@@ -5,7 +5,6 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.core.extension.moveToEndAt
 import com.itechart.vpaveldm.words.core.extension.plusDays
-import com.itechart.vpaveldm.words.core.extension.resetTime
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +45,7 @@ class StudyWordViewModel : ViewModel() {
     fun doNotKnowWord() {
         val word = words.moveToEndAt(index = 0)
         val newWord = word.copy(
-                date = Date().resetTime(),
+                date = Date(),
                 count = 0
         )
         updateWord(newWord) {
