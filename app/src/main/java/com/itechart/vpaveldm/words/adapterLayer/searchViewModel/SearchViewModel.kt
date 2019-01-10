@@ -31,6 +31,15 @@ class SearchViewModel : ViewModel() {
         disposables.add(disposable)
     }
 
+    fun subscribe(user: User) {
+        val disposable = userManager.subscribe(user)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, { _ ->
+
+                })
+        disposables.add(disposable)
+    }
 
     override fun onCleared() {
         super.onCleared()

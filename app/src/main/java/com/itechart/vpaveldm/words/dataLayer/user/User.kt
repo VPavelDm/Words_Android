@@ -1,7 +1,12 @@
 package com.itechart.vpaveldm.words.dataLayer.user
 
+import com.google.firebase.database.Exclude
+import com.google.firebase.database.IgnoreExtraProperties
+
+@IgnoreExtraProperties
 class User(
-    val name: String = "",
-    subscribers: List<User> = listOf(),
-    subscriptions: List<User> = listOf()
+        @get:Exclude
+        var key: String = "",
+        val name: String = "",
+        val subscriptions: ArrayList<String> = arrayListOf()
 )

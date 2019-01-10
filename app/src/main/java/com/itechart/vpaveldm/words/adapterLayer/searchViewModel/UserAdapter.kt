@@ -8,7 +8,8 @@ import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.user.User
 import kotlinx.android.synthetic.main.recycler_user.view.*
 
-class UserAdapter(private val users: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+class UserAdapter(private val users: List<User>, private val listener: ISubscribeUser) :
+        RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_user, parent, false)
@@ -23,10 +24,24 @@ class UserAdapter(private val users: List<User>) : RecyclerView.Adapter<UserAdap
         holder.bind(user = users[position])
     }
 
-    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        private var user: User? = null
+
+        init {
+            itemView.setOnClickListener {
+                user?.let { user -> listener.subscribe(user) }
+            }
+        }
+
         fun bind(user: User) {
+            this.user = user
             itemView.nicknameTV.text = user.name
         }
     }
 
+}
+
+interface ISubscribeUser {
+    fun subscribe(user: User)
 }

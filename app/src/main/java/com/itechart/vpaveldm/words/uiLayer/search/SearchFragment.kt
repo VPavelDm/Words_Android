@@ -8,11 +8,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.widget.SearchView
 import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.ISubscribeUser
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.SearchViewModel
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.UserAdapter
+import com.itechart.vpaveldm.words.dataLayer.user.User
 import com.itechart.vpaveldm.words.databinding.FragmentSearchBinding
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), ISubscribeUser {
 
     private lateinit var binding: FragmentSearchBinding
     private lateinit var viewModel: SearchViewModel
@@ -31,7 +33,7 @@ class SearchFragment : Fragment() {
                 binding.searchRV.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(this@SearchFragment.context)
-                    adapter = UserAdapter(it)
+                    adapter = UserAdapter(it, this@SearchFragment)
                     addItemDecoration(ItemDivider(context))
                 }
             }
@@ -56,6 +58,10 @@ class SearchFragment : Fragment() {
 
         })
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun subscribe(user: User) {
+        viewModel.subscribe(user)
     }
 
 }
