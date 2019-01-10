@@ -1,5 +1,6 @@
 package com.itechart.vpaveldm.words
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -36,7 +37,11 @@ class MainActivity : AppCompatActivity(), IAuthorization {
 
     override fun onBackPressed() {
         if (navController.currentDestination == navController.graph.findNode(R.id.loginFragment) && auth.currentUser == null) {
-            finishAndRemoveTask()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAndRemoveTask()
+            } else {
+                finishAffinity()
+            }
         } else {
             super.onBackPressed()
         }
