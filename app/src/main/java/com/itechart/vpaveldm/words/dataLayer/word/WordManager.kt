@@ -2,6 +2,7 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
 import io.reactivex.Completable
@@ -34,6 +35,27 @@ class WordManager {
 
         })
     }.doOnDispose { removeListener() }
+
+    fun getWords(): Single<List<Word>> = Single.create { subscriber ->
+        val lastAddedWordDate = Application.wordDao.getLastAddedWordDate()?.time?.toDouble() ?: 0.0
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        usersRef
+            .child(userID)
+            .child(userWords)
+            .orderByChild("date/time")
+            .startAt(lastAddedWordDate)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    subscriber.onError(error.toException())
+                }
+
+                override fun onDataChange(wordsSnapshot: DataSnapshot) {
+                    val words = wordsSnapshot.children.mapNotNull { convert(it) }
+                    subscriber.onSuccess(words)
+                }
+
+            })
+    }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create

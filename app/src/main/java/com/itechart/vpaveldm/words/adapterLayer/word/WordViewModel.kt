@@ -24,12 +24,31 @@ class WordViewModel : ViewModel() {
                 emptyWordsTextViewVisible.set(true)
             }
             .subscribe()
+        addUntrackedWords()
+    }
+
+    // This method is used to get notification about adding word and cache this word
+    private fun addNewWordNotification() {
         val disposable = wordManager.subscribeOnWordUpdating()
             .observeOn(Schedulers.newThread())
             .subscribe { word ->
                 Application.wordDao.addWord(word)
             }
         disposables.add(disposable)
+    }
+
+    // This method is used to cache words that were added after user closed app
+    private fun addUntrackedWords() {
+        val untrackedWordsDisposable = wordManager.getWords()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(Schedulers.newThread())
+            .subscribe({ words ->
+                Application.wordDao.addWords(words)
+                addNewWordNotification()
+            }, { _ ->
+                // TODO: Add error handling
+            })
+        disposables.add(untrackedWordsDisposable)
     }
 
     override fun onCleared() {
