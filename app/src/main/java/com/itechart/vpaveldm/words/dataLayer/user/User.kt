@@ -1,4 +1,4 @@
-package com.itechart.vpaveldm.words.dataLayer.authorization
+package com.itechart.vpaveldm.words.dataLayer.user
 
 class User(
     val name: String = "",
