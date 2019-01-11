@@ -16,5 +16,6 @@ data class Word(
     var transcription: String = "",
     var translate: String = "",
     var date: Date = Date(),
-    var count: Int = 0
+    var count: Int = 0,
+    var owner: String = ""
 )

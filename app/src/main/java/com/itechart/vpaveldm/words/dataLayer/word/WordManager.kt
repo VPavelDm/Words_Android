@@ -5,6 +5,7 @@ import com.google.firebase.database.*
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
+import com.itechart.vpaveldm.words.dataLayer.user.User
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -50,20 +51,23 @@ class WordManager {
                 }
 
                 override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words = wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.date.time > lastAddedWordDate }
+                    val words =
+                        wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.date.time > lastAddedWordDate }
                     subscriber.onSuccess(words)
                 }
 
             })
     }
 
-    fun addWord(word: Word, subscribers: List<String>): Completable = Completable.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+    fun addWord(word: Word, subscribers: List<User>): Completable = Completable.create { subscriber ->
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return@create
+        word.owner = currentUser.displayName ?: return@create
         val userUpdates = HashMap<String, Any>()
         // Add to notification section for all subscribers
         subscribers.forEach {
-            val key = usersRef.child("$it/notification").push().key
-            userUpdates["/$it/notification/$key"] = word
+            val key = usersRef.child("${it.key}/notification").push().key
+            userUpdates["/${it.key}/notification/$key"] = word
         }
         // Add to words section for me
         val key = usersRef.child("$userID/words").push().key

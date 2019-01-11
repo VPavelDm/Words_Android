@@ -29,6 +29,7 @@ class WordAdapter : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL) {
             itemView.wordTV.text = word.word
             itemView.translateTV.text = word.translate
             itemView.transcriptionTV.text = word.transcription
+            itemView.nicknameTV.text = word.owner
         }
     }
 

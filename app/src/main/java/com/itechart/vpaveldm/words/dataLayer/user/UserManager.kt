@@ -32,7 +32,7 @@ class UserManager {
             })
     }
 
-    fun getSubscribers(): Single<List<String>> = Single.create { subscriber ->
+    fun getSubscribers(): Single<List<User>> = Single.create { subscriber ->
         val userRef = FirebaseDatabase.getInstance().getReference("users")
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         userRef
@@ -44,7 +44,7 @@ class UserManager {
                 }
 
                 override fun onDataChange(usersSnapshot: DataSnapshot) {
-                    val subscribers = usersSnapshot.children.mapNotNull { it.key }
+                    val subscribers = usersSnapshot.children.mapNotNull { convert(it) }
                     subscriber.onSuccess(subscribers)
                 }
 
@@ -76,6 +76,12 @@ class UserManager {
             .setValue(user)
             .addOnSuccessListener { subscriber.onComplete() }
             .addOnFailureListener { error -> subscriber.tryOnError(error) }
+    }
+
+    private fun convert(snapshot: DataSnapshot): User? {
+        val user = snapshot.getValue(User::class.java) ?: return null
+        user.key = snapshot.key ?: return null
+        return user
     }
 
 }

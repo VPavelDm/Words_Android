@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexTranslateManager
+import com.itechart.vpaveldm.words.dataLayer.user.User
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
@@ -89,7 +90,7 @@ class AddWordViewModel : ViewModel() {
         disposables.clear()
     }
 
-    private fun getSubscribers(callback: (List<String>?, Throwable?) -> Unit) {
+    private fun getSubscribers(callback: (List<User>?, Throwable?) -> Unit) {
         val disposable = userManager.getSubscribers()
             .subscribe({ subscribers ->
                 callback(subscribers, null)
