@@ -10,39 +10,72 @@ class UserManager {
     fun getUsers(name: String): Single<List<User>> = Single.create { subscriber ->
         val userRef = FirebaseDatabase.getInstance().getReference("users")
         userRef
-                .orderByChild("name")
-                .equalTo(name)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onCancelled(error: DatabaseError) {
-                        subscriber.tryOnError(error.toException())
-                    }
+            .orderByChild("name")
+            .equalTo(name)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    subscriber.tryOnError(error.toException())
+                }
 
-                    override fun onDataChange(usersSnapshot: DataSnapshot) {
-                        val users = arrayListOf<User>()
-                        for (snapshot in usersSnapshot.children) {
-                            val user = snapshot.getValue(User::class.java) ?: continue
-                            snapshot.key?.let { key ->
-                                user.key = key
-                                users += user
-                            } ?: continue
-                        }
-                        subscriber.onSuccess(users)
+                override fun onDataChange(usersSnapshot: DataSnapshot) {
+                    val users = arrayListOf<User>()
+                    for (snapshot in usersSnapshot.children) {
+                        val user = snapshot.getValue(User::class.java) ?: continue
+                        snapshot.key?.let { key ->
+                            user.key = key
+                            users += user
+                        } ?: continue
                     }
+                    subscriber.onSuccess(users)
+                }
 
-                })
+            })
     }
 
-    // Add user to my subscriptions
-    fun subscribe(user: User): Completable = Completable.create { subscriber ->
+    fun getSubscribers(): Single<List<String>> = Single.create { subscriber ->
         val userRef = FirebaseDatabase.getInstance().getReference("users")
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         userRef
-                .child(userID)
-                .child("subscriptions")
-                .push()
-                .setValue(user)
-                .addOnSuccessListener { subscriber.onComplete() }
-                .addOnFailureListener { subscriber.tryOnError(it) }
+            .child(userID)
+            .child("subscribers")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    subscriber.tryOnError(error.toException())
+                }
+
+                override fun onDataChange(usersSnapshot: DataSnapshot) {
+                    val subscribers = usersSnapshot.children.mapNotNull { it.key }
+                    subscriber.onSuccess(subscribers)
+                }
+
+            })
+    }
+
+    // Add me to user's subscribers
+    fun subscribe(user: User): Completable = Completable.create { subscriber ->
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val auth = FirebaseAuth.getInstance()
+        val myNickname = auth.currentUser?.displayName ?: return@create
+        val me = User(name = myNickname)
+        val userRef = FirebaseDatabase.getInstance().getReference("users")
+        userRef
+            .child(user.key)
+            .child("subscribers")
+            .child(userID)
+            .setValue(me)
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { subscriber.tryOnError(it) }
+    }
+
+    fun saveUser(nickname: String): Completable = Completable.create { subscriber ->
+        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val user = User(name = nickname)
+        val userDBRef = FirebaseDatabase.getInstance().getReference("users")
+        userDBRef
+            .child(userID)
+            .setValue(user)
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { error -> subscriber.tryOnError(error) }
     }
 
 }

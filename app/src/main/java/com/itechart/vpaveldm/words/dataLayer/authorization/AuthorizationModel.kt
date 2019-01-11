@@ -2,8 +2,7 @@ package com.itechart.vpaveldm.words.dataLayer.authorization
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.database.FirebaseDatabase
-import com.itechart.vpaveldm.words.dataLayer.user.User
+import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
 
 class AuthorizationModel {
@@ -34,17 +33,13 @@ class AuthorizationModel {
                             .build()
 
                         val currentUser = auth.currentUser ?: return@addOnSuccessListener
-
                         currentUser.updateProfile(userProfile)
-                        val user = User(name = nickname)
+                        val userManager = UserManager()
                         // TODO: There are an error. If account is created but database isn't filled. Fix it
-                        val userDBRef = FirebaseDatabase.getInstance().getReference("users")
-                        userDBRef
-                            .child(currentUser.uid)
-                            .setValue(user)
-                            .addOnSuccessListener { subscriber.onComplete() }
-                            .addOnFailureListener { error -> subscriber.tryOnError(error) }
-
+                        userManager.saveUser(nickname)
+                            .subscribe({ subscriber.onComplete() }, { error ->
+                                subscriber.tryOnError(error)
+                            })
                     }
                     .addOnFailureListener { subscriber.tryOnError(it) }
             }
