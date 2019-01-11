@@ -24,10 +24,7 @@ class MainActivity : AppCompatActivity(), IAuthorization {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigation, navController)
         auth = FirebaseAuth.getInstance()
-    }
 
-    override fun onStart() {
-        super.onStart()
         if (auth.currentUser == null) {
             navController.navigate(R.id.action_wordFragment_to_loginFragment)
         } else {

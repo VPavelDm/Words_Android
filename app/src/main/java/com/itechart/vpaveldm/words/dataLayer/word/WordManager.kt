@@ -87,7 +87,7 @@ class WordManager {
 
     fun getWordCount(): Single<Long> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef.child(userID).child("words")
+        val wordsRef = usersRef.child(userID).child("notification")
         wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
 
