@@ -1,10 +1,25 @@
 <resources>
     <string name="app_name">Words</string>
-    <string name="title_home">Home</string>
-    <string name="title_search">Search</string>
+    <string name="title_home">Слова</string>
+    <string name="title_search">Поиск</string>
     <string name="title_enter_login">Логин</string>
     <string name="title_enter_password">Пароль</string>
-    <string name="title_sign_up">Еще нет аккаунта? "<b>"Зарегистрируйтесь."</b>"</string>
+    <string name="title_do_not_have_an_account">Еще нет аккаунта? "<b>"Зарегистрируйтесь."</b>"</string>
+    <string name="title_have_an_account">Уже есть аккаунт? "<b>Войти."</b>"</string>
+    <string name="title_sign_up">Зарегистрироваться</string>
     <string name="title_sign_in">Вход</string>
-    <string name="error_message_empty_login_or_password_field">Введите логин и пароль</string>
+    <string name="title_confirm_password">Подтвердите пароль</string>
+    <string name="title_add">Добавить</string>
+    <string name="title_enter_word">Введите слово</string>
+    <string name="title_enter_transcription">Введите транскрипцию</string>
+    <string name="title_enter_translate">Введите перевод</string>
+    <string name="yandex_dictionary_api_key">dict.1.1.20181010T070000Z.16b824adde570294.88d60c64a344f4c7ede04647219b095c4575d1ea</string>
+    <string name="title_add_words">Добавьте слова</string>
+    <string name="title_know_word">Я вспомнил\nэто слово</string>
+    <string name="title_do_not_know_word">Я не вспомнил\nэто слово</string>
+    <string name="title_study">Учить</string>
+    <string name="title_cancel">Отмена</string>
+    <string name="title_choose_translate">Выберите перевод</string>
+    <string name="title_nickname">Имя</string>
+    <string name="title_next">Далее</string>
 </resources>

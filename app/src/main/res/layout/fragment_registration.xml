@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="com.itechart.vpaveldm.words.R" />
+
+        <import type="androidx.navigation.Navigation" />
+
+        <variable
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.login.AuthorizationViewModel" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/loginButton"
+            app:layout_constraintEnd_toEndOf="@id/loginButton"
+            app:layout_constraintStart_toStartOf="@id/loginButton"
+            app:layout_constraintTop_toTopOf="@id/loginButton" />
+
+        <EditText
+            android:id="@+id/loginET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="128dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_enter_login"
+            android:inputType="textEmailAddress"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill" />
+
+        <EditText
+            android:id="@+id/passwordET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_enter_password"
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginET"
+            tools:ignore="Autofill" />
+
+        <EditText
+            android:id="@+id/confirmPasswordET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_confirm_password"
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/passwordET"
+            tools:ignore="Autofill" />
+
+        <TextView
+            android:id="@+id/errorTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="0"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@{handler.error}"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{(handler.error == null || handler.error.isEmpty()) ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/passwordET"
+            app:layout_constraintStart_toStartOf="@id/passwordET"
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordET" />
+
+        <Button
+            android:id="@+id/loginButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="@{handler.progressBarVisible? false : true}"
+            android:onClick="@{() -> handler.signUp(loginET.getText().toString(), passwordET.getText().toString(), confirmPasswordET.getText().toString())}"
+            android:text="@string/title_sign_up"
+            android:visibility="@{handler.progressBarVisible? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/passwordET"
+            app:layout_constraintStart_toStartOf="@id/passwordET"
+            app:layout_constraintTop_toBottomOf="@id/errorTV"
+            tools:text="@string/title_sign_up" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{(view) -> Navigation.findNavController(view).popBackStack(R.id.loginFragment, false)}"
+            android:text="@string/title_have_an_account"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

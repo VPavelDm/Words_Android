@@ -7,10 +7,12 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.google.firebase.auth.FirebaseAuth
-import com.itechart.vpaveldm.words.uiLayer.login.ILoginFragmentListener
+import com.itechart.vpaveldm.words.core.hideKeyboard
+import com.itechart.vpaveldm.words.uiLayer.word.IAuthorization
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), ILoginFragmentListener {
+class MainActivity : AppCompatActivity(), IAuthorization {
+
     private lateinit var auth: FirebaseAuth
     private lateinit var navController: NavController
 
@@ -28,16 +30,20 @@ class MainActivity : AppCompatActivity(), ILoginFragmentListener {
         if (auth.currentUser == null) {
             navController.navigate(R.id.action_wordFragment_to_loginFragment)
         } else {
-            // Call this method 'cause you don't need display login fragment
-            destroy()
+            authorized()
         }
     }
 
-    override fun create() {
-        navigation.visibility = View.GONE
+    override fun onBackPressed() {
+        if (navController.currentDestination == navController.graph.findNode(R.id.loginFragment) && auth.currentUser == null) {
+            finishAndRemoveTask()
+        } else {
+            super.onBackPressed()
+        }
     }
 
-    override fun destroy() {
+    override fun authorized() {
         navigation.visibility = View.VISIBLE
+        hideKeyboard(currentFocus)
     }
 }

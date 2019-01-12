@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<layout>
 
-    <TextView
-            android:text="WordFragment"
-            android:layout_gravity="center"
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/wordRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:scrollbars="vertical" />
+
+        <TextView
+            android:id="@+id/emptyWordsTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:ignore="HardcodedText"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{handler.emptyWordsTextViewVisible ? View.VISIBLE : View.INVISIBLE}"
+            android:text="@string/title_add_words" />
 
-</FrameLayout>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}" />
+
+    </FrameLayout>
+
+</layout>

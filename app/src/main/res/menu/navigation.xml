@@ -2,13 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/wordFragment"
-            android:icon="@drawable/ic_home_black_24dp"
-            android:title="@string/title_home"/>
+        android:id="@+id/wordFragment"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_home" />
 
     <item
-            android:id="@+id/searchFragment"
-            android:icon="@drawable/ic_search_black_24dp"
-            android:title="@string/title_search"/>
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/title_search" />
+
+    <item
+        android:id="@+id/studyWordFragment"
+        android:icon="@drawable/ic_check_black_24dp"
+        android:title="@string/title_study"/>
+
+    <item
+        android:id="@+id/addWordFragment"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="@string/title_add" />
 
 </menu>

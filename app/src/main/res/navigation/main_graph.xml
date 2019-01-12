@@ -6,8 +6,10 @@
     <fragment android:id="@+id/wordFragment"
               android:name="com.itechart.vpaveldm.words.uiLayer.word.WordFragment"
               android:label="WordFragment">
-        <action android:id="@+id/action_wordFragment_to_loginFragment" app:destination="@id/loginFragment"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action
+            android:id="@+id/action_wordFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim" />
     </fragment>
 
     <fragment android:id="@+id/searchFragment"
@@ -15,6 +17,42 @@
               android:label="SearchFragment"/>
     <fragment android:id="@+id/loginFragment" android:name="com.itechart.vpaveldm.words.uiLayer.login.LoginFragment"
               android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_registrationFragment"
+            app:destination="@+id/registrationFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.registration.RegistrationFragment"
+        android:label="RegistrationFragment">
+        <argument
+            android:name="step"
+            android:defaultValue="1"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_registrationFragment_to_registrationFragment2"
+            app:destination="@id/registrationFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/addWordFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.addWord.AddWordFragment"
+        android:label="AddWordFragment" />
+    <fragment
+        android:id="@+id/studyWordFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.studyWord.StudyWordFragment"
+        android:label="StudyWordFragment" />
+    <fragment
+        android:id="@+id/registrationFragment2"
+        android:name="com.itechart.vpaveldm.words.uiLayer.registration.RegistrationFragment"
+        android:label="RegistrationFragment" >
+        <argument
+            android:name="step"
+            android:defaultValue="2"
+            app:argType="integer" />
     </fragment>
 
 </navigation>
