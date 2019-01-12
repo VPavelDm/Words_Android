@@ -31,6 +31,7 @@ class WordViewModel : ViewModel() {
     private fun addNewWordNotification() {
         val disposable = wordManager.subscribeOnWordUpdating()
             .observeOn(Schedulers.newThread())
+            .doOnNext { emptyWordsTextViewVisible.set(false) }
             .subscribe { word ->
                 Application.wordDao.addWord(word)
             }
