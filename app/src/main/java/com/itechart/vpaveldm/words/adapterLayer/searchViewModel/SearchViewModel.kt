@@ -40,7 +40,7 @@ class SearchViewModel : ViewModel() {
                 .doOnSubscribe { progressBarVisible.set(true) }
                 .doOnEvent { progressBarVisible.set(false) }
                 .subscribe({}, { _ ->
-
+                    // TODO: Add error handling
                 })
         disposables.add(disposable)
     }

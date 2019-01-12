@@ -7,7 +7,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 class User(
         @get:Exclude
         var key: String = "",
-        val name: String = "",
+        var name: String = "",
         @get:Exclude
-        val isSubscriber: Boolean = false
+        var isSubscriber: Boolean = false
 )

@@ -63,7 +63,7 @@ class UserManager {
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         val auth = FirebaseAuth.getInstance()
         val myNickname = auth.currentUser?.displayName ?: return@create
-        val me = User(name = myNickname)
+        val me = if (!user.isSubscriber) null else User(name = myNickname)
         val userRef = FirebaseDatabase.getInstance().getReference("users")
         userRef
                 .child(user.key)

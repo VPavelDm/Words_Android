@@ -30,13 +30,13 @@ class SearchFragment : Fragment(), ISubscribeUser {
         viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
         binding.handler = viewModel
         val greenIcon = Icon.createWithResource(context, R.drawable.ic_track_green)
-        val blacIcon = Icon.createWithResource(context, R.drawable.ic_track)
+        val blackIcon = Icon.createWithResource(context, R.drawable.ic_track)
         viewModel.users.observe(this, Observer { users ->
             users?.let {
                 binding.searchRV.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(this@SearchFragment.context)
-                    adapter = UserAdapter(it, this@SearchFragment, greenIcon, blacIcon)
+                    adapter = UserAdapter(it, this@SearchFragment, greenIcon, blackIcon)
                     addItemDecoration(ItemDivider(context))
                 }
             }

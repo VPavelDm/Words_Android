@@ -35,7 +35,12 @@ class UserAdapter(
 
         init {
             itemView.subscribeButton.setOnClickListener {
-                user?.let { user -> listener.subscribe(user) }
+                if (user != null) {
+                    user!!.isSubscriber = !user!!.isSubscriber
+                    itemView.subscribeButton.setImageIcon(if (user!!.isSubscriber) greenIcon else blackIcon)
+                    listener.subscribe(user!!)
+                }
+
             }
         }
 
