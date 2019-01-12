@@ -20,6 +20,7 @@ class SearchFragment : Fragment(), ISubscribeUser {
 
     private lateinit var binding: FragmentSearchBinding
     private lateinit var viewModel: SearchViewModel
+    private lateinit var adapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +38,8 @@ class SearchFragment : Fragment(), ISubscribeUser {
                 binding.searchRV.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(this@SearchFragment.context)
-                    adapter = UserAdapter(it, this@SearchFragment, greenIcon, blackIcon)
+                    this@SearchFragment.adapter = UserAdapter(it, this@SearchFragment, greenIcon, blackIcon)
+                    adapter = this@SearchFragment.adapter
                     addItemDecoration(ItemDivider(context))
                 }
             }
@@ -64,8 +66,9 @@ class SearchFragment : Fragment(), ISubscribeUser {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun subscribe(user: User) {
+    override fun subscribe(user: User, position: Int) {
         viewModel.subscribe(user) {
+            adapter.notifyItemChanged(position)
             if (user.isSubscriber) context!!.toast("Вы подписаны") else context!!.toast("Вы отписаны")
         }
     }

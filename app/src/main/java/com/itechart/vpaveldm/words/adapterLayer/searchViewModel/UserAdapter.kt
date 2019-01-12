@@ -26,26 +26,17 @@ class UserAdapter(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(user = users[position])
+        val user = users[position]
+        holder.bind(user = user)
+        holder.itemView.subscribeButton.setOnClickListener {
+            user.isSubscriber = !user.isSubscriber
+            listener.subscribe(user, position)
+        }
     }
 
     inner class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private var user: User? = null
-
-        init {
-            itemView.subscribeButton.setOnClickListener {
-                if (user != null) {
-                    user!!.isSubscriber = !user!!.isSubscriber
-                    itemView.subscribeButton.setImageIcon(if (user!!.isSubscriber) greenIcon else blackIcon)
-                    listener.subscribe(user!!)
-                }
-
-            }
-        }
-
         fun bind(user: User) {
-            this.user = user
             itemView.nicknameTV.text = user.name
             itemView.subscribeButton.setImageIcon(if (user.isSubscriber) greenIcon else blackIcon)
         }
@@ -54,5 +45,5 @@ class UserAdapter(
 }
 
 interface ISubscribeUser {
-    fun subscribe(user: User)
+    fun subscribe(user: User, position: Int)
 }
