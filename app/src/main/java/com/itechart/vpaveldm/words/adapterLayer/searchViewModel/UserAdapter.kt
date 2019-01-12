@@ -29,7 +29,7 @@ class UserAdapter(private val users: List<User>, private val listener: ISubscrib
         private var user: User? = null
 
         init {
-            itemView.setOnClickListener {
+            itemView.subscribeButton.setOnClickListener {
                 user?.let { user -> listener.subscribe(user) }
             }
         }

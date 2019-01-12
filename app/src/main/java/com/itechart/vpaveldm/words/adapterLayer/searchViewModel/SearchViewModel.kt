@@ -23,6 +23,8 @@ class SearchViewModel : ViewModel() {
         val disposable = userManager.getUsers(name)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { _, _ -> progressBarVisible.set(false) }
                 .subscribe({ users ->
                     usersProvider.value = users
                 }, { _ ->
@@ -35,6 +37,8 @@ class SearchViewModel : ViewModel() {
         val disposable = userManager.subscribe(user)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
                 .subscribe({}, { _ ->
 
                 })
