@@ -5,24 +5,25 @@ import com.google.firebase.database.*
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
+import com.itechart.vpaveldm.words.dataLayer.user.User
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
+import kotlin.collections.HashMap
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 
 class WordManager {
 
     private var listener: ChildEventListener? = null
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
-    private val userWords = "words"
 
     fun subscribeOnWordUpdating(): Observable<Word> = Observable.create<Word> { subscriber ->
         removeListener()
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         val wordsRef = usersRef
             .child(userID)
-            .child(userWords)
+            .child("notification")
             .orderByChild("date/time")
             .startAt(Date().time.toDouble())
 
@@ -41,7 +42,7 @@ class WordManager {
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         usersRef
             .child(userID)
-            .child(userWords)
+            .child("notification")
             .orderByChild("date/time")
             .startAt(lastAddedWordDate)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -50,30 +51,38 @@ class WordManager {
                 }
 
                 override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words = wordsSnapshot.children.mapNotNull { convert(it) }
+                    val words =
+                        wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.date.time > lastAddedWordDate }
                     subscriber.onSuccess(words)
                 }
 
             })
     }
 
-    fun addWord(word: Word): Completable = Completable.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        usersRef
-            .child(userID)
-            .child(userWords)
-            .push()
-            .setValue(word)
+    fun addWord(word: Word, subscribers: List<User>): Completable = Completable.create { subscriber ->
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return@create
+        word.owner = currentUser.displayName ?: return@create
+        val userUpdates = HashMap<String, Any>()
+        // Add to notification section for all subscribers
+        subscribers.forEach {
+            val key = usersRef.child("${it.key}/notification").push().key
+            userUpdates["/${it.key}/notification/$key"] = word
+        }
+        // Add to words section for me
+        val key = usersRef.child("$userID/words").push().key
+        userUpdates["/$userID/words/$key"] = word
+        // Add word for me and my subscribers
+        usersRef.updateChildren(userUpdates)
             .addOnSuccessListener { subscriber.onComplete() }
             .addOnFailureListener { subscriber.tryOnError(it) }
-
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         usersRef
             .child(userID)
-            .child(userWords)
+            .child("words")
             .child(word.key)
             .setValue(word)
             .addOnSuccessListener { subscriber.onComplete() }
@@ -82,7 +91,7 @@ class WordManager {
 
     fun getWordCount(): Single<Long> = Single.create { subscriber ->
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef.child(userID).child(userWords)
+        val wordsRef = usersRef.child(userID).child("notification")
         wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
 
@@ -99,7 +108,7 @@ class WordManager {
         val currentDate = Date().plusDays(1).resetTime().time.toDouble()
         usersRef
             .child(userID)
-            .child(userWords)
+            .child("words")
             .orderByChild("date/time")
             .endAt(currentDate)
             .limitToFirst(10)

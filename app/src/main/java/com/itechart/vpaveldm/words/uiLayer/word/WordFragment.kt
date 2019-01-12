@@ -34,12 +34,8 @@ class WordFragment : Fragment() {
         listener = activity as IAuthorization
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
         binding = FragmentWordBinding.inflate(inflater, container, false)
         binding.wordRecyclerView.apply {
             adapter = this@WordFragment.adapter
