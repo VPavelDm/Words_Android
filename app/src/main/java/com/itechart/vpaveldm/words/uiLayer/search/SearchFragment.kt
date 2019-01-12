@@ -12,6 +12,7 @@ import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.ISubscribeUser
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.SearchViewModel
 import com.itechart.vpaveldm.words.adapterLayer.searchViewModel.UserAdapter
+import com.itechart.vpaveldm.words.core.extension.toast
 import com.itechart.vpaveldm.words.dataLayer.user.User
 import com.itechart.vpaveldm.words.databinding.FragmentSearchBinding
 
@@ -64,7 +65,9 @@ class SearchFragment : Fragment(), ISubscribeUser {
     }
 
     override fun subscribe(user: User) {
-        viewModel.subscribe(user)
+        viewModel.subscribe(user) {
+            if (user.isSubscriber) context!!.toast("Вы подписаны") else context!!.toast("Вы отписаны")
+        }
     }
 
 }

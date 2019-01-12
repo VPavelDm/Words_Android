@@ -33,13 +33,13 @@ class SearchViewModel : ViewModel() {
         disposables.add(disposable)
     }
 
-    fun subscribe(user: User) {
+    fun subscribe(user: User, callback: () -> Unit) {
         val disposable = userManager.subscribe(user)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { progressBarVisible.set(true) }
                 .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({}, { _ ->
+                .subscribe({ callback() }, { _ ->
                     // TODO: Add error handling
                 })
         disposables.add(disposable)
