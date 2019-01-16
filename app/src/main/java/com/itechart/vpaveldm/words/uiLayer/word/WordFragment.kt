@@ -56,7 +56,7 @@ class WordFragment : Fragment() {
     }
 
     private fun initPageList() {
-        val sourceFactory = Application.wordDao.getWords()
+        val sourceFactory = viewModel.getSubscriptionsWords()
         val config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(10)
@@ -66,7 +66,7 @@ class WordFragment : Fragment() {
             .build()
         pagedListData.observe(this, Observer { pagedList ->
             pagedList?.let {
-                Log.i("myAppTAG", "pagedList size = ${pagedList.size}")
+                viewModel.emptyWordsTextViewVisible.set(it.size == 0)
                 adapter.submitList(it)
             }
         })

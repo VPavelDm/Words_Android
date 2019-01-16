@@ -4,8 +4,6 @@ import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexTranslateManager
-import com.itechart.vpaveldm.words.dataLayer.user.User
-import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +14,6 @@ import java.lang.ref.WeakReference
 class AddWordViewModel : ViewModel() {
 
     private val wordManager = WordManager()
-    private val userManager = UserManager()
     private val yandexTranslateManager = YandexTranslateManager()
     private val disposables = CompositeDisposable()
 
@@ -36,23 +33,17 @@ class AddWordViewModel : ViewModel() {
             translate = translateObservable.get() ?: "",
             transcription = transcriptionObservable.get() ?: ""
         )
-        getSubscribers { subscribers, error ->
-            if (error != null) {
-                // TODO: Add error handling
-            } else {
-                val disposable = wordManager.addWord(newWord, subscribers!!)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { addWordProgressBarVisible.set(true) }
-                    .doOnEvent { addWordProgressBarVisible.set(false) }
-                    .subscribe {
-                        wordObservable.set("")
-                        translateObservable.set("")
-                        transcriptionObservable.set("")
-                    }
-                disposables.add(disposable)
+        val disposable = wordManager.addWord(newWord)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { addWordProgressBarVisible.set(true) }
+            .doOnEvent { addWordProgressBarVisible.set(false) }
+            .subscribe {
+                wordObservable.set("")
+                translateObservable.set("")
+                transcriptionObservable.set("")
             }
-        }
+        disposables.add(disposable)
     }
 
     fun loadTranslate() {
@@ -88,16 +79,6 @@ class AddWordViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
-    }
-
-    private fun getSubscribers(callback: (List<User>?, Throwable?) -> Unit) {
-        val disposable = userManager.getSubscribers()
-            .subscribe({ subscribers ->
-                callback(subscribers, null)
-            }, { error ->
-                callback(null, error)
-            })
-        disposables.add(disposable)
     }
 
 }
