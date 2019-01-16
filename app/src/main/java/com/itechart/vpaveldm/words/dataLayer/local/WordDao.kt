@@ -12,7 +12,10 @@ interface WordDao {
     fun addWords(words: List<Word>)
 
     @Query("SELECT * FROM words WHERE owner NOT LIKE :arg0")
-    fun getWords(userName: String): DataSource.Factory<Int, Word>
+    fun getSubscriptionsWords(userName: String): DataSource.Factory<Int, Word>
+
+    @Query("SELECT * FROM words")
+    fun getWords(): List<Word>
 
     @Update
     fun updateWord(word: Word)
@@ -22,5 +25,8 @@ interface WordDao {
 
     @Query("SELECT * FROM words WHERE date < :date")
     fun getWordsToStudy(date: Date): List<Word>
+
+    @Delete
+    fun removeWord(word: Word)
 
 }

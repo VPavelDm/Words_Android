@@ -6,6 +6,8 @@ import com.google.firebase.database.*
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
+import com.itechart.vpaveldm.words.dataLayer.user.UserManager
+import com.itechart.vpaveldm.words.dataLayer.word.WordState.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -32,18 +34,20 @@ class WordManager {
 
     fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
         val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        return Application.wordDao.getWords(userName)
+        return Application.wordDao.getSubscriptionsWords(userName)
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        val words = listOf(word.copy(state = WordState.ADD, owner = userName))
+        val words = listOf(word.copy(state = ADD, owner = userName))
         Application.wordDao.addWords(words)
+        sync()
         subscriber.onComplete()
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
-        Application.wordDao.updateWord(word.copy(state = WordState.UPDATE))
+        Application.wordDao.updateWord(word.copy(state = UPDATE))
+        sync()
         subscriber.onComplete()
     }
 
@@ -57,6 +61,60 @@ class WordManager {
         val currentDate = Date().plusDays(1).resetTime()
         val words = Application.wordDao.getWordsToStudy(currentDate)
         subscriber.onSuccess(words)
+    }
+
+    private fun sync() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return
+        val words = Application.wordDao.getWords()
+        words.forEach { word ->
+            when (word.state) {
+                ADD -> {
+                    val userManager = UserManager()
+                    val userUpdates = HashMap<String, Any>()
+                    userManager.getSubscribers().subscribe { subscribers ->
+                        subscribers.forEach {
+                            val key = usersRef.child("${it.key}/notification").push().key
+                            userUpdates["/${it.key}/notification/$key"] = word
+                        }
+                        val key = usersRef.child("$userID/words").push().key
+                        userUpdates["/$userID/words/$key"] = word
+                        usersRef.updateChildren(userUpdates)
+                            .addOnSuccessListener {
+                                Thread(Runnable {
+                                    Application.wordDao.updateWord(word.copy(state = NOTHING))
+                                }).start()
+                            }
+                    }
+                }
+                UPDATE -> {
+                    usersRef
+                        .child(userID)
+                        .child("words")
+                        .child(word.key)
+                        .setValue(word)
+                        .addOnSuccessListener {
+                            Thread(Runnable {
+                                Application.wordDao.updateWord(word.copy(state = NOTHING))
+                            }).start()
+                        }
+                }
+                REMOVE -> {
+                    usersRef
+                        .child(userID)
+                        .child("notification")
+                        .child(word.key)
+                        .setValue(null)
+                        .addOnSuccessListener {
+                            Thread(Runnable {
+                                Application.wordDao.removeWord(word)
+                            }).start()
+                        }
+                }
+                NOTHING -> {
+                }
+            }
+        }
     }
 
     private fun convert(snapshot: DataSnapshot): Word? {
