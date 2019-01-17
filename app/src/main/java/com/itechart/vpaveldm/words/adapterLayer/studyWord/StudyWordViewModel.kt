@@ -15,7 +15,7 @@ import java.util.*
 
 class StudyWordViewModel : ViewModel() {
 
-    private val wordManager = WordManager()
+    private val wordManager = WordManager.shared
     private val disposables = CompositeDisposable()
     private var words: ArrayList<Word> = arrayListOf()
 

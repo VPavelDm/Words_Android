@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 
 class AddWordViewModel : ViewModel() {
 
-    private val wordManager = WordManager()
+    private val wordManager = WordManager.shared
     private val yandexTranslateManager = YandexTranslateManager()
     private val disposables = CompositeDisposable()
 

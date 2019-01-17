@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers
 
 class WordViewModel : ViewModel() {
 
-    private val wordManager = WordManager()
+    private val wordManager = WordManager.shared
     private val disposables = CompositeDisposable()
 
     val progressBarVisible = ObservableBoolean(false)
@@ -28,7 +28,6 @@ class WordViewModel : ViewModel() {
                 emptyWordsTextViewVisible.set(true)
             }
             .subscribe()
-        wordManager.syncLocalDatabase()
     }
 
     fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
