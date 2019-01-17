@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import android.annotation.SuppressLint
 import android.arch.paging.DataSource
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
@@ -23,7 +22,6 @@ class WordManager private constructor() {
     private val executors = Executors.newSingleThreadExecutor()
 
     init {
-        Log.i("myAppTAG", "Sync database")
         // Remote database synchronization
         // Called when program is started...
         executors.submit {
@@ -34,7 +32,7 @@ class WordManager private constructor() {
                         sendWordToRemoteDB(word)
                     }
                     UPDATE -> {
-                        updateWord(word)
+                        updateWordAtRemoteDB(word)
                     }
                     REMOVE -> {
                         removeWordFromRemoteDB(word)
@@ -92,7 +90,8 @@ class WordManager private constructor() {
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val currentDate = Date().plusDays(1).resetTime()
-        val words = Application.wordDao.getWordsToStudy(currentDate)
+        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        val words = Application.wordDao.getWordsToStudy(userName, currentDate)
         subscriber.onSuccess(words)
     }
 
@@ -136,7 +135,6 @@ class WordManager private constructor() {
             userUpdates["/$userID/words/${word.key}"] = word
             usersRef.updateChildren(userUpdates)
                 .addOnSuccessListener {
-                    Log.i("myAppTAG", "word = ${word.word} is added")
                     executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
                 }
         }

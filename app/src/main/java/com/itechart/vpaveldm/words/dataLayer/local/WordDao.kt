@@ -23,8 +23,8 @@ interface WordDao {
     @Query("SELECT COUNT(`key`) FROM words WHERE owner LIKE :userName")
     fun getWordCount(userName: String): Int
 
-    @Query("SELECT * FROM words WHERE date < :date")
-    fun getWordsToStudy(date: Date): List<Word>
+    @Query("SELECT * FROM words WHERE date < :date AND owner LIKE :userName")
+    fun getWordsToStudy(userName: String, date: Date): List<Word>
 
     @Delete
     fun removeWord(word: Word)
