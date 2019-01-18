@@ -17,5 +17,11 @@ data class Word(
     var translate: String = "",
     var date: Date = Date(),
     var count: Int = 0,
-    var owner: String = ""
+    var owner: String = "",
+    @get:Exclude
+    var state: WordState = WordState.NOTHING
 )
+
+enum class WordState {
+    ADD, REMOVE, UPDATE, NOTHING
+}

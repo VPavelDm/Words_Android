@@ -15,7 +15,6 @@ import java.util.*
 
 class StudyWordViewModel : ViewModel() {
 
-    private val wordManager = WordManager()
     private val disposables = CompositeDisposable()
     private var words: ArrayList<Word> = arrayListOf()
 
@@ -72,7 +71,7 @@ class StudyWordViewModel : ViewModel() {
     }
 
     private fun updateWord(word: Word, callback: () -> Unit) {
-        val disposable = wordManager.updateWord(word)
+        val disposable = WordManager.updateWord(word)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { updateWordProgressBarVisible.set(true) }
@@ -99,7 +98,7 @@ class StudyWordViewModel : ViewModel() {
     }
 
     private fun getWords() {
-        val disposable = wordManager.getWordsToStudy()
+        val disposable = WordManager.getWordsToStudy()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
