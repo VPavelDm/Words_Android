@@ -45,7 +45,7 @@ class WordFragment : Fragment(), IWordAdapter {
             linearLayoutManager.stackFromEnd = true
             layoutManager = linearLayoutManager
         }
-        val touchHelper = ItemTouchHelper(WordItemTouchCallback(adapter))
+        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
         touchHelper.attachToRecyclerView(binding.wordRecyclerView)
         binding.handler = viewModel
         initPageList()
