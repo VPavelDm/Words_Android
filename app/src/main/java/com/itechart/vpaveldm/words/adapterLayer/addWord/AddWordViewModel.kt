@@ -13,7 +13,6 @@ import java.lang.ref.WeakReference
 
 class AddWordViewModel : ViewModel() {
 
-    private val wordManager = WordManager.shared
     private val yandexTranslateManager = YandexTranslateManager()
     private val disposables = CompositeDisposable()
 
@@ -33,7 +32,7 @@ class AddWordViewModel : ViewModel() {
             translate = translateObservable.get() ?: "",
             transcription = transcriptionObservable.get() ?: ""
         )
-        val disposable = wordManager.addWord(newWord)
+        val disposable = WordManager.addWord(newWord)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { addWordProgressBarVisible.set(true) }

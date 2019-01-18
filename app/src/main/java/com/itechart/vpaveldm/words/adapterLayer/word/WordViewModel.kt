@@ -11,14 +11,13 @@ import io.reactivex.schedulers.Schedulers
 
 class WordViewModel : ViewModel() {
 
-    private val wordManager = WordManager.shared
     private val disposables = CompositeDisposable()
 
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
 
     init {
-        wordManager.getWordCount()
+        WordManager.getWordCount()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .filter { it == 0 }
@@ -31,7 +30,7 @@ class WordViewModel : ViewModel() {
     }
 
     fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
-        return wordManager.getSubscriptionsWords()
+        return WordManager.getSubscriptionsWords()
     }
 
     override fun onCleared() {

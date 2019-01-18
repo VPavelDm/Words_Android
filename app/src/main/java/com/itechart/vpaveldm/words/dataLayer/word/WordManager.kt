@@ -16,7 +16,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 
-class WordManager private constructor() {
+object WordManager {
 
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
     private val executors = Executors.newSingleThreadExecutor()
@@ -146,10 +146,6 @@ class WordManager private constructor() {
             word.key = it
             return word
         } ?: return null
-    }
-
-    companion object {
-        val shared = WordManager()
     }
 
 }
