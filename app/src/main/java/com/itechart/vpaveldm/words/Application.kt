@@ -2,6 +2,7 @@ package com.itechart.vpaveldm.words
 
 import android.app.Application
 import android.arch.persistence.room.Room
+import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.dataLayer.local.WordDao
 import com.itechart.vpaveldm.words.dataLayer.local.WordDatabase
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexService
@@ -13,6 +14,7 @@ class Application : Application() {
     override fun onCreate() {
         super.onCreate()
         initDictionaryService()
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         dictionaryApiKey = getString(R.string.yandex_dictionary_api_key)
         wordDao = Room.databaseBuilder(applicationContext, WordDatabase::class.java, "database").build().wordDao()
     }

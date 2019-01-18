@@ -3,7 +3,6 @@ package com.itechart.vpaveldm.words.adapterLayer.word
 import android.arch.paging.PagedListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,6 @@ class WordAdapter : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL) {
 
 private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
     override fun areItemsTheSame(oldWord: Word, newWord: Word): Boolean {
-        Log.i("myAppTAG", "oldWord = ${oldWord.key}, newWord = ${newWord.key}")
         return oldWord.key == newWord.key
     }
 

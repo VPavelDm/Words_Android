@@ -1,136 +1,143 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
+import android.annotation.SuppressLint
+import android.arch.paging.DataSource
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
-import com.itechart.vpaveldm.words.dataLayer.user.User
+import com.itechart.vpaveldm.words.dataLayer.user.UserManager
+import com.itechart.vpaveldm.words.dataLayer.word.WordState.*
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.Executors
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 
-class WordManager {
+object WordManager {
 
-    private var listener: ChildEventListener? = null
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
+    private val executors = Executors.newSingleThreadExecutor()
 
-    fun subscribeOnWordUpdating(): Observable<Word> = Observable.create<Word> { subscriber ->
-        removeListener()
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef
-            .child(userID)
-            .child("notification")
-            .orderByChild("date/time")
-            .startAt(Date().time.toDouble())
-
-        listener = wordsRef.addChildEventListener(object : DelegateChildEventListener() {
-
-            override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
-                val word = convert(snapshot) ?: return
-                subscriber.onNext(word)
+    init {
+        // Remote database synchronization
+        // Called when program is started...
+        executors.submit {
+            val words = Application.wordDao.getWords()
+            words.forEach { word ->
+                when (word.state) {
+                    ADD -> {
+                        sendWordToRemoteDB(word)
+                    }
+                    UPDATE -> {
+                        updateWordAtRemoteDB(word)
+                    }
+                    REMOVE -> {
+                        removeWordFromRemoteDB(word)
+                    }
+                    NOTHING -> {
+                    }
+                }
             }
-
-        })
-    }.doOnDispose { removeListener() }
-
-    fun getWords(): Single<List<Word>> = Single.create { subscriber ->
-        val lastAddedWordDate = Application.wordDao.getLastAddedWordDate()?.time?.toDouble() ?: 0.0
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        usersRef
-            .child(userID)
-            .child("notification")
-            .orderByChild("date/time")
-            .startAt(lastAddedWordDate)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                    subscriber.onError(error.toException())
-                }
-
-                override fun onDataChange(wordsSnapshot: DataSnapshot) {
-                    val words =
-                        wordsSnapshot.children.mapNotNull { convert(it) }.filter { it.date.time > lastAddedWordDate }
-                    subscriber.onSuccess(words)
-                }
-
-            })
+        }
+        // Local database synchronization
+        // Called when program is started...
+        val userID = FirebaseAuth.getInstance().currentUser?.uid
+        userID?.let {
+            usersRef
+                .child(userID)
+                .child("notification")
+                .addChildEventListener(object : DelegateChildEventListener() {
+                    override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
+                        val word = convert(snapshot) ?: return
+                        executors.submit { Application.wordDao.addWords(listOf(word)) }
+                    }
+                })
+        }
     }
 
-    fun addWord(word: Word, subscribers: List<User>): Completable = Completable.create { subscriber ->
+    fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
+        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        return Application.wordDao.getSubscriptionsWords(userName)
+    }
+
+    fun addWord(word: Word): Completable = Completable.create { subscriber ->
+        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userID = currentUser?.uid ?: return@create
-        word.owner = currentUser.displayName ?: return@create
-        val userUpdates = HashMap<String, Any>()
-        // Add to notification section for all subscribers
-        subscribers.forEach {
-            val key = usersRef.child("${it.key}/notification").push().key
-            userUpdates["/${it.key}/notification/$key"] = word
-        }
-        // Add to words section for me
-        val key = usersRef.child("$userID/words").push().key
-        userUpdates["/$userID/words/$key"] = word
-        // Add word for me and my subscribers
-        usersRef.updateChildren(userUpdates)
-            .addOnSuccessListener { subscriber.onComplete() }
-            .addOnFailureListener { subscriber.tryOnError(it) }
+        val key = usersRef.child("$userID/words").push().key ?: return@create
+        val addWord = word.copy(key = key, state = ADD, owner = userName)
+        val words = listOf(addWord)
+        Application.wordDao.addWords(words)
+        sendWordToRemoteDB(addWord)
+        subscriber.onComplete()
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
+        val updateWord = word.copy(state = UPDATE)
+        Application.wordDao.updateWord(updateWord)
+        updateWordAtRemoteDB(updateWord)
+        subscriber.onComplete()
+    }
+
+    fun getWordCount(): Single<Int> = Single.create { subscriber ->
+        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        val count = Application.wordDao.getWordCount(userName)
+        subscriber.onSuccess(count)
+    }
+
+    fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
+        val currentDate = Date().plusDays(1).resetTime()
+        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        val words = Application.wordDao.getWordsToStudy(userName, currentDate)
+        subscriber.onSuccess(words)
+    }
+
+    private fun removeWordFromRemoteDB(word: Word) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return
+        usersRef
+            .child(userID)
+            .child("notification")
+            .child(word.key)
+            .setValue(null)
+            .addOnSuccessListener {
+                executors.submit { Application.wordDao.removeWord(word) }
+            }
+    }
+
+    private fun updateWordAtRemoteDB(word: Word) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return
         usersRef
             .child(userID)
             .child("words")
             .child(word.key)
             .setValue(word)
-            .addOnSuccessListener { subscriber.onComplete() }
-            .addOnFailureListener { subscriber.tryOnError(it) }
-    }
-
-    fun getWordCount(): Single<Long> = Single.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val wordsRef = usersRef.child(userID).child("notification")
-        wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-
+            .addOnSuccessListener {
+                executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
             }
+    }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                subscriber.onSuccess(snapshot.childrenCount)
+    @SuppressLint("CheckResult")
+    private fun sendWordToRemoteDB(word: Word) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return
+        val userManager = UserManager()
+        val userUpdates = HashMap<String, Any>()
+        userManager.getSubscribers().subscribe { subscribers ->
+            subscribers.forEach {
+                val key = usersRef.child("${it.key}/notification").push().key
+                userUpdates["/${it.key}/notification/$key"] = word
             }
-        })
-    }
-
-    fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
-        val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
-        val currentDate = Date().plusDays(1).resetTime().time.toDouble()
-        usersRef
-            .child(userID)
-            .child("words")
-            .orderByChild("date/time")
-            .endAt(currentDate)
-            .limitToFirst(10)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    //TODO: Add error handling
+            userUpdates["/$userID/words/${word.key}"] = word
+            usersRef.updateChildren(userUpdates)
+                .addOnSuccessListener {
+                    executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
                 }
-
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val words = arrayListOf<Word>()
-                    for (wordSnapshot in snapshot.children) {
-                        val word = convert(wordSnapshot) ?: continue
-                        words += word
-                    }
-                    subscriber.onSuccess(words)
-                }
-
-            })
-    }
-
-    private fun removeListener() {
-        listener?.let { usersRef.removeEventListener(it) }
+        }
     }
 
     private fun convert(snapshot: DataSnapshot): Word? {
