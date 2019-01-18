@@ -44,8 +44,8 @@ class WordManager private constructor() {
         }
         // Local database synchronization
         // Called when program is started...
-        executors.submit {
-            val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@submit
+        val userID = FirebaseAuth.getInstance().currentUser?.uid
+        userID?.let {
             usersRef
                 .child(userID)
                 .child("notification")
