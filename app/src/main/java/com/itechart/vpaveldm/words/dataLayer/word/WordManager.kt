@@ -82,6 +82,15 @@ object WordManager {
         subscriber.onComplete()
     }
 
+    fun removeWord(word: Word, toAdd: Boolean): Completable = Completable.create { subscriber ->
+        val removeWord = word.copy(state = REMOVE)
+        Application.wordDao.removeWord(removeWord)
+        removeWordFromRemoteDB(removeWord)
+        if (toAdd)
+            addWord(word).subscribe()
+        subscriber.onComplete()
+    }
+
     fun getWordCount(): Single<Int> = Single.create { subscriber ->
         val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
         val count = Application.wordDao.getWordCount(userName)
@@ -104,7 +113,7 @@ object WordManager {
             .child(word.key)
             .setValue(null)
             .addOnSuccessListener {
-                executors.submit { Application.wordDao.removeWord(word) }
+                executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
             }
     }
 

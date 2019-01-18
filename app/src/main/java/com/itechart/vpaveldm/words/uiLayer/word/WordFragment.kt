@@ -8,23 +8,23 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.itechart.vpaveldm.words.Application
+import com.itechart.vpaveldm.words.adapterLayer.word.IWordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
 import java.util.concurrent.Executors
 
-class WordFragment : Fragment() {
+class WordFragment : Fragment(), IWordAdapter {
 
     private lateinit var listener: IAuthorization
     private lateinit var binding: FragmentWordBinding
     private lateinit var viewModel: WordViewModel
-    private var adapter = WordAdapter()
+    private var adapter = WordAdapter(this)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -45,6 +45,8 @@ class WordFragment : Fragment() {
             linearLayoutManager.stackFromEnd = true
             layoutManager = linearLayoutManager
         }
+        val touchHelper = ItemTouchHelper(WordItemTouchCallback(adapter))
+        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
         binding.handler = viewModel
         initPageList()
         return binding.root
@@ -53,6 +55,10 @@ class WordFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         listener.authorized()
+    }
+
+    override fun onItemSwiped(word: Word, toAdd: Boolean) {
+        viewModel.removeWord(word, toAdd)
     }
 
     private fun initPageList() {

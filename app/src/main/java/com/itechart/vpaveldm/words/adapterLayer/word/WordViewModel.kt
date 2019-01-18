@@ -33,6 +33,13 @@ class WordViewModel : ViewModel() {
         return WordManager.getSubscriptionsWords()
     }
 
+    fun removeWord(word: Word, toAdd: Boolean) {
+        WordManager.removeWord(word, toAdd)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+    }
+
     override fun onCleared() {
         super.onCleared()
         disposables.clear()

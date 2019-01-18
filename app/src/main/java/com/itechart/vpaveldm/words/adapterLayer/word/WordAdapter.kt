@@ -11,7 +11,8 @@ import com.itechart.vpaveldm.words.dataLayer.word.Word
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
 
-class WordAdapter : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL) {
+class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL),
+    WordItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent, false)
@@ -23,6 +24,16 @@ class WordAdapter : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL) {
         holder.bind(word)
     }
 
+    override fun onItemSwipedToAdd(position: Int) {
+        val word = getItem(position) ?: return
+        listener.onItemSwiped(word, toAdd = true)
+    }
+
+    override fun onItemSwipedToRemove(position: Int) {
+        val word = getItem(position) ?: return
+        listener.onItemSwiped(word, toAdd = false)
+    }
+
     class WordHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(word: Word) {
             itemView.wordTV.text = word.word
@@ -32,6 +43,15 @@ class WordAdapter : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL) {
         }
     }
 
+}
+
+interface WordItemTouchHelperAdapter {
+    fun onItemSwipedToRemove(position: Int)
+    fun onItemSwipedToAdd(position: Int)
+}
+
+interface IWordAdapter {
+    fun onItemSwiped(word: Word, toAdd: Boolean)
 }
 
 private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
