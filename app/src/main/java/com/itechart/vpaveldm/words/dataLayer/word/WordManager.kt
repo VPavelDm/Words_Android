@@ -58,7 +58,7 @@ object WordManager {
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(key = key, owner = userName, count = 0)
             Application.wordDao.addWords(addWord)
-            sendWordToRemoteDB(addWord)
+            sendWordToRemoteDB(addWord, word.owner.isEmpty())
             subscriber.onComplete()
         } ?: subscriber.onError(UserError())
     }
@@ -111,11 +111,11 @@ object WordManager {
     }
 
     @SuppressLint("CheckResult")
-    private fun sendWordToRemoteDB(word: Word) {
-        val (userName, userID) = userNameAndID() ?: return
+    private fun sendWordToRemoteDB(word: Word, doNotifySubscribers: Boolean) {
+        val (_, userID) = userNameAndID() ?: return
         val userUpdates = HashMap<String, Any>()
         // If it is my word I have to notify all subscribers and other way not
-        if (word.owner == userName) {
+        if (doNotifySubscribers) {
             userManager.getSubscribers().subscribe { subscribers ->
                 subscribers.forEach {
                     val key = usersRef.child("${it.key}/notification").push().key
