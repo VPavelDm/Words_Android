@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.uiLayer.search
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -31,14 +30,12 @@ class SearchFragment : Fragment(), ISubscribeUser {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
         binding.handler = viewModel
-        val greenIcon = Icon.createWithResource(context, R.drawable.ic_track_green)
-        val blackIcon = Icon.createWithResource(context, R.drawable.ic_track)
         viewModel.users.observe(this, Observer { users ->
             users?.let {
                 binding.searchRV.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(this@SearchFragment.context)
-                    this@SearchFragment.adapter = UserAdapter(it, this@SearchFragment, greenIcon, blackIcon)
+                    this@SearchFragment.adapter = UserAdapter(it, this@SearchFragment)
                     adapter = this@SearchFragment.adapter
                     addItemDecoration(ItemDivider(context))
                 }
