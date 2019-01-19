@@ -6,10 +6,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.Application
+import com.itechart.vpaveldm.words.core.UserError
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
-import com.itechart.vpaveldm.words.dataLayer.word.WordState.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -19,133 +19,104 @@ import com.itechart.vpaveldm.words.core.extension.ChildEventListener as Delegate
 object WordManager {
 
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
+    private val userManager = UserManager()
     private val executors = Executors.newSingleThreadExecutor()
 
     init {
-        // Remote database synchronization
-        // Called when program is started...
-        executors.submit {
-            val words = Application.wordDao.getWords()
-            words.forEach { word ->
-                when (word.state) {
-                    ADD -> {
-                        sendWordToRemoteDB(word)
-                    }
-                    UPDATE -> {
-                        updateWordAtRemoteDB(word)
-                    }
-                    REMOVE -> {
-                        removeWordFromRemoteDB(word)
-                    }
-                    NOTHING -> {
-                    }
-                }
-            }
-        }
         // Local database synchronization
         // Called when program is started...
-        val userID = FirebaseAuth.getInstance().currentUser?.uid
-        userID?.let {
+        userNameAndID()?.let { (_, userID) ->
             usersRef
                 .child(userID)
                 .child("notification")
                 .addChildEventListener(object : DelegateChildEventListener() {
                     override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
                         val word = convert(snapshot) ?: return
-                        executors.submit { Application.wordDao.addWords(listOf(word)) }
+                        executors.submit { Application.wordDao.addWord(word) }
                     }
                 })
         }
     }
 
     fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
-        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        val (userName, _) = userNameAndID() ?: "" to ""
         return Application.wordDao.getSubscriptionsWords(userName)
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
-        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return@create
-        val key = usersRef.child("$userID/words").push().key ?: return@create
-        val addWord = word.copy(key = key, state = ADD, owner = userName)
-        val words = listOf(addWord)
-        Application.wordDao.addWords(words)
-        sendWordToRemoteDB(addWord)
-        subscriber.onComplete()
+        userNameAndID()?.let { (userName, userID) ->
+            val key = usersRef.child("$userID/words").push().key ?: return@create
+            val addWord = word.copy(key = key, owner = userName, count = 0)
+            Application.wordDao.addWord(addWord)
+            sendWordToRemoteDB(addWord)
+            subscriber.onComplete()
+        } ?: subscriber.onError(UserError())
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
-        val updateWord = word.copy(state = UPDATE)
-        Application.wordDao.updateWord(updateWord)
-        updateWordAtRemoteDB(updateWord)
+        Application.wordDao.updateWord(word)
+        updateWordAtRemoteDB(word)
         subscriber.onComplete()
     }
 
     fun removeWord(word: Word, toAdd: Boolean): Completable = Completable.create { subscriber ->
-        val removeWord = word.copy(state = REMOVE)
-        Application.wordDao.removeWord(removeWord)
-        removeWordFromRemoteDB(removeWord)
+        Application.wordDao.removeWord(word)
+        removeWordFromRemoteDB(word)
         if (toAdd)
             addWord(word).subscribe()
         subscriber.onComplete()
     }
 
     fun getWordCount(): Single<Int> = Single.create { subscriber ->
-        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        val count = Application.wordDao.getWordCount(userName)
-        subscriber.onSuccess(count)
+        userNameAndID()?.let { (userName, _) ->
+            val count = Application.wordDao.getWordCount(userName)
+            subscriber.onSuccess(count)
+        } ?: subscriber.onError(UserError())
     }
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
-        val currentDate = Date().plusDays(1).resetTime()
-        val userName = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        val words = Application.wordDao.getWordsToStudy(userName, currentDate)
-        subscriber.onSuccess(words)
+        userNameAndID()?.let { (userName, _) ->
+            val currentDate = Date().plusDays(1).resetTime()
+            val words = Application.wordDao.getWordsToStudy(userName, currentDate)
+            subscriber.onSuccess(words)
+        } ?: subscriber.onError(UserError())
     }
 
     private fun removeWordFromRemoteDB(word: Word) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return
+        val (_, userID) = userNameAndID() ?: return
         usersRef
             .child(userID)
             .child("notification")
             .child(word.key)
             .setValue(null)
-            .addOnSuccessListener {
-                executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
-            }
     }
 
     private fun updateWordAtRemoteDB(word: Word) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return
+        val (_, userID) = userNameAndID() ?: return
         usersRef
             .child(userID)
             .child("words")
             .child(word.key)
             .setValue(word)
-            .addOnSuccessListener {
-                executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
-            }
     }
 
     @SuppressLint("CheckResult")
     private fun sendWordToRemoteDB(word: Word) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return
-        val userManager = UserManager()
+        val (userName, userID) = userNameAndID() ?: return
         val userUpdates = HashMap<String, Any>()
-        userManager.getSubscribers().subscribe { subscribers ->
-            subscribers.forEach {
-                val key = usersRef.child("${it.key}/notification").push().key
-                userUpdates["/${it.key}/notification/$key"] = word
+        // If it is my word I have to notify all subscribers and other way not
+        if (word.owner == userName) {
+            userManager.getSubscribers().subscribe { subscribers ->
+                subscribers.forEach {
+                    val key = usersRef.child("${it.key}/notification").push().key
+                    userUpdates["/${it.key}/notification/$key"] = word
+                }
+                userUpdates["/$userID/words/${word.key}"] = word
+                usersRef.updateChildren(userUpdates)
             }
+        } else {
             userUpdates["/$userID/words/${word.key}"] = word
             usersRef.updateChildren(userUpdates)
-                .addOnSuccessListener {
-                    executors.submit { Application.wordDao.updateWord(word.copy(state = NOTHING)) }
-                }
         }
     }
 
@@ -155,6 +126,13 @@ object WordManager {
             word.key = it
             return word
         } ?: return null
+    }
+
+    private fun userNameAndID(): Pair<String, String>? {
+        val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: return null
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userID = currentUser?.uid ?: return null
+        return userName to userID
     }
 
 }

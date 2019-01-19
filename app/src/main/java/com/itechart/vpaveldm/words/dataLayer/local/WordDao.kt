@@ -9,13 +9,10 @@ import java.util.*
 interface WordDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addWords(words: List<Word>)
+    fun addWord(word: Word)
 
     @Query("SELECT * FROM words WHERE owner NOT LIKE :arg0")
     fun getSubscriptionsWords(userName: String): DataSource.Factory<Int, Word>
-
-    @Query("SELECT * FROM words")
-    fun getWords(): List<Word>
 
     @Update
     fun updateWord(word: Word)
