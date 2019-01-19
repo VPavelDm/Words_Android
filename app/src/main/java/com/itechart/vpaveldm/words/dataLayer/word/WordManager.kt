@@ -56,7 +56,7 @@ object WordManager {
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         userNameAndID()?.let { (userName, userID) ->
             val key = usersRef.child("$userID/words").push().key ?: return@create
-            val addWord = word.copy(key = key, owner = userName, count = 0)
+            val addWord = word.copy(key = key, owner = userName, count = 0, date = Date())
             Application.wordDao.addWords(addWord)
             sendWordToRemoteDB(addWord, word.owner.isEmpty())
             subscriber.onComplete()
