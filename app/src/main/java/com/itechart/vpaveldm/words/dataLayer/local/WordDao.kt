@@ -8,8 +8,8 @@ import java.util.*
 @Dao
 interface WordDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addWord(word: Word)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addWords(vararg words: Word)
 
     @Query("SELECT * FROM words WHERE owner NOT LIKE :arg0")
     fun getSubscriptionsWords(userName: String): DataSource.Factory<Int, Word>

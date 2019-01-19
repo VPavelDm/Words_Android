@@ -15,6 +15,7 @@ import io.reactivex.Single
 import java.util.*
 import java.util.concurrent.Executors
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
+import com.itechart.vpaveldm.words.core.extension.ValueEventListener as DelegateValueEventListener
 
 object WordManager {
 
@@ -29,10 +30,19 @@ object WordManager {
             usersRef
                 .child(userID)
                 .child("notification")
-                .addChildEventListener(object : DelegateChildEventListener() {
+                .addChildEventListener(object : DelegateChildEventListener {
                     override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
                         val word = convert(snapshot) ?: return
-                        executors.submit { Application.wordDao.addWord(word) }
+                        executors.submit { Application.wordDao.addWords(word) }
+                    }
+                })
+            usersRef
+                .child(userID)
+                .child("words")
+                .addListenerForSingleValueEvent(object : DelegateValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val words = snapshot.children.mapNotNull { convert(it) }.toTypedArray()
+                        executors.submit { Application.wordDao.addWords(*words) }
                     }
                 })
         }
@@ -47,7 +57,7 @@ object WordManager {
         userNameAndID()?.let { (userName, userID) ->
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(key = key, owner = userName, count = 0)
-            Application.wordDao.addWord(addWord)
+            Application.wordDao.addWords(addWord)
             sendWordToRemoteDB(addWord)
             subscriber.onComplete()
         } ?: subscriber.onError(UserError())

@@ -4,7 +4,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 
-open class ChildEventListener: ChildEventListener {
+interface ChildEventListener: ChildEventListener {
     override fun onCancelled(p0: DatabaseError) {
     }
 
