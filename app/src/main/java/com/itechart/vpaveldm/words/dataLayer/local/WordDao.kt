@@ -8,7 +8,7 @@ import java.util.*
 @Dao
 interface WordDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addWords(vararg words: Word)
 
     @Query("SELECT * FROM words WHERE owner NOT LIKE :arg0")
