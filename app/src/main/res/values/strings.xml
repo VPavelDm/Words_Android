@@ -24,4 +24,6 @@
     <string name="title_next">Далее</string>
     <string name="title_enter_nickname">Введите имя пользователя</string>
     <string name="title_subscribe">Подписаться</string>
+    <string name="title_enter_english_text">Введите текст на английском</string>
+    <string name="title_add_example">Добавить пример</string>
 </resources>

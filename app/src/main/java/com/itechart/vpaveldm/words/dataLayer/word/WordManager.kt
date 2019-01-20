@@ -7,8 +7,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.UserError
-import com.itechart.vpaveldm.words.core.extension.plusDays
-import com.itechart.vpaveldm.words.core.extension.resetTime
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -33,7 +31,7 @@ object WordManager {
                 .addChildEventListener(object : DelegateChildEventListener {
                     override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
                         val word = convert(snapshot) ?: return
-                        executors.submit { Application.wordDao.addWords(word) }
+                        executors.submit { Application.wordDao.addWordWithExamples(word) }
                     }
                 })
             usersRef
@@ -42,22 +40,23 @@ object WordManager {
                 .addListenerForSingleValueEvent(object : DelegateValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val words = snapshot.children.mapNotNull { convert(it) }.toTypedArray()
-                        executors.submit { Application.wordDao.addWords(*words) }
+                        executors.submit { Application.wordDao.addWordWithExamples(*words) }
                     }
                 })
         }
     }
 
-    fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
+    fun getSubscriptionsWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
         val (userName, _) = userNameAndID() ?: "" to ""
-        return Application.wordDao.getSubscriptionsWords(userName)
+        subscriber.onSuccess(Application.wordDao.getSubscriptionsWords(userName))
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         userNameAndID()?.let { (userName, userID) ->
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(key = key, owner = userName, count = 0, date = Date())
-            Application.wordDao.addWords(addWord)
+            addWord.examples.forEach { it.wordId = key }
+            Application.wordDao.addWordWithExamples(addWord)
             sendWordToRemoteDB(addWord, word.owner.isEmpty())
             subscriber.onComplete()
         } ?: subscriber.onError(UserError())
@@ -70,7 +69,7 @@ object WordManager {
     }
 
     fun removeWord(word: Word, toAdd: Boolean): Completable = Completable.create { subscriber ->
-        Application.wordDao.removeWord(word)
+        Application.wordDao.removeWordWithExamples(word)
         removeWordFromRemoteDB(word)
         if (toAdd)
             addWord(word).subscribe()
@@ -86,8 +85,7 @@ object WordManager {
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         userNameAndID()?.let { (userName, _) ->
-            val currentDate = Date().plusDays(1).resetTime()
-            val words = Application.wordDao.getWordsToStudy(userName, currentDate)
+            val words = Application.wordDao.getWordsWithExamplesToStudy(userName)
             subscriber.onSuccess(words)
         } ?: subscriber.onError(UserError())
     }

@@ -62,20 +62,21 @@ class WordFragment : Fragment(), IWordAdapter {
     }
 
     private fun initPageList() {
-        val sourceFactory = viewModel.getSubscriptionsWords()
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .build()
-        val pagedListData = LivePagedListBuilder<Int, Word>(sourceFactory, config)
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .build()
-        pagedListData.observe(this, Observer { pagedList ->
-            pagedList?.let {
-                viewModel.emptyWordsTextViewVisible.set(it.size == 0)
-                adapter.submitList(it)
-            }
-        })
+        viewModel.getSubscriptionsWords { sourceFactory ->
+            val config = PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPageSize(10)
+                .build()
+            val pagedListData = LivePagedListBuilder<Int, Word>(sourceFactory, config)
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .build()
+            pagedListData.observe(this, Observer { pagedList ->
+                pagedList?.let {
+                    viewModel.emptyWordsTextViewVisible.set(it.size == 0)
+                    adapter.submitList(it)
+                }
+            })
+        }
     }
 
 }

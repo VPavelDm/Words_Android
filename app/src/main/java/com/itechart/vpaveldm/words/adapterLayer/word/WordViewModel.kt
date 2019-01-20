@@ -29,8 +29,12 @@ class WordViewModel : ViewModel() {
             .subscribe()
     }
 
-    fun getSubscriptionsWords(): DataSource.Factory<Int, Word> {
-        return WordManager.getSubscriptionsWords()
+    fun getSubscriptionsWords(callback: (DataSource.Factory<Int, Word>) -> Unit) {
+        val disposable = WordManager.getSubscriptionsWords()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { ds -> callback(ds) }
+        disposables.add(disposable)
     }
 
     fun removeWord(word: Word, toAdd: Boolean) {
