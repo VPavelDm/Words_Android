@@ -9,6 +9,8 @@
                 name="viewHolder"
                 type="com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordAdapter.ExampleViewHolder"/>
 
+        <variable name="position" type="Integer"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -20,7 +22,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Example"
+                android:text="@{@string/title_example(viewHolder.positionObservable)}"
                 android:textStyle="italic"
                 android:textSize="14sp"
                 android:textAlignment="center"

@@ -1,6 +1,7 @@
 package com.itechart.vpaveldm.words.adapterLayer.addWord
 
 import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +46,7 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ExampleViewHolder -> {
-                holder.bind(examples[position - 1])
+                holder.bind(examples[position - 1], position)
             }
         }
     }
@@ -71,12 +72,13 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
 
     class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    class ExampleViewHolder(binding: RecyclerItemAddExampleBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+    class ExampleViewHolder(binding: RecyclerItemAddExampleBinding) : RecyclerView.ViewHolder(binding.root) {
         val exampleObservable = ObservableField<Example>()
+        val positionObservable = ObservableInt(1)
 
-        fun bind(example: Example) {
+        fun bind(example: Example, position: Int) {
             exampleObservable.set(example)
+            positionObservable.set(position)
         }
     }
 
