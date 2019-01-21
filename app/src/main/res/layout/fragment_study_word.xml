@@ -1,224 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
-                name="handler"
-                type="com.itechart.vpaveldm.words.adapterLayer.studyWord.StudyWordViewModel"/>
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.studyWord.StudyWordViewModel" />
 
     </data>
 
     <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{handler.progressBarVisible ? View.VISIBLE: View.INVISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE: View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                android:id="@+id/emptyWordsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_add_words"
-                android:visibility="@{handler.emptyWordsTextViewVisible ? View.VISIBLE : View.INVISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:id="@+id/emptyWordsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_add_words"
+            android:visibility="@{handler.emptyWordsTextViewVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.CardView
-                android:id="@+id/wordCard"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:visibility="@{(handler.progressBarVisible || handler.emptyWordsTextViewVisible) ? View.INVISIBLE : View.VISIBLE}"
-                app:cardCornerRadius="8sp"
-                app:cardElevation="8sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/wordCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:visibility="@{(handler.progressBarVisible || handler.emptyWordsTextViewVisible) ? View.INVISIBLE : View.VISIBLE}"
+            app:cardCornerRadius="8sp"
+            app:cardElevation="8sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/studyWordRV"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="3"
+                    android:scrollbars="vertical" />
 
                 <android.support.constraint.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_weight="3"
-                        android:onClick="@{() -> handler.showAnswer()}"
-                        android:orientation="vertical">
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_weight="1">
 
-                    <TextView
-                            android:id="@+id/wordTV"
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/knowAnswer"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="@{() -> handler.knowWord()}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/doNotKnowAnswer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/knowWordBtn"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:maxLines="5"
-                            android:paddingStart="18dp"
-                            android:paddingTop="18dp"
-                            android:paddingEnd="18dp"
-                            android:text="@{handler.word.word}"
-                            android:textAlignment="center"
-                            android:textSize="24sp"
-                            app:layout_constraintBottom_toTopOf="@id/transcriptionTV"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_thumbs_up_hand_symbol"
+                            app:layout_constraintBottom_toTopOf="@id/knowWordTV"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.7"
                             app:layout_constraintVertical_chainStyle="packed"
-                            tools:text="Hello world my dear friend. My name is Paul, I am from Minsk"/>
-
-                    <TextView
-                            android:id="@+id/transcriptionTV"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:lines="1"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp"
-                            android:paddingBottom="10dp"
-                            android:text="@{handler.word.transcription}"
-                            android:textAlignment="center"
-                            android:textSize="18sp"
-                            app:layout_constraintBottom_toTopOf="@id/translateSeparator"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/wordTV"
-                            tools:text="[Hello]"/>
-
-                    <View
-                            android:id="@+id/translateSeparator"
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="#7F000000"
-                            android:visibility="@{handler.translateVisible ? View.VISIBLE : View.INVISIBLE}"
-                            app:layout_constraintBottom_toTopOf="@id/translateTV"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/transcriptionTV"/>
-
-                    <TextView
-                            android:id="@+id/translateTV"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:maxLines="2"
-                            android:paddingStart="18dp"
-                            android:paddingTop="10dp"
-                            android:paddingEnd="18dp"
-                            android:paddingBottom="18dp"
-                            android:text="@{handler.word.translate}"
-                            android:textAlignment="center"
-                            android:textSize="18sp"
-                            android:visibility="@{handler.translateVisible ? View.VISIBLE : View.INVISIBLE}"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/translateSeparator"
-                            tools:text="Привет"/>
-
-                </android.support.constraint.ConstraintLayout>
-
-                <android.support.constraint.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginBottom="20dp"
-                        android:layout_weight="1">
-
-                    <android.support.constraint.ConstraintLayout
-                            android:id="@+id/knowAnswer"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:onClick="@{() -> handler.knowWord()}"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/doNotKnowAnswer"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                                android:id="@+id/knowWordBtn"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:src="@drawable/ic_thumbs_up_hand_symbol"
-                                app:layout_constraintBottom_toTopOf="@id/knowWordTV"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.7"
-                                app:layout_constraintVertical_chainStyle="packed"
-                                tools:ignore="ContentDescription"/>
+                            tools:ignore="ContentDescription" />
 
                         <TextView
-                                android:id="@+id/knowWordTV"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:gravity="center"
-                                android:text="@string/title_know_word"
-                                android:textColor="@color/knowWordColor"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/knowWordBtn"/>
+                            android:id="@+id/knowWordTV"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="@string/title_know_word"
+                            android:textColor="@color/knowWordColor"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/knowWordBtn" />
 
                     </android.support.constraint.ConstraintLayout>
 
                     <android.support.constraint.ConstraintLayout
-                            android:id="@+id/doNotKnowAnswer"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:onClick="@{() -> handler.doNotKnowWord()}"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/knowAnswer"
-                            app:layout_constraintTop_toTopOf="parent">
+                        android:id="@+id/doNotKnowAnswer"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="@{() -> handler.doNotKnowWord()}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/knowAnswer"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
-                                android:id="@+id/doNotKnowWordBtn"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:src="@drawable/ic_thumbs_down_silhouette"
-                                app:layout_constraintBottom_toTopOf="@id/doNotKnowWordTV"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.7"
-                                app:layout_constraintVertical_chainStyle="packed"
-                                tools:ignore="ContentDescription"/>
+                            android:id="@+id/doNotKnowWordBtn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_thumbs_down_silhouette"
+                            app:layout_constraintBottom_toTopOf="@id/doNotKnowWordTV"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.7"
+                            app:layout_constraintVertical_chainStyle="packed"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
-                                android:id="@+id/doNotKnowWordTV"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:gravity="center"
-                                android:text="@string/title_do_not_know_word"
-                                android:textColor="@color/doNotKnowWordColor"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/doNotKnowWordBtn"/>
+                            android:id="@+id/doNotKnowWordTV"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="@string/title_do_not_know_word"
+                            android:textColor="@color/doNotKnowWordColor"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/doNotKnowWordBtn" />
 
                     </android.support.constraint.ConstraintLayout>
 
@@ -227,19 +155,19 @@
             </LinearLayout>
 
             <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:alpha="0"
-                    android:background="@android:color/black"
-                    android:clickable="true"
-                    android:visibility="@{handler.updateWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}"
-                    tools:ignore="KeyboardInaccessibleWidget"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0"
+                android:background="@android:color/black"
+                android:clickable="true"
+                android:visibility="@{handler.updateWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}"
+                tools:ignore="KeyboardInaccessibleWidget" />
 
             <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{handler.updateWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}"
-                    android:layout_gravity="center"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="@{handler.updateWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}" />
 
         </android.support.v7.widget.CardView>
 
