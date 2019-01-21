@@ -28,7 +28,7 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentAddWordBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(AddWordViewModel::class.java)
-        adapter = AddWordAdapter(viewModel)
+        adapter = AddWordAdapter(activity!!.applicationContext, viewModel)
         translateViewModel = ViewModelProviders.of(activity!!).get(TranslateViewModel::class.java)
         translateViewModel.translateProvider.observe(this, Observer { translate ->
             translate?.let {

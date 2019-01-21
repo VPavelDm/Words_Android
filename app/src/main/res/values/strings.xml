@@ -11,7 +11,7 @@
     <string name="title_confirm_password">Подтвердите пароль</string>
     <string name="title_add">Добавить</string>
     <string name="title_enter_word">Введите слово</string>
-    <string name="title_enter_transcription">Введите транскрипцию</string>
+    <string name="title_enter_transcription">Введите транскрипцию (Не обязательно)</string>
     <string name="title_enter_translate">Введите перевод</string>
     <string name="yandex_dictionary_api_key">dict.1.1.20181010T070000Z.16b824adde570294.88d60c64a344f4c7ede04647219b095c4575d1ea</string>
     <string name="title_add_words">Добавьте слова</string>
@@ -27,4 +27,6 @@
     <string name="title_enter_english_text">Введите текст на английском</string>
     <string name="title_add_example">Добавить пример</string>
     <string name="title_example">Пример %1$s</string>
+    <string name="error_title_fill_examples">Заполните все поля в примерах</string>
+    <string name="error_title_fill_fields">Заполните все обязательные поля в слове и примерах</string>
 </resources>

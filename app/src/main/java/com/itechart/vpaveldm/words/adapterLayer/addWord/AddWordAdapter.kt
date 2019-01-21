@@ -1,18 +1,22 @@
 package com.itechart.vpaveldm.words.adapterLayer.addWord
 
+import android.content.Context
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.addWord.ViewHolderType.*
+import com.itechart.vpaveldm.words.core.extension.toast
 import com.itechart.vpaveldm.words.dataLayer.word.Example
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddExampleBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordFooterBinding
 
-class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+class AddWordAdapter(private val context: Context, private val viewModel: AddWordViewModel) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     IExampleItemTouchHelperAdapter {
 
     private var examples = arrayListOf<Example>()
@@ -67,13 +71,20 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
     }
 
     fun clickAddExample() {
-        createdExampleCount += 1
-        examples.add(Example())
-        notifyItemInserted(itemCount - 1)
+        if (isExamplesFilled()) {
+            createdExampleCount += 1
+            examples.add(Example())
+            notifyItemInserted(itemCount - 1)
+        } else {
+            context.toast(context.getString(R.string.error_title_fill_examples))
+        }
     }
 
     fun clickAddWord() {
-        viewModel.addWord(examples)
+        if (isAllFieldsFilled())
+            viewModel.addWord(examples)
+        else
+            context.toast(context.getString(R.string.error_title_fill_fields))
     }
 
     class ItemViewHolder(binding: RecyclerItemAddWordBinding) : RecyclerView.ViewHolder(binding.root)
@@ -89,6 +100,12 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
             positionObservable.set(position)
         }
     }
+
+    private fun isExamplesFilled(): Boolean = examples.none { it.text.isEmpty() || it.translate.isEmpty() }
+
+    private fun isAllFieldsFilled(): Boolean = isExamplesFilled()
+            && viewModel.wordObservable.get()?.isNotEmpty() ?: false
+            && viewModel.translateObservable.get()?.isNotEmpty() ?: false
 
 }
 
