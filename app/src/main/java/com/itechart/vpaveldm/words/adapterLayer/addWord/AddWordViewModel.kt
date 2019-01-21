@@ -27,7 +27,7 @@ class AddWordViewModel : ViewModel() {
 
     var delegate: WeakReference<IAddWordDelegate>? = null
 
-    fun addWord(examples: List<Example>) {
+    fun addWord(examples: List<Example>, callback: () -> Unit) {
         val newWord = Word(
             word = wordObservable.get() ?: "",
             translate = translateObservable.get() ?: "",
@@ -43,6 +43,7 @@ class AddWordViewModel : ViewModel() {
                 wordObservable.set("")
                 translateObservable.set("")
                 transcriptionObservable.set("")
+                callback()
             }
         disposables.add(disposable)
     }

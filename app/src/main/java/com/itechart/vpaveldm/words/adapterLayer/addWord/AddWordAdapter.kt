@@ -16,8 +16,8 @@ import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordFooterBinding
 
 class AddWordAdapter(private val context: Context, private val viewModel: AddWordViewModel) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-    IExampleItemTouchHelperAdapter {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+        IExampleItemTouchHelperAdapter {
 
     private var examples = arrayListOf<Example>()
     private var createdExampleCount = 0
@@ -81,9 +81,12 @@ class AddWordAdapter(private val context: Context, private val viewModel: AddWor
     }
 
     fun clickAddWord() {
-        if (isAllFieldsFilled())
-            viewModel.addWord(examples)
-        else
+        if (isAllFieldsFilled()) {
+            viewModel.addWord(examples) {
+                examples.clear()
+                notifyDataSetChanged()
+            }
+        } else
             context.toast(context.getString(R.string.error_title_fill_fields))
     }
 
