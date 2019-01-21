@@ -12,9 +12,11 @@ import com.itechart.vpaveldm.words.databinding.RecyclerItemAddExampleBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordFooterBinding
 
-class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+    IExampleItemTouchHelperAdapter {
 
-    private var examples: Array<Example> = arrayOf()
+    private var examples = arrayListOf<Example>()
+    private var createdExampleCount = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -46,7 +48,7 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ExampleViewHolder -> {
-                holder.bind(examples[position - 1], position)
+                holder.bind(examples[position - 1], createdExampleCount)
             }
         }
     }
@@ -59,13 +61,19 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
         }
     }
 
+    override fun onItemSwiped(position: Int) {
+        examples.removeAt(position - 1)
+        notifyItemRemoved(position)
+    }
+
     fun clickAddExample() {
-        examples += Example()
+        createdExampleCount += 1
+        examples.add(Example())
         notifyItemInserted(itemCount - 1)
     }
 
     fun clickAddWord() {
-        viewModel.addWord(examples = examples.toList())
+        viewModel.addWord(examples)
     }
 
     class ItemViewHolder(binding: RecyclerItemAddWordBinding) : RecyclerView.ViewHolder(binding.root)
@@ -86,4 +94,8 @@ class AddWordAdapter(private val viewModel: AddWordViewModel) : RecyclerView.Ada
 
 private enum class ViewHolderType {
     ITEM, EXAMPLE, FOOTER
+}
+
+interface IExampleItemTouchHelperAdapter {
+    fun onItemSwiped(position: Int)
 }

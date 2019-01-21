@@ -116,4 +116,8 @@ class WordItemTouchCallback(context: Context, private val listener: WordItemTouc
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
+
+    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+        return 0.7F
+    }
 }

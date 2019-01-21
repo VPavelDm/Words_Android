@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,8 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
             adapter = this@AddWordFragment.adapter
             itemAnimator = WordDefaultItemAnimator()
         }
+        val touchHelper = ItemTouchHelper(ExampleTouchCallback(adapter))
+        touchHelper.attachToRecyclerView(binding.addWordRV)
         adapter.registerAdapterDataObserver(listener)
         return binding.root
     }
