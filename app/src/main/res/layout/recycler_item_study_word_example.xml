@@ -51,12 +51,11 @@
             android:id="@+id/translateSeparator"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="8dp"
+            android:alpha="0.5"
             android:background="#7F000000"
             android:visibility="@{handler.translateVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/exampleTranslateTV"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/exampleTextTV"
             app:layout_constraintStart_toStartOf="@id/expandButton"
             app:layout_constraintTop_toBottomOf="@id/exampleTextTV" />
 
