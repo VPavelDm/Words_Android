@@ -30,4 +30,5 @@
     <string name="error_title_fill_examples">Заполните все поля в примерах</string>
     <string name="error_title_fill_fields">Заполните все обязательные поля в слове и примерах</string>
     <string name="title_empty_word">Нет новых слов</string>
+    <string name="title_profile">Профиль</string>
 </resources>

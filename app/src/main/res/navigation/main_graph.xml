@@ -54,5 +54,9 @@
             android:defaultValue="2"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.profile.ProfileFragment"
+        android:label="ProfileFragment" />
 
 </navigation>
