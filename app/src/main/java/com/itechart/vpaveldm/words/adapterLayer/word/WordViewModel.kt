@@ -17,7 +17,7 @@ class WordViewModel : ViewModel() {
     val emptyWordsTextViewVisible = ObservableBoolean(false)
 
     init {
-        WordManager.getWordCount()
+        WordManager.getSubscriptionsWordCount()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .filter { it == 0 }

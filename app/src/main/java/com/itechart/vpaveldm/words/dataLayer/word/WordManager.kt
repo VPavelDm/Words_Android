@@ -26,23 +26,23 @@ object WordManager {
         // Called when program is started...
         userNameAndID()?.let { (_, userID) ->
             usersRef
-                .child(userID)
-                .child("notification")
-                .addChildEventListener(object : DelegateChildEventListener {
-                    override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
-                        val word = convert(snapshot) ?: return
-                        executors.submit { Application.wordDao.addWordWithExamples(word) }
-                    }
-                })
+                    .child(userID)
+                    .child("notification")
+                    .addChildEventListener(object : DelegateChildEventListener {
+                        override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
+                            val word = convert(snapshot) ?: return
+                            executors.submit { Application.wordDao.addWordWithExamples(word) }
+                        }
+                    })
             usersRef
-                .child(userID)
-                .child("words")
-                .addListenerForSingleValueEvent(object : DelegateValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val words = snapshot.children.mapNotNull { convert(it) }.toTypedArray()
-                        executors.submit { Application.wordDao.addWordWithExamples(*words) }
-                    }
-                })
+                    .child(userID)
+                    .child("words")
+                    .addListenerForSingleValueEvent(object : DelegateValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val words = snapshot.children.mapNotNull { convert(it) }.toTypedArray()
+                            executors.submit { Application.wordDao.addWordWithExamples(*words) }
+                        }
+                    })
         }
     }
 
@@ -54,7 +54,14 @@ object WordManager {
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         userNameAndID()?.let { (userName, userID) ->
             val key = usersRef.child("$userID/words").push().key ?: return@create
-            val addWord = word.copy(key = key, owner = userName, count = 0, date = Date())
+            val addWord = word.copy(
+                    key = key,
+                    owner = userName,
+                    count = 0,
+                    date = Date(),
+                    word = word.word.toLowerCase(),
+                    transcription = word.transcription.toLowerCase(),
+                    translate = word.translate.toLowerCase())
             addWord.examples.forEach { it.wordId = key }
             Application.wordDao.addWordWithExamples(addWord)
             sendWordToRemoteDB(addWord, word.owner.isEmpty())
@@ -63,8 +70,12 @@ object WordManager {
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
-        Application.wordDao.updateWord(word)
-        updateWordAtRemoteDB(word)
+        val updateWord = word.copy(
+                word = word.word.toLowerCase(),
+                transcription = word.transcription.toLowerCase(),
+                translate = word.translate.toLowerCase())
+        Application.wordDao.updateWord(updateWord)
+        updateWordAtRemoteDB(updateWord)
         subscriber.onComplete()
     }
 
@@ -74,6 +85,13 @@ object WordManager {
         if (toAdd)
             addWord(word).subscribe()
         subscriber.onComplete()
+    }
+
+    fun getSubscriptionsWordCount(): Single<Int> = Single.create { subscriber ->
+        userNameAndID()?.let { (userName, _) ->
+            val count = Application.wordDao.getSubscriptionsWordCount(userName)
+            subscriber.onSuccess(count)
+        } ?: subscriber.onError(UserError())
     }
 
     fun getWordCount(): Single<Int> = Single.create { subscriber ->
@@ -90,22 +108,29 @@ object WordManager {
         } ?: subscriber.onError(UserError())
     }
 
+    fun getWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
+        userNameAndID()?.let { (userName, _) ->
+            val dataSource = Application.wordDao.getWordsWithExamples(userName)
+            subscriber.onSuccess(dataSource)
+        } ?: subscriber.onError(UserError())
+    }
+
     private fun removeWordFromRemoteDB(word: Word) {
         val (_, userID) = userNameAndID() ?: return
         usersRef
-            .child(userID)
-            .child("notification")
-            .child(word.key)
-            .setValue(null)
+                .child(userID)
+                .child("notification")
+                .child(word.key)
+                .setValue(null)
     }
 
     private fun updateWordAtRemoteDB(word: Word) {
         val (_, userID) = userNameAndID() ?: return
         usersRef
-            .child(userID)
-            .child("words")
-            .child(word.key)
-            .setValue(word)
+                .child(userID)
+                .child("words")
+                .child(word.key)
+                .setValue(word)
     }
 
     @SuppressLint("CheckResult")
