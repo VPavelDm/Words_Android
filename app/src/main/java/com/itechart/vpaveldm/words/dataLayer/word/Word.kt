@@ -1,6 +1,7 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
@@ -17,5 +18,7 @@ data class Word(
     var translate: String = "",
     var date: Date = Date(),
     var count: Int = 0,
-    var owner: String = ""
+    var owner: String = "",
+    @Ignore
+    var examples: List<Example> = listOf()
 )

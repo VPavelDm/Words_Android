@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="viewHolder"
+                type="com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordAdapter.ExampleViewHolder"/>
+
+        <variable name="position" type="Integer"/>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/exampleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@{@string/title_example(viewHolder.positionObservable)}"
+                android:textStyle="italic"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText"/>
+
+        <EditText
+                android:id="@+id/enterTextET"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/title_enter_english_text"
+                android:inputType="text"
+                android:text="@={viewHolder.exampleObservable.text}"
+                app:layout_constraintEnd_toEndOf="@id/exampleTV"
+                app:layout_constraintStart_toStartOf="@id/exampleTV"
+                app:layout_constraintTop_toBottomOf="@id/exampleTV"
+                tools:ignore="Autofill"/>
+
+        <EditText
+                android:id="@+id/enterTranslateET"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/title_enter_translate"
+                android:inputType="text"
+                android:text="@={viewHolder.exampleObservable.translate}"
+                app:layout_constraintEnd_toEndOf="@id/enterTextET"
+                app:layout_constraintStart_toStartOf="@id/enterTextET"
+                app:layout_constraintTop_toBottomOf="@id/enterTextET"
+                tools:ignore="Autofill"/>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

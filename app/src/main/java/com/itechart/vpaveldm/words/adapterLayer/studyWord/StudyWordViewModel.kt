@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.adapterLayer.studyWord
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.core.extension.moveToEndAt
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.dataLayer.word.Word
@@ -22,7 +21,6 @@ class StudyWordViewModel : ViewModel() {
     val emptyWordsTextViewVisible = ObservableBoolean(false)
     val updateWordProgressBarVisible = ObservableBoolean(false)
     val translateVisible = ObservableBoolean(false)
-    val word = ObservableField<Word>(Word())
 
     var delegate: WeakReference<IStudyWordDelegate>? = null
 
@@ -55,9 +53,8 @@ class StudyWordViewModel : ViewModel() {
     fun showAnswer() {
         // If first click on the card
         if (!translateVisible.get()) {
-            delegate?.get()?.showTranslateClicked {
-                translateVisible.set(true)
-            }
+            translateVisible.set(true)
+            delegate?.get()?.showTranslateClicked()
         }
     }
 
@@ -87,10 +84,10 @@ class StudyWordViewModel : ViewModel() {
     private fun updateCard(isFirst: Boolean) {
         if (words.size > 0) {
             if (!isFirst) delegate?.get()?.cardClicked {
-                word.set(words.first())
+                delegate?.get()?.showWord(words.first())
                 translateVisible.set(false)
             } else {
-                word.set(words.first())
+                delegate?.get()?.showWord(words.first())
             }
         } else {
             getWords()
@@ -118,5 +115,6 @@ class StudyWordViewModel : ViewModel() {
 
 interface IStudyWordDelegate {
     fun cardClicked(callback: () -> Unit)
-    fun showTranslateClicked(callback: () -> Unit)
+    fun showTranslateClicked()
+    fun showWord(word: Word)
 }

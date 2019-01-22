@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexTranslateManager
+import com.itechart.vpaveldm.words.dataLayer.word.Example
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,11 +27,12 @@ class AddWordViewModel : ViewModel() {
 
     var delegate: WeakReference<IAddWordDelegate>? = null
 
-    fun addWord() {
+    fun addWord(examples: List<Example>, callback: () -> Unit) {
         val newWord = Word(
             word = wordObservable.get() ?: "",
             translate = translateObservable.get() ?: "",
-            transcription = transcriptionObservable.get() ?: ""
+            transcription = transcriptionObservable.get() ?: "",
+            examples = examples
         )
         val disposable = WordManager.addWord(newWord)
             .subscribeOn(Schedulers.newThread())
@@ -41,6 +43,7 @@ class AddWordViewModel : ViewModel() {
                 wordObservable.set("")
                 translateObservable.set("")
                 transcriptionObservable.set("")
+                callback()
             }
         disposables.add(disposable)
     }
