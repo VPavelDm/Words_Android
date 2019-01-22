@@ -17,6 +17,7 @@ class StudyWordAdapter(private val viewModel: StudyWordViewModel) : RecyclerView
     private var text: Int = 0
     private var translate: Int = 1
     private var example: Int = 2
+    private var isEnglishCard = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -46,18 +47,18 @@ class StudyWordAdapter(private val viewModel: StudyWordViewModel) : RecyclerView
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is StudyTextViewHolder -> holder.bind(word)
-            is StudyTranslateViewHolder -> holder.bind(word)
+            is StudyTextViewHolder -> holder.bind(word, isEnglishCard)
+            is StudyTranslateViewHolder -> holder.bind(word, isEnglishCard)
             is StudyExampleViewHolder -> holder.bind(word.examples[position - 2])
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            position == 0 && word.count % 2 != 0 -> translate
-            position == 0 -> text
-            position == 1 && viewModel.translateVisible.get() && word.count % 2 != 0 -> text
-            position == 1 && viewModel.translateVisible.get() -> translate
+            position == 0 && isEnglishCard -> text
+            position == 0 -> translate
+            position == 1 && viewModel.translateVisible.get() && isEnglishCard -> translate
+            position == 1 && viewModel.translateVisible.get() -> text
             else -> example
         }
     }
@@ -65,8 +66,7 @@ class StudyWordAdapter(private val viewModel: StudyWordViewModel) : RecyclerView
 
     fun swapWord(word: Word) {
         this.word = word
-        text = word.count % 2
-        translate = 1 - word.count % 2
+        isEnglishCard = word.count % 2 != 0
         notifyDataSetChanged()
     }
 
@@ -77,17 +77,21 @@ class StudyWordAdapter(private val viewModel: StudyWordViewModel) : RecyclerView
     class StudyTextViewHolder(val binding: RecyclerItemStudyWordQuestionBinding) : RecyclerView.ViewHolder(binding.root) {
 
         val wordObservable = ObservableField<Word>()
+        val englishCard = ObservableBoolean(false)
 
-        fun bind(word: Word) {
+        fun bind(word: Word, isEnglishCard: Boolean) {
             wordObservable.set(word)
+            englishCard.set(isEnglishCard)
         }
     }
 
     class StudyTranslateViewHolder(val binding: RecyclerItemStudyWordTranslateBinding) : RecyclerView.ViewHolder(binding.root) {
         val translateObservable = ObservableField<String>()
+        val englishCard = ObservableBoolean(false)
 
-        fun bind(word: Word) {
+        fun bind(word: Word, isEnglishCard: Boolean) {
             translateObservable.set(word.translate)
+            englishCard.set(isEnglishCard)
         }
     }
 

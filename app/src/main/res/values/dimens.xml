@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="login_side_margin">40dp</dimen>
     <dimen name="progress_bar_size">28dp</dimen>
+    <dimen name="question_size">24sp</dimen>
+    <dimen name="answer_size">18sp</dimen>
+    <dimen name="question_transcription_size">18sp</dimen>
+    <dimen name="answer_transcription_size">14sp</dimen>
 </resources>

@@ -12,6 +12,7 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/wordLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -27,7 +28,7 @@
             android:paddingBottom="18dp"
             android:text="@{handler.translateObservable}"
             android:textAlignment="center"
-            android:textSize="18sp"
+            android:textSize="@{handler.englishCard ? @dimen/answer_size : @dimen/question_size}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
