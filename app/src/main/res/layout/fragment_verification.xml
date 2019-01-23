@@ -3,6 +3,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <import type="androidx.navigation.Navigation" />
 
         <import type="com.itechart.vpaveldm.words.R" />
@@ -37,14 +39,15 @@
             app:layout_constraintVertical_bias="0.3" />
 
         <ImageView
+            android:id="@+id/mailImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_email"
-            app:layout_constraintVertical_bias="1.09"
             app:layout_constraintBottom_toBottomOf="@id/verifyTV"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/verifyTV"
+            app:layout_constraintVertical_bias="1.09"
             tools:ignore="ContentDescription" />
 
         <Button
@@ -72,6 +75,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/errorTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="0"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@{handler.error}"
+            android:textAlignment="center"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{(handler.error == null || handler.error.isEmpty()) ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mailImage"
+            tools:text="Hello"
+            tools:visibility="invisible" />
+
+        <ProgressBar
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintEnd_toEndOf="@+id/mailImage"
+            app:layout_constraintStart_toStartOf="@+id/mailImage"
+            app:layout_constraintTop_toBottomOf="@+id/errorTV" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

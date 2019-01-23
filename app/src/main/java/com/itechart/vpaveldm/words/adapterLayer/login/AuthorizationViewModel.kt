@@ -18,38 +18,32 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
     val progressBarVisible = ObservableBoolean(false)
     private val authModel = AuthorizationModel()
     private val disposables = CompositeDisposable()
-    private var nickname: String = ""
 
     fun signIn(login: String, password: String) {
         val disposable = authModel.signIn(login, password)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { progressBarVisible.set(true) }
-            .doOnEvent { progressBarVisible.set(false) }
-            .subscribe({
-                navController.popBackStack()
-            }, { error ->
-                this.error.set(error.localizedMessage)
-            })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
+                .subscribe({
+                    navController.popBackStack()
+                }, { error ->
+                    this.error.set(error.localizedMessage)
+                })
         disposables.add(disposable)
     }
 
-    fun signUp(nickname: String) {
-        this.nickname = nickname
-        navController.navigate(R.id.action_registrationFragment_to_registrationFragment2)
-    }
-
     fun signUp(login: String, password: String, confirmPassword: String) {
-        val disposable = authModel.signUp(login, password, confirmPassword, nickname)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { progressBarVisible.set(true) }
-            .doOnEvent { progressBarVisible.set(false) }
-            .subscribe({
-                navController.navigate(R.id.action_registrationFragment2_to_verificationFragment)
-            }, {
-                error.set(it.localizedMessage)
-            })
+        val disposable = authModel.signUp(login, password, confirmPassword)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
+                .subscribe({
+                    navController.navigate(R.id.action_registrationFragment_to_verificationFragment)
+                }, {
+                    error.set(it.localizedMessage)
+                })
         disposables.add(disposable)
     }
 
@@ -64,12 +58,16 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
     }
 
     fun checkVerification() {
-        val user = FirebaseAuth.getInstance().currentUser
-        user?.reload()?.addOnSuccessListener {
-            if (user.isEmailVerified) {
-                navController.popBackStack(R.id.loginFragment, true)
-            }
-        }
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val disposable = authModel.checkVerification(user)
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
+                .subscribe({
+                    navController.popBackStack(R.id.wordFragment, false)
+                }, { error ->
+                    this.error.set(error.localizedMessage)
+                })
+        disposables.add(disposable)
     }
 
     override fun onCleared() {
