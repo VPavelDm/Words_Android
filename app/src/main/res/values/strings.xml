@@ -30,6 +30,7 @@
     <string name="error_title_fill_examples">Заполните все поля в примерах</string>
     <string name="error_title_fill_fields">Заполните все обязательные поля в слове и примерах</string>
     <string name="title_empty_word">Нет новых слов</string>
+    <string name="title_profile">Профиль</string>
     <string name="title_verify_email_address">Мы только что отправили сообщение со ссылкой подтверждения на указанный почтовый адрес</string>
     <string name="title_send_email_verification_message_again">Отправить повторно</string>
     <string name="title_check_verification">Проверить</string>

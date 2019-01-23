@@ -24,7 +24,7 @@ class WordFragment : Fragment(), IWordAdapter {
     private lateinit var listener: IAuthorization
     private lateinit var binding: FragmentWordBinding
     private lateinit var viewModel: WordViewModel
-    private var adapter = WordAdapter(this)
+    private val adapter = WordAdapter(this)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -40,10 +40,7 @@ class WordFragment : Fragment(), IWordAdapter {
         binding.wordRecyclerView.apply {
             adapter = this@WordFragment.adapter
             setHasFixedSize(true)
-            val linearLayoutManager = LinearLayoutManager(context)
-            linearLayoutManager.reverseLayout = true
-            linearLayoutManager.stackFromEnd = true
-            layoutManager = linearLayoutManager
+            layoutManager = LinearLayoutManager(context)
         }
         val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
         touchHelper.attachToRecyclerView(binding.wordRecyclerView)
