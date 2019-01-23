@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.authorization.AuthorizationModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,11 +46,30 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
             .doOnSubscribe { progressBarVisible.set(true) }
             .doOnEvent { progressBarVisible.set(false) }
             .subscribe({
-                navController.popBackStack(R.id.loginFragment, true)
+                navController.navigate(R.id.action_registrationFragment2_to_verificationFragment)
             }, {
                 error.set(it.localizedMessage)
             })
         disposables.add(disposable)
+    }
+
+    fun sendVerificationMail() {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let {
+            authModel.verifyEmail(it)
+                    .subscribe({}, { error ->
+                        this.error.set(error.localizedMessage)
+                    })
+        }
+    }
+
+    fun checkVerification() {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.reload()?.addOnSuccessListener {
+            if (user.isEmailVerified) {
+                navController.popBackStack(R.id.loginFragment, true)
+            }
+        }
     }
 
     override fun onCleared() {

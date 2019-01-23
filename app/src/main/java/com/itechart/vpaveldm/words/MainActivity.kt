@@ -25,10 +25,16 @@ class MainActivity : AppCompatActivity(), IAuthorization {
         NavigationUI.setupWithNavController(navigation, navController)
         auth = FirebaseAuth.getInstance()
 
-        if (auth.currentUser == null) {
-            navController.navigate(R.id.action_wordFragment_to_loginFragment)
-        } else {
-            authorized()
+        when {
+            auth.currentUser == null -> {
+                navController.navigate(R.id.action_wordFragment_to_loginFragment)
+            }
+            auth.currentUser!!.isEmailVerified -> {
+                authorized()
+            }
+            else -> {
+                navController.navigate(R.id.verificationFragment)
+            }
         }
     }
 
