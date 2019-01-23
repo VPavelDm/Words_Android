@@ -53,6 +53,11 @@
             android:name="step"
             android:defaultValue="2"
             app:argType="integer" />
+        <action android:id="@+id/action_registrationFragment2_to_verificationFragment"
+                app:destination="@id/verificationFragment"/>
     </fragment>
+    <fragment android:id="@+id/verificationFragment"
+              android:name="com.itechart.vpaveldm.words.uiLayer.verification.VerificationFragment"
+              android:label="VerificationFragment"/>
 
 </navigation>

@@ -1,6 +1,7 @@
 package com.itechart.vpaveldm.words.dataLayer.authorization
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
@@ -44,5 +45,11 @@ class AuthorizationModel {
                     .addOnFailureListener { subscriber.tryOnError(it) }
             }
         }
+
+    fun verifyEmail(user: FirebaseUser): Completable = Completable.create { subscriber ->
+        user.sendEmailVerification()
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { subscriber.tryOnError(it) }
+    }
 
 }
