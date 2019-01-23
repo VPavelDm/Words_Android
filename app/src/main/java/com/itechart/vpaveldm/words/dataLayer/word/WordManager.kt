@@ -155,8 +155,9 @@ object WordManager {
 
     private fun convert(snapshot: DataSnapshot): Word? {
         val word = snapshot.getValue(Word::class.java) ?: return null
-        snapshot.key?.let {
-            word.key = it
+        snapshot.key?.let { wordKey ->
+            word.key = wordKey
+            word.examples.forEach { it.wordId = wordKey }
             return word
         } ?: return null
     }

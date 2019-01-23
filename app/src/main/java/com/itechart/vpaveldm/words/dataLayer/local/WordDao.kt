@@ -11,7 +11,7 @@ import java.util.*
 @Dao
 abstract class WordDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.ROLLBACK)
     abstract fun addWords(vararg words: Word)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
