@@ -63,13 +63,17 @@ class UserManager {
         val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return@create
         val auth = FirebaseAuth.getInstance()
         val myNickname = auth.currentUser?.displayName ?: return@create
-        val me = if (!user.isSubscriber) null else User(name = myNickname)
+        val userUpdates = HashMap<String, Any?>()
+        if (user.isSubscriber) {
+            userUpdates["/${user.key}/subscribers/$userID"] = User(name = myNickname)
+            userUpdates["/$userID/subscriptions/${user.key}"] = user
+        } else {
+            userUpdates["/${user.key}/subscribers/$userID"] = null
+            userUpdates["/$userID/subscriptions/${user.key}"] = null
+        }
         val userRef = FirebaseDatabase.getInstance().getReference("users")
         userRef
-                .child(user.key)
-                .child("subscribers")
-                .child(userID)
-                .setValue(me)
+                .updateChildren(userUpdates)
                 .addOnSuccessListener { subscriber.onComplete() }
                 .addOnFailureListener { subscriber.tryOnError(it) }
     }
