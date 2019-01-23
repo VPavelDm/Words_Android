@@ -66,7 +66,7 @@ class StudyWordAdapter(private val viewModel: StudyWordViewModel) : RecyclerView
 
     fun swapWord(word: Word) {
         this.word = word
-        isEnglishCard = word.count % 2 != 0
+        isEnglishCard = word.count % 2 == 0
         notifyDataSetChanged()
     }
 
