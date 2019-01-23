@@ -34,4 +34,5 @@
     <string name="title_verify_email_address">Мы только что отправили сообщение со ссылкой подтверждения на указанный почтовый адрес</string>
     <string name="title_send_email_verification_message_again">Отправить повторно</string>
     <string name="title_check_verification">Проверить</string>
+    <string name="title_exit">Выйти</string>
 </resources>

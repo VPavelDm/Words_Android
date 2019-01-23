@@ -7,9 +7,8 @@ import android.arch.paging.PagedList
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileAdapter
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileViewModel
 import com.itechart.vpaveldm.words.dataLayer.word.Word
@@ -22,6 +21,11 @@ class ProfileFragment : Fragment() {
     private lateinit var viewModel: ProfileViewModel
     private val adapter = ProfileAdapter()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
@@ -32,6 +36,24 @@ class ProfileFragment : Fragment() {
         }
         initPageList()
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.profile, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.exit -> {
+                viewModel.logOut()
+                activity!!.finish()
+                startActivity(activity!!.intent)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun initPageList() {

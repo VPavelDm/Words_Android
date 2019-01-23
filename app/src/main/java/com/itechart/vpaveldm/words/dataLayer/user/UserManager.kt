@@ -89,6 +89,10 @@ class UserManager {
                 .addOnFailureListener { error -> subscriber.tryOnError(error) }
     }
 
+    fun logOut() {
+        FirebaseAuth.getInstance().signOut()
+    }
+
     private fun convert(snapshot: DataSnapshot): User? {
         val user = snapshot.getValue(User::class.java) ?: return null
         user.key = snapshot.key ?: return null

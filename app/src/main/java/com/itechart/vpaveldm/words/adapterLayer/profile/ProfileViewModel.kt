@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.arch.paging.DataSource
 import android.databinding.ObservableBoolean
+import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -15,6 +16,7 @@ class ProfileViewModel : ViewModel() {
 
     private val wordsProvider = MutableLiveData<DataSource.Factory<Int, Word>>()
     private val disposables = CompositeDisposable()
+    private val userManager = UserManager()
 
     val words: LiveData<DataSource.Factory<Int, Word>> = wordsProvider
     val progressBarVisible = ObservableBoolean(false)
@@ -40,6 +42,10 @@ class ProfileViewModel : ViewModel() {
                     // TODO: Add error handling
                 })
         disposables.add(disposable)
+    }
+
+    fun logOut() {
+        userManager.logOut()
     }
 
 }
