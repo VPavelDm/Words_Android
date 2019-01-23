@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.word.WordItemTouchHelperAdapter
 import kotlin.math.abs
@@ -71,11 +70,6 @@ class WordItemTouchCallback(context: Context, private val listener: WordItemTouc
         val totalDistance = recyclerView.width * getSwipeThreshold(viewHolder)
         // How much you did to remove view
         val currentDistance = abs(dX)
-
-        Log.i("myAppTAG", "total = $totalDistance")
-        Log.i("myAppTAG", "current = $currentDistance")
-        Log.i("myAppTAG", "alpha = ${currentDistance / totalDistance}")
-
 
         var progress = ((currentDistance / totalDistance) * 255).toInt()
         // Alpha = 0..255
