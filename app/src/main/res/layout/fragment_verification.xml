@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="androidx.navigation.Navigation" />
+
+        <import type="com.itechart.vpaveldm.words.R" />
+
+        <variable
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.login.AuthorizationViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/verifyTV"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@color/colorPrimary"
+            android:paddingStart="70dp"
+            android:paddingTop="100dp"
+            android:paddingEnd="70dp"
+            android:paddingBottom="70dp"
+            android:text="@string/title_verify_email_address"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3" />
+
+        <ImageView
+            android:id="@+id/mailImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_email"
+            app:layout_constraintBottom_toBottomOf="@id/verifyTV"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/verifyTV"
+            app:layout_constraintVertical_bias="1.09"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{() -> handler.sendVerificationMail()}"
+            android:text="@string/title_send_email_verification_message_again"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{() -> handler.checkVerification()}"
+            android:text="@string/title_check_verification"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/errorTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="0"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@{handler.error}"
+            android:textAlignment="center"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{(handler.error == null || handler.error.isEmpty()) ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mailImage"
+            tools:text="Hello"
+            tools:visibility="invisible" />
+
+        <ProgressBar
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintEnd_toEndOf="@+id/mailImage"
+            app:layout_constraintStart_toStartOf="@+id/mailImage"
+            app:layout_constraintTop_toBottomOf="@+id/errorTV" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

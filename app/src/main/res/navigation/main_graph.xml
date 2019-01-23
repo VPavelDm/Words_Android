@@ -29,13 +29,9 @@
         android:id="@+id/registrationFragment"
         android:name="com.itechart.vpaveldm.words.uiLayer.registration.RegistrationFragment"
         android:label="RegistrationFragment">
-        <argument
-            android:name="step"
-            android:defaultValue="1"
-            app:argType="integer" />
         <action
-            android:id="@+id/action_registrationFragment_to_registrationFragment2"
-            app:destination="@id/registrationFragment2" />
+            android:id="@+id/action_registrationFragment_to_verificationFragment"
+            app:destination="@id/verificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/addWordFragment"
@@ -46,17 +42,11 @@
         android:name="com.itechart.vpaveldm.words.uiLayer.studyWord.StudyWordFragment"
         android:label="StudyWordFragment" />
     <fragment
-        android:id="@+id/registrationFragment2"
-        android:name="com.itechart.vpaveldm.words.uiLayer.registration.RegistrationFragment"
-        android:label="RegistrationFragment" >
-        <argument
-            android:name="step"
-            android:defaultValue="2"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/profileFragment"
         android:name="com.itechart.vpaveldm.words.uiLayer.profile.ProfileFragment"
         android:label="ProfileFragment" />
+    <fragment android:id="@+id/verificationFragment"
+              android:name="com.itechart.vpaveldm.words.uiLayer.verification.VerificationFragment"
+              android:label="VerificationFragment"/>
 
 </navigation>
