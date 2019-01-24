@@ -8,9 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.word.Word
+import com.itechart.vpaveldm.words.uiLayer.wordCard.CardItemTouchHelperAdapter
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
-class ProfileAdapter(private val listener: IProfileAdapter) : PagedListAdapter<Word, ProfileAdapter.WordViewHolder>(DIFF_UTIL) {
+class ProfileAdapter(private val listener: IProfileAdapter) : PagedListAdapter<Word, ProfileAdapter.WordViewHolder>(DIFF_UTIL), CardItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent, false)
@@ -20,6 +21,16 @@ class ProfileAdapter(private val listener: IProfileAdapter) : PagedListAdapter<W
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val word = getItem(position) ?: return
         holder.bind(word)
+    }
+
+    override fun onItemSwipedToLeft(position: Int) {
+        val word = getItem(position) ?: return
+        listener.wordCardSwipedToRemove(word)
+    }
+
+    override fun onItemSwipedToRight(position: Int) {
+        val word = getItem(position) ?: return
+        listener.wordCardSwipedToEdit(word)
     }
 
     inner class WordViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -54,4 +65,6 @@ private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
 
 interface IProfileAdapter {
     fun wordCardClicked(word: Word)
+    fun wordCardSwipedToRemove(word: Word)
+    fun wordCardSwipedToEdit(word: Word)
 }

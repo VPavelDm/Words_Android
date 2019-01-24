@@ -44,6 +44,13 @@ class ProfileViewModel : ViewModel() {
         disposables.add(disposable)
     }
 
+    fun removeWord(word: Word) {
+        WordManager.removeWordFromProfile(word)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+    }
+
     fun logOut() {
         userManager.logOut()
     }

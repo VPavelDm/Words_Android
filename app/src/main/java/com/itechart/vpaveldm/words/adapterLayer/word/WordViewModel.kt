@@ -38,7 +38,7 @@ class WordViewModel : ViewModel() {
     }
 
     fun removeWord(word: Word, toAdd: Boolean) {
-        WordManager.removeWord(word, toAdd)
+        WordManager.removeWordFromNotification(word, toAdd)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()

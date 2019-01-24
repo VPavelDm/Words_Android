@@ -7,6 +7,7 @@ import android.arch.paging.PagedList
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.profile.IProfileAdapter
@@ -36,6 +37,8 @@ class ProfileFragment : Fragment(), IProfileAdapter {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
         }
+        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
+        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
         initPageList()
         return binding.root
     }
@@ -63,16 +66,24 @@ class ProfileFragment : Fragment(), IProfileAdapter {
         fragment.show(activity!!.supportFragmentManager, null)
     }
 
+    override fun wordCardSwipedToRemove(word: Word) {
+        viewModel.removeWord(word)
+    }
+
+    override fun wordCardSwipedToEdit(word: Word) {
+
+    }
+
     private fun initPageList() {
         viewModel.words.observe(this, Observer { sourceFactory ->
             sourceFactory?.let {
                 val config = PagedList.Config.Builder()
-                        .setEnablePlaceholders(false)
-                        .setPageSize(10)
-                        .build()
+                    .setEnablePlaceholders(false)
+                    .setPageSize(10)
+                    .build()
                 val pagedListData = LivePagedListBuilder<Int, Word>(sourceFactory, config)
-                        .setFetchExecutor(Executors.newSingleThreadExecutor())
-                        .build()
+                    .setFetchExecutor(Executors.newSingleThreadExecutor())
+                    .build()
                 pagedListData.observe(this, Observer { pagedList ->
                     pagedList?.let {
                         viewModel.emptyWordsTextViewVisible.set(pagedList.size == 0)
