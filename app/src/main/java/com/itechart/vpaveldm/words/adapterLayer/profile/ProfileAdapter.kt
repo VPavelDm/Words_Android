@@ -10,7 +10,7 @@ import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
-class ProfileAdapter : PagedListAdapter<Word, ProfileAdapter.WordViewHolder>(DIFF_UTIL) {
+class ProfileAdapter(private val listener: IProfileAdapter) : PagedListAdapter<Word, ProfileAdapter.WordViewHolder>(DIFF_UTIL) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent, false)
@@ -22,7 +22,15 @@ class ProfileAdapter : PagedListAdapter<Word, ProfileAdapter.WordViewHolder>(DIF
         holder.bind(word)
     }
 
-    class WordViewHolder(itemView: View) : ViewHolder(itemView) {
+    inner class WordViewHolder(itemView: View) : ViewHolder(itemView) {
+
+        init {
+            itemView.setOnClickListener {
+                val word = this@ProfileAdapter.getItem(adapterPosition) ?: return@setOnClickListener
+                listener.wordCardClicked(word)
+            }
+        }
+
         fun bind(word: Word) {
             itemView.nicknameTV.text = word.owner
             itemView.wordTV.text = word.word
@@ -42,4 +50,8 @@ private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
         return oldWord == newWord
     }
 
+}
+
+interface IProfileAdapter {
+    fun wordCardClicked(word: Word)
 }

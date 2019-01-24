@@ -9,17 +9,19 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.adapterLayer.profile.IProfileAdapter
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileAdapter
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileViewModel
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentProfileBinding
+import com.itechart.vpaveldm.words.uiLayer.wordCard.CardDialogFragment
 import java.util.concurrent.Executors
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), IProfileAdapter {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
-    private val adapter = ProfileAdapter()
+    private val adapter = ProfileAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,11 @@ class ProfileFragment : Fragment() {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    override fun wordCardClicked(word: Word) {
+        val fragment = CardDialogFragment.create(word)
+        fragment.show(activity!!.supportFragmentManager, null)
     }
 
     private fun initPageList() {
