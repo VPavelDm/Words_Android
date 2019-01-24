@@ -23,4 +23,8 @@ class WordItemTouchCallback(context: Context, listener: CardItemTouchHelperAdapt
     override fun getLeftDirectionIcon(): Drawable? = removeIcon
 
     override fun getRightDirectionIcon(): Drawable? = editIcon
+
+    override fun canRightSwipe(): Boolean = false
+
+    override fun canLeftSwipe(): Boolean = true
 }

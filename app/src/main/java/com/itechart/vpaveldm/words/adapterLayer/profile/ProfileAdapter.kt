@@ -29,8 +29,7 @@ class ProfileAdapter(private val listener: IProfileAdapter) : PagedListAdapter<W
     }
 
     override fun onItemSwipedToRight(position: Int) {
-        val word = getItem(position) ?: return
-        listener.wordCardSwipedToEdit(word)
+        throw UnsupportedOperationException("Данная операция не поддерживается")
     }
 
     inner class WordViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -66,5 +65,4 @@ private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
 interface IProfileAdapter {
     fun wordCardClicked(word: Word)
     fun wordCardSwipedToRemove(word: Word)
-    fun wordCardSwipedToEdit(word: Word)
 }

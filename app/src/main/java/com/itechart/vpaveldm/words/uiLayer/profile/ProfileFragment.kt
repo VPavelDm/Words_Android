@@ -70,10 +70,6 @@ class ProfileFragment : Fragment(), IProfileAdapter {
         viewModel.removeWord(word)
     }
 
-    override fun wordCardSwipedToEdit(word: Word) {
-
-    }
-
     private fun initPageList() {
         viewModel.words.observe(this, Observer { sourceFactory ->
             sourceFactory?.let {

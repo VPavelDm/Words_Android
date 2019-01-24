@@ -15,6 +15,8 @@ abstract class CardItemTouchCallback(private val listener: CardItemTouchHelperAd
     abstract fun getRightDirectionDrawable(): ColorDrawable?
     abstract fun getLeftDirectionIcon(): Drawable?
     abstract fun getRightDirectionIcon(): Drawable?
+    abstract fun canRightSwipe(): Boolean
+    abstract fun canLeftSwipe(): Boolean
 
     override fun isLongPressDragEnabled(): Boolean {
         return false
@@ -25,7 +27,13 @@ abstract class CardItemTouchCallback(private val listener: CardItemTouchHelperAd
     }
 
     override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder): Int {
-        val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
+        val swipeFlags =
+            when {
+                canRightSwipe() && canLeftSwipe() -> ItemTouchHelper.START or ItemTouchHelper.END
+                canLeftSwipe() -> ItemTouchHelper.START
+                canRightSwipe() -> ItemTouchHelper.END
+                else -> 0
+            }
         return ItemTouchHelper.Callback.makeMovementFlags(0, swipeFlags)
     }
 
