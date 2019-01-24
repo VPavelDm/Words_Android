@@ -23,7 +23,7 @@ object WordManager {
     init {
         // Local database synchronization
         // Called when program is started...
-        userManager.userNameAndID()?.let { (_, userID) ->
+        userManager.userNameAndID().second?.let { userID ->
             usersRef
                 .child(userID)
                 .child("notification")
@@ -46,12 +46,13 @@ object WordManager {
     }
 
     fun getSubscriptionsWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        val (userName, _) = userManager.userNameAndID() ?: "" to ""
+        val userName = userManager.userNameAndID().second ?: ""
         subscriber.onSuccess(Application.wordDao.getSubscriptionsWords(userName))
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
-        userManager.userNameAndID()?.let { (userName, userID) ->
+        val (userName, userID) = userManager.userNameAndID()
+        if (userName != null && userID != null) {
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(
                 key = key,
@@ -66,7 +67,7 @@ object WordManager {
             Application.wordDao.addWordWithExamples(addWord)
             sendWordToRemoteDB(addWord, word.owner.isEmpty())
             subscriber.onComplete()
-        } ?: subscriber.onError(UserError())
+        } else subscriber.onError(UserError())
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
@@ -95,68 +96,72 @@ object WordManager {
     }
 
     fun getSubscriptionsWordCount(): Single<Int> = Single.create { subscriber ->
-        userManager.userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID().first?.let { userName ->
             val count = Application.wordDao.getSubscriptionsWordCount(userName)
             subscriber.onSuccess(count)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWordCount(): Single<Int> = Single.create { subscriber ->
-        userManager.userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID().first?.let { userName ->
             val count = Application.wordDao.getWordCount(userName)
             subscriber.onSuccess(count)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
-        userManager.userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID().first?.let { userName ->
             val words = Application.wordDao.getWordsWithExamplesToStudy(userName)
             subscriber.onSuccess(words)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        userManager.userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID().first?.let { userName ->
             val dataSource = Application.wordDao.getWordsWithExamples(userName)
             subscriber.onSuccess(dataSource)
         } ?: subscriber.onError(UserError())
     }
 
     private fun removeWordFromRemoteDB(word: Word, section: String) {
-        val (_, userID) = userManager.userNameAndID() ?: return
-        usersRef
-            .child(userID)
-            .child(section)
-            .child(word.key)
-            .setValue(null)
+        userManager.userNameAndID().second?.let { userID ->
+            usersRef
+                .child(userID)
+                .child(section)
+                .child(word.key)
+                .setValue(null)
+        }
     }
 
     private fun updateWordAtRemoteDB(word: Word) {
-        val (_, userID) = userManager.userNameAndID() ?: return
-        usersRef
-            .child(userID)
-            .child("words")
-            .child(word.key)
-            .setValue(word)
+        userManager.userNameAndID().second?.let { userID ->
+            usersRef
+                .child(userID)
+                .child("words")
+                .child(word.key)
+                .setValue(word)
+        }
     }
 
     @SuppressLint("CheckResult")
     private fun sendWordToRemoteDB(word: Word, doNotifySubscribers: Boolean) {
-        val (_, userID) = userManager.userNameAndID() ?: return
-        val userUpdates = HashMap<String, Any>()
-        // If it is my word I have to notify all subscribers and other way not
-        if (doNotifySubscribers) {
-            userManager.getSubscribers().subscribe { subscribers ->
-                subscribers.forEach {
-                    val key = usersRef.child("${it.key}/notification").push().key
-                    userUpdates["/${it.key}/notification/$key"] = word
+        val userID = userManager.userNameAndID().second
+        if (userID != null) {
+            val userUpdates = HashMap<String, Any>()
+            // If it is my word I have to notify all subscribers and other way not
+            if (doNotifySubscribers) {
+                userManager.getSubscribers().subscribe { subscribers ->
+                    subscribers.forEach {
+                        val key = usersRef.child("${it.key}/notification").push().key
+                        userUpdates["/${it.key}/notification/$key"] = word
+                    }
+                    userUpdates["/$userID/words/${word.key}"] = word
+                    usersRef.updateChildren(userUpdates)
                 }
+            } else {
                 userUpdates["/$userID/words/${word.key}"] = word
                 usersRef.updateChildren(userUpdates)
             }
-        } else {
-            userUpdates["/$userID/words/${word.key}"] = word
-            usersRef.updateChildren(userUpdates)
         }
     }
 

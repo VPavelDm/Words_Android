@@ -13,7 +13,7 @@ import io.reactivex.Single
 class UserManager {
 
     fun getUsers(name: String): Single<List<User>> = Single.create { subscriber ->
-        userNameAndID()?.let { (userName, _) ->
+        userNameAndID().first?.let { userName ->
             val userRef = FirebaseDatabase.getInstance().getReference("users")
             userRef
                 .orderByChild("name")
@@ -43,7 +43,7 @@ class UserManager {
 
     fun getSubscribers(): Single<List<User>> = Single.create { subscriber ->
         val userRef = FirebaseDatabase.getInstance().getReference("users")
-        userNameAndID()?.let { (_, userID) ->
+        userNameAndID().second?.let { userID ->
             userRef
                 .child(userID)
                 .child("subscribers")
@@ -63,7 +63,8 @@ class UserManager {
 
     // Add me to user's subscribers
     fun subscribe(user: User): Completable = Completable.create { subscriber ->
-        userNameAndID()?.let { (userName, userID) ->
+        val (userName, userID) = userNameAndID()
+        if (userName != null && userID != null) {
             if (user.name == userName) {
                 subscriber.tryOnError(UserSubscribeError(userName))
                 return@create
@@ -81,11 +82,11 @@ class UserManager {
                 .updateChildren(userUpdates)
                 .addOnSuccessListener { subscriber.onComplete() }
                 .addOnFailureListener { subscriber.tryOnError(it) }
-        } ?: subscriber.tryOnError(UserError())
+        } else subscriber.tryOnError(UserError())
     }
 
     fun saveUser(nickname: String): Completable = Completable.create { subscriber ->
-        userNameAndID()?.let { (_, userID) ->
+        userNameAndID().second?.let { userID ->
             val user = User(name = nickname)
             val userDBRef = FirebaseDatabase.getInstance().getReference("users")
             userDBRef
@@ -100,10 +101,10 @@ class UserManager {
         FirebaseAuth.getInstance().signOut()
     }
 
-    fun userNameAndID(): Pair<String, String>? {
-        val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: return null
+    fun userNameAndID(): Pair<String?, String?> {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return null
+        val userName = currentUser?.displayName
+        val userID = currentUser?.uid
         return userName to userID
     }
 
