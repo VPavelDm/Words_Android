@@ -15,9 +15,11 @@ class SearchViewModel : ViewModel() {
     private val userManager = UserManager()
     private val disposables = CompositeDisposable()
     private val usersProvider = MutableLiveData<List<User>>()
+    private val errorProvider = MutableLiveData<String>()
 
     val progressBarVisible = ObservableBoolean(false)
     val users: LiveData<List<User>> = usersProvider
+    val error: LiveData<String> = errorProvider
 
     fun findUsers(name: String) {
         val disposable = userManager.getUsers(name)
@@ -39,8 +41,8 @@ class SearchViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { progressBarVisible.set(true) }
                 .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({ callback() }, { _ ->
-                    // TODO: Add error handling
+                .subscribe({ callback() }, { error ->
+                    errorProvider.value = error.localizedMessage
                 })
         disposables.add(disposable)
     }

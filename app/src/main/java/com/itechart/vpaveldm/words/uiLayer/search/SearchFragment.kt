@@ -30,6 +30,9 @@ class SearchFragment : Fragment(), ISubscribeUser {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
         binding.handler = viewModel
+        viewModel.error.observe(this, Observer { message ->
+            message?.let { context?.toast(message) }
+        })
         viewModel.users.observe(this, Observer { users ->
             users?.let {
                 binding.searchRV.apply {

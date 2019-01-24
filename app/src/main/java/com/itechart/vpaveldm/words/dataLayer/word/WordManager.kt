@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.dataLayer.word
 
 import android.annotation.SuppressLint
 import android.arch.paging.DataSource
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.Application
@@ -24,7 +23,7 @@ object WordManager {
     init {
         // Local database synchronization
         // Called when program is started...
-        userNameAndID()?.let { (_, userID) ->
+        userManager.userNameAndID()?.let { (_, userID) ->
             usersRef
                     .child(userID)
                     .child("notification")
@@ -47,12 +46,12 @@ object WordManager {
     }
 
     fun getSubscriptionsWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        val (userName, _) = userNameAndID() ?: "" to ""
+        val (userName, _) = userManager.userNameAndID() ?: "" to ""
         subscriber.onSuccess(Application.wordDao.getSubscriptionsWords(userName))
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
-        userNameAndID()?.let { (userName, userID) ->
+        userManager.userNameAndID()?.let { (userName, userID) ->
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(
                     key = key,
@@ -88,35 +87,35 @@ object WordManager {
     }
 
     fun getSubscriptionsWordCount(): Single<Int> = Single.create { subscriber ->
-        userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID()?.let { (userName, _) ->
             val count = Application.wordDao.getSubscriptionsWordCount(userName)
             subscriber.onSuccess(count)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWordCount(): Single<Int> = Single.create { subscriber ->
-        userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID()?.let { (userName, _) ->
             val count = Application.wordDao.getWordCount(userName)
             subscriber.onSuccess(count)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
-        userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID()?.let { (userName, _) ->
             val words = Application.wordDao.getWordsWithExamplesToStudy(userName)
             subscriber.onSuccess(words)
         } ?: subscriber.onError(UserError())
     }
 
     fun getWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        userNameAndID()?.let { (userName, _) ->
+        userManager.userNameAndID()?.let { (userName, _) ->
             val dataSource = Application.wordDao.getWordsWithExamples(userName)
             subscriber.onSuccess(dataSource)
         } ?: subscriber.onError(UserError())
     }
 
     private fun removeWordFromRemoteDB(word: Word) {
-        val (_, userID) = userNameAndID() ?: return
+        val (_, userID) = userManager.userNameAndID() ?: return
         usersRef
                 .child(userID)
                 .child("notification")
@@ -125,7 +124,7 @@ object WordManager {
     }
 
     private fun updateWordAtRemoteDB(word: Word) {
-        val (_, userID) = userNameAndID() ?: return
+        val (_, userID) = userManager.userNameAndID() ?: return
         usersRef
                 .child(userID)
                 .child("words")
@@ -135,7 +134,7 @@ object WordManager {
 
     @SuppressLint("CheckResult")
     private fun sendWordToRemoteDB(word: Word, doNotifySubscribers: Boolean) {
-        val (_, userID) = userNameAndID() ?: return
+        val (_, userID) = userManager.userNameAndID() ?: return
         val userUpdates = HashMap<String, Any>()
         // If it is my word I have to notify all subscribers and other way not
         if (doNotifySubscribers) {
@@ -160,13 +159,6 @@ object WordManager {
             word.examples.forEach { it.wordId = wordKey }
             return word
         } ?: return null
-    }
-
-    private fun userNameAndID(): Pair<String, String>? {
-        val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: return null
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userID = currentUser?.uid ?: return null
-        return userName to userID
     }
 
 }
