@@ -70,6 +70,10 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
         disposables.add(disposable)
     }
 
+    fun changeEmailAddress() {
+
+    }
+
     override fun onCleared() {
         disposables.clear()
         super.onCleared()
