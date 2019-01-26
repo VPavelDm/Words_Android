@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="handler"
+            type="com.itechart.vpaveldm.words.adapterLayer.login.AuthorizationViewModel" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/changeLoginET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="128dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_enter_login"
+            android:inputType="textEmailAddress"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill" />
+
+        <EditText
+            android:id="@+id/passwordET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/login_side_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/login_side_margin"
+            android:hint="@string/title_confirm_password"
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changeLoginET"
+            tools:ignore="Autofill" />
+
+        <TextView
+            android:id="@+id/errorTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="0"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@{handler.error}"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{(handler.error == null || handler.error.isEmpty()) ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/passwordET"
+            app:layout_constraintStart_toStartOf="@id/passwordET"
+            app:layout_constraintTop_toBottomOf="@id/passwordET"
+            tools:text="hello"
+            tools:visibility="gone" />
+
+        <Button
+            android:id="@+id/changeMailButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> handler.changeEmailAddress(changeLoginET.getText().toString(), passwordET.getText().toString())}"
+            android:text="@string/title_change"
+            android:visibility="@{handler.progressBarVisible ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/changeLoginET"
+            app:layout_constraintStart_toStartOf="@id/changeLoginET"
+            app:layout_constraintTop_toBottomOf="@id/errorTV" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="@{handler.progressBarVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/changeMailButton"
+            app:layout_constraintEnd_toEndOf="@id/changeMailButton"
+            app:layout_constraintStart_toStartOf="@id/changeMailButton"
+            app:layout_constraintTop_toTopOf="@id/changeMailButton" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

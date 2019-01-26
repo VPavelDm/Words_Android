@@ -50,6 +50,14 @@
         android:label="ProfileFragment" />
     <fragment android:id="@+id/verificationFragment"
               android:name="com.itechart.vpaveldm.words.uiLayer.verification.VerificationFragment"
-              android:label="VerificationFragment"/>
+              android:label="VerificationFragment">
+        <action
+            android:id="@+id/action_verificationFragment_to_changeEmailFragment"
+            app:destination="@id/changeEmailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/changeEmailFragment"
+        android:name="com.itechart.vpaveldm.words.uiLayer.changeEmail.ChangeEmailFragment"
+        android:label="ChangeEmailFragment" />
 
 </navigation>

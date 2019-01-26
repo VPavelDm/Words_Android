@@ -70,8 +70,14 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
         disposables.add(disposable)
     }
 
-    fun changeEmailAddress() {
-
+    fun changeEmailAddress(newLogin: String, password: String) {
+        val disposable = authModel.changeEmail(newLogin, password)
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnEvent { progressBarVisible.set(false) }
+                .subscribe({ navController.popBackStack() }, { error ->
+                    this.error.set(error.localizedMessage)
+                })
+        disposables.add(disposable)
     }
 
     override fun onCleared() {

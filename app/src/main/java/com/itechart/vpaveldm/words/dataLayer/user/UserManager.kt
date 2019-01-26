@@ -97,10 +97,6 @@ class UserManager {
         } ?: subscriber.tryOnError(UserError())
     }
 
-    fun logOut() {
-        FirebaseAuth.getInstance().signOut()
-    }
-
     fun userNameAndID(): Pair<String?, String?> {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userName = currentUser?.displayName

@@ -40,7 +40,10 @@ class MainActivity : AppCompatActivity(), IAuthorization {
 
     override fun onBackPressed() {
         if ((navController.currentDestination == navController.graph.findNode(R.id.loginFragment) && auth.currentUser == null)
-            || (auth.currentUser != null && !auth.currentUser!!.isEmailVerified)) {
+            || (auth.currentUser != null && !auth.currentUser!!.isEmailVerified && navController.currentDestination == navController.graph.findNode(
+                R.id.verificationFragment
+            ))
+        ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 finishAndRemoveTask()
             } else {

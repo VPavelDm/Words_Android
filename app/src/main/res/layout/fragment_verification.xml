@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
-            android:onClick="@{() -> handler.changeEmailAddress()}"
+            android:onClick="@{(view) -> Navigation.findNavController(view).navigate(R.id.action_verificationFragment_to_changeEmailFragment)}"
             android:text="@string/title_change_mail"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
