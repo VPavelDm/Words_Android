@@ -46,7 +46,7 @@ object WordManager {
     }
 
     fun getSubscriptionsWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        val userName = userManager.userNameAndID().second ?: ""
+        val userName = userManager.userNameAndID().first ?: ""
         subscriber.onSuccess(Application.wordDao.getSubscriptionsWords(userName))
     }
 
