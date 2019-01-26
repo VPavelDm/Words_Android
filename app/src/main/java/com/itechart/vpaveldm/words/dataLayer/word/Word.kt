@@ -5,6 +5,7 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
+import java.io.Serializable
 import java.util.*
 
 @Entity(tableName = "words")
@@ -21,4 +22,4 @@ data class Word(
     var owner: String = "",
     @Ignore
     var examples: List<Example> = listOf()
-)
+) : Serializable

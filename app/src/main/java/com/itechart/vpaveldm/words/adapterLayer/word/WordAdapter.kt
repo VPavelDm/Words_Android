@@ -8,11 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.dataLayer.word.Word
+import com.itechart.vpaveldm.words.uiLayer.wordCard.CardItemTouchHelperAdapter
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
 
 class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL),
-    WordItemTouchHelperAdapter {
+    CardItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_word, parent, false)
@@ -24,12 +25,12 @@ class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, W
         holder.bind(word)
     }
 
-    override fun onItemSwipedToAdd(position: Int) {
+    override fun onItemSwipedToRight(position: Int) {
         val word = getItem(position) ?: return
         listener.onItemSwiped(word, toAdd = true)
     }
 
-    override fun onItemSwipedToRemove(position: Int) {
+    override fun onItemSwipedToLeft(position: Int) {
         val word = getItem(position) ?: return
         listener.onItemSwiped(word, toAdd = false)
     }
@@ -43,11 +44,6 @@ class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, W
         }
     }
 
-}
-
-interface WordItemTouchHelperAdapter {
-    fun onItemSwipedToRemove(position: Int)
-    fun onItemSwipedToAdd(position: Int)
 }
 
 interface IWordAdapter {

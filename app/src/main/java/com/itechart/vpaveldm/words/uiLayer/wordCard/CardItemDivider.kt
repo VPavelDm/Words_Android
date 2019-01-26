@@ -1,4 +1,4 @@
-package com.itechart.vpaveldm.words.uiLayer.studyWord
+package com.itechart.vpaveldm.words.uiLayer.wordCard
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import com.itechart.vpaveldm.words.R
 
-class StudyItemDivider internal constructor(context: Context) : RecyclerView.ItemDecoration() {
+class CardItemDivider internal constructor(context: Context) : RecyclerView.ItemDecoration() {
     private val divider: Drawable
 
     init {

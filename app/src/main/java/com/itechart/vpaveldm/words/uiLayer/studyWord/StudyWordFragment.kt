@@ -17,6 +17,7 @@ import com.itechart.vpaveldm.words.adapterLayer.studyWord.StudyWordViewModel
 import com.itechart.vpaveldm.words.core.interfaces.AnimationListener
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentStudyWordBinding
+import com.itechart.vpaveldm.words.uiLayer.wordCard.CardItemDivider
 import java.lang.ref.WeakReference
 
 class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationListener by AnimationListener() {
@@ -34,7 +35,7 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = this@StudyWordFragment.adapter
-            addItemDecoration(StudyItemDivider(context))
+            addItemDecoration(CardItemDivider(context))
             setOnTouchListener { _, event ->
                 if (!viewModel.translateVisible.get() && event.action == MotionEvent.ACTION_UP) {
                     viewModel.showAnswer()

@@ -10,7 +10,7 @@
 
         <variable
             name="handler"
-            type="com.itechart.vpaveldm.words.adapterLayer.studyWord.StudyWordAdapter.StudyTextViewHolder" />
+            type="com.itechart.vpaveldm.words.adapterLayer.wordCard.CardAdapter.WordViewHolder" />
     </data>
 
     <android.support.constraint.ConstraintLayout
