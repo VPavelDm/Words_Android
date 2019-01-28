@@ -1,7 +1,7 @@
 package com.itechart.vpaveldm.words
 
-import android.app.Application
 import android.arch.persistence.room.Room
+import android.support.multidex.MultiDexApplication
 import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.dataLayer.local.WordDao
 import com.itechart.vpaveldm.words.dataLayer.local.WordDatabase
@@ -9,7 +9,7 @@ import com.itechart.vpaveldm.words.dataLayer.translate.YandexService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class Application : Application() {
+class Application : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
