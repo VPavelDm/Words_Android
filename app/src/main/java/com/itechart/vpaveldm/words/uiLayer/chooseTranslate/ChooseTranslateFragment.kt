@@ -9,36 +9,34 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import com.itechart.vpaveldm.words.R
-import com.itechart.vpaveldm.words.adapterLayer.chooseTranslate.ITranslateClick
 import com.itechart.vpaveldm.words.adapterLayer.chooseTranslate.TranslateAdapter
 import com.itechart.vpaveldm.words.adapterLayer.chooseTranslate.TranslateViewModel
 import kotlinx.android.synthetic.main.fragment_choose_translate.view.*
 
-class ChooseTranslateFragment : DialogFragment(), ITranslateClick {
+class ChooseTranslateFragment : DialogFragment() {
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val translates = arguments?.getStringArrayList(TRANSLATES_KEY)
-                ?: return super.onCreateDialog(savedInstanceState)
+            ?: return super.onCreateDialog(savedInstanceState)
         context?.let { context ->
             val builder = AlertDialog.Builder(context)
             val view = LayoutInflater.from(context).inflate(R.layout.fragment_choose_translate, null)
+            val viewModel = ViewModelProviders.of(activity!!).get(TranslateViewModel::class.java)
             view.translatesRV.apply {
-                adapter = TranslateAdapter(translates, this@ChooseTranslateFragment)
+                adapter = TranslateAdapter(translates)
                 setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(context)
             }
             return builder
-                    .setTitle(context.getString(R.string.title_choose_translate))
-                    .setView(view)
-                    .setNegativeButton(context.getText(R.string.title_cancel), null)
-                    .create()
+                .setTitle(context.getString(R.string.title_choose_translate))
+                .setView(view)
+                .setNegativeButton(context.getText(R.string.title_cancel), null)
+                .setPositiveButton(getString(R.string.title_add)) { _, _ ->
+                    val chosenTranslates = (view.translatesRV.adapter as? TranslateAdapter)?.getChosenTranslates() ?: listOf()
+                    viewModel.translateProvider.value = chosenTranslates.joinToString()
+                }
+                .create()
         } ?: return super.onCreateDialog(savedInstanceState)
-    }
-
-    override fun translateClicked(translate: String) {
-        val viewModel = ViewModelProviders.of(activity!!).get(TranslateViewModel::class.java)
-        viewModel.translateProvider.value = translate
-        dismiss()
     }
 
     companion object {

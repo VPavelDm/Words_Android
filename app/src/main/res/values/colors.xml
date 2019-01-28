@@ -5,4 +5,5 @@
     <color name="colorAccent">#1ba6d8</color>
     <color name="knowWordColor">#FF92DC5B</color>
     <color name="doNotKnowWordColor">#d80229</color>
+    <color name="selectedItemColor">#801BA6D8</color>
 </resources>
