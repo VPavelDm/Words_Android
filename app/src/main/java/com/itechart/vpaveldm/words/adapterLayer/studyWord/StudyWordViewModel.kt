@@ -11,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.collections.ArrayList
 
 class StudyWordViewModel : ViewModel() {
 
@@ -18,14 +19,13 @@ class StudyWordViewModel : ViewModel() {
     private var words: ArrayList<Word> = arrayListOf()
 
     val progressBarVisible = ObservableBoolean(false)
-    val emptyWordsTextViewVisible = ObservableBoolean(false)
-    val updateWordProgressBarVisible = ObservableBoolean(false)
+    val emptyWordsTextViewVisible = ObservableBoolean(true)
     val translateVisible = ObservableBoolean(false)
 
     var delegate: WeakReference<IStudyWordDelegate>? = null
 
     init {
-        getWords()
+        getWords(doOnSuccess = { updateUI() })
     }
 
     fun knowWord() {
@@ -34,9 +34,14 @@ class StudyWordViewModel : ViewModel() {
                 date = word.date.plusDays(word.count + 1),
                 count = word.count + 1
         )
-        updateWord(newWord) {
-            updateCard(false)
-        }
+        updateWordInDatabase(newWord, doOnSuccess = {
+            if (words.isNotEmpty()) {
+                progressBarVisible.set(false)
+                delegate?.get()?.startNextCardAnimation { updateUI() }
+            } else {
+                getWords(doOnSuccess = { delegate?.get()?.startNextCardAnimation { updateUI() } })
+            }
+        })
     }
 
     fun doNotKnowWord() {
@@ -45,67 +50,54 @@ class StudyWordViewModel : ViewModel() {
                 date = Date(),
                 count = 0
         )
-        updateWord(newWord) {
-            updateCard(false)
-        }
+        updateWordInDatabase(newWord, doOnSuccess = {
+            progressBarVisible.set(false)
+            delegate?.get()?.startNextCardAnimation { updateUI() }
+        })
     }
 
     fun showAnswer() {
-        // If first click on the card
+        // You can show translate just once
         if (!translateVisible.get()) {
             translateVisible.set(true)
-            delegate?.get()?.showTranslateClicked()
+            delegate?.get()?.showTranslate()
         }
     }
 
-    private fun initWords(words: List<Word>) {
+    private fun updateUI() {
         if (words.isNotEmpty()) {
-            this.words = ArrayList(words)
-            updateCard(true)
+            emptyWordsTextViewVisible.set(false)
+            delegate?.get()?.showWord(words.first())
         } else {
             emptyWordsTextViewVisible.set(true)
         }
     }
 
-    private fun updateWord(word: Word, callback: () -> Unit) {
+    private fun updateWordInDatabase(word: Word, doOnSuccess: () -> Unit) {
         val disposable = WordManager.updateWord(word)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { updateWordProgressBarVisible.set(true) }
-                .doOnEvent { updateWordProgressBarVisible.set(false) }
+                .doOnSubscribe { progressBarVisible.set(true) }
+                .doOnError { progressBarVisible.set(false) }
                 .subscribe({
-                    callback()
-                }, { _ ->
+                    // Note that progress bar is still visible.. You have to hide it by yourself
+                    doOnSuccess()
+                }, {
                     //TODO: Handle error
                 })
         disposables.add(disposable)
     }
 
-    private fun updateCard(isFirst: Boolean) {
-        if (words.size > 0) {
-            if (!isFirst) delegate?.get()?.cardClicked {
-                delegate?.get()?.showWord(words.first())
-                translateVisible.set(false)
-            } else {
-                delegate?.get()?.showWord(words.first())
-            }
-        } else {
-            getWords()
-        }
-    }
-
-    private fun getWords() {
+    private fun getWords(doOnSuccess: () -> Unit) {
         val disposable = WordManager.getWordsToStudy()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    progressBarVisible.set(true)
-                    translateVisible.set(false)
-                }
+                .doOnSubscribe { progressBarVisible.set(true) }
                 .doOnEvent { _, _ -> progressBarVisible.set(false) }
                 .subscribe({ words ->
-                    initWords(words)
-                }, { _ ->
+                    this.words = ArrayList(words)
+                    doOnSuccess()
+                }, {
                     // TODO: Add error handling
                 })
         disposables.add(disposable)
@@ -114,7 +106,7 @@ class StudyWordViewModel : ViewModel() {
 }
 
 interface IStudyWordDelegate {
-    fun cardClicked(callback: () -> Unit)
-    fun showTranslateClicked()
+    fun startNextCardAnimation(callback: () -> Unit)
+    fun showTranslate()
     fun showWord(word: Word)
 }
