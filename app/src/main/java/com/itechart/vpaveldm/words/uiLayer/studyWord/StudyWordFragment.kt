@@ -46,7 +46,7 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
         return binding.root
     }
 
-    override fun cardClicked(callback: () -> Unit) {
+    override fun startNextCardAnimation(callback: () -> Unit) {
         val animation = AnimationUtils.loadAnimation(context, R.anim.anim_fade_in_out)
         animation.setAnimationListener(object : AnimationListener() {
             override fun onAnimationRepeat(animation: Animation?) {
@@ -61,7 +61,7 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
         adapter.swapWord(word)
     }
 
-    override fun showTranslateClicked() {
+    override fun showTranslate() {
         adapter.showAnswer()
     }
 

@@ -93,6 +93,7 @@ abstract class CardAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val translateVisible = ObservableBoolean(false)
 
         fun bind(example: Example) {
+            translateVisible.set(false)
             exampleObservable.set(example)
         }
 

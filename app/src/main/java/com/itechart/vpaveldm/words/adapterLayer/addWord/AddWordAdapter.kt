@@ -83,6 +83,7 @@ class AddWordAdapter(private val context: Context, private val viewModel: AddWor
     fun clickAddWord() {
         if (isAllFieldsFilled()) {
             viewModel.addWord(examples.toList()) {
+                createdExampleCount = 0
                 examples.clear()
                 notifyDataSetChanged()
             }

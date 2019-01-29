@@ -35,7 +35,7 @@ abstract class WordDao {
     @Query("SELECT COUNT(`key`) FROM words WHERE owner NOT LIKE :userName")
     abstract fun getSubscriptionsWordCount(userName: String): Int
 
-    @Query("SELECT * FROM words WHERE date < :date AND owner LIKE :userName")
+    @Query("SELECT * FROM words WHERE date < :date AND owner LIKE :userName ORDER BY RANDOM() LIMIT 10")
     abstract fun getWordsToStudy(userName: String, date: Date): List<Word>
 
     @Query("SELECT * FROM words WHERE owner LIKE :userName")
