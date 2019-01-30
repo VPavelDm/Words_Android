@@ -2,7 +2,6 @@ package com.itechart.vpaveldm.words.adapterLayer.studyWord
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
-import com.itechart.vpaveldm.words.core.extension.moveToEndAt
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
@@ -45,11 +44,12 @@ class StudyWordViewModel : ViewModel() {
     }
 
     fun doNotKnowWord() {
-        val word = words.moveToEndAt(index = 0)
+        val word = words.removeAt(0)
         val newWord = word.copy(
                 date = Date(),
                 count = 0
         )
+        words.add(newWord)
         updateWordInDatabase(newWord, doOnSuccess = {
             progressBarVisible.set(false)
             delegate?.get()?.startNextCardAnimation { updateUI() }
