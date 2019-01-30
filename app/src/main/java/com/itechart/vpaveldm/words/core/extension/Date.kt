@@ -15,9 +15,8 @@ fun Date.resetTime(): Date {
     return calendar.time
 }
 
-fun Date.plusDays(count: Int): Date {
+fun plusDays(count: Int): Date {
     val calendar = Calendar.getInstance()
-    calendar.time = this
     calendar.add(Calendar.DATE, count)
     return calendar.time
 }

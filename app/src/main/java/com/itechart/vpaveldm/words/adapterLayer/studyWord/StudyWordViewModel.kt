@@ -30,7 +30,7 @@ class StudyWordViewModel : ViewModel() {
     fun knowWord() {
         val word = words.removeAt(0)
         val newWord = word.copy(
-                date = word.date.plusDays(word.count + 1),
+                date = plusDays(word.count + 1),
                 count = word.count + 1
         )
         updateWordInDatabase(newWord, doOnSuccess = {
@@ -65,6 +65,7 @@ class StudyWordViewModel : ViewModel() {
     }
 
     private fun updateUI() {
+        translateVisible.set(false)
         if (words.isNotEmpty()) {
             emptyWordsTextViewVisible.set(false)
             delegate?.get()?.showWord(words.first())

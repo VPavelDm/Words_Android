@@ -57,7 +57,7 @@ abstract class WordDao {
 
     @Transaction
     open fun getWordsWithExamplesToStudy(userName: String): List<Word> {
-        val currentDate = Date().plusDays(1).resetTime()
+        val currentDate = plusDays(1).resetTime()
         return getWordsToStudy(userName, currentDate).map { word ->
             word.examples = getExamples(word.key)
             return@map word
