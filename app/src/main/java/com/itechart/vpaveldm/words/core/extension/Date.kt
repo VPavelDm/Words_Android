@@ -20,3 +20,6 @@ fun plusDays(count: Int): Date {
     calendar.add(Calendar.DATE, count)
     return calendar.time
 }
+
+val Date.timeIntervalSince1970: Long
+    get() = this.time / 1000

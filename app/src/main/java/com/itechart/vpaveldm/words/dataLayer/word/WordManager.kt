@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.UserError
+import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -67,7 +68,7 @@ object WordManager {
                 key = key,
                 owner = userName,
                 count = 0,
-                date = Date().time,
+                date = Date().timeIntervalSince1970,
                 word = word.word.toLowerCase(),
                 transcription = word.transcription.toLowerCase(),
                 translate = word.translate.toLowerCase()

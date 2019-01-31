@@ -3,6 +3,7 @@ package com.itechart.vpaveldm.words.adapterLayer.studyWord
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import com.itechart.vpaveldm.words.core.extension.plusDays
+import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,7 +31,7 @@ class StudyWordViewModel : ViewModel() {
     fun knowWord() {
         val word = words.removeAt(0)
         val newWord = word.copy(
-                date = plusDays(word.count + 1).time,
+                date = plusDays(word.count + 1).timeIntervalSince1970,
                 count = word.count + 1
         )
         updateWordInDatabase(newWord, doOnSuccess = {
@@ -46,7 +47,7 @@ class StudyWordViewModel : ViewModel() {
     fun doNotKnowWord() {
         val word = words.removeAt(0)
         val newWord = word.copy(
-                date = Date().time,
+                date = Date().timeIntervalSince1970,
                 count = 0
         )
         words.add(newWord)
