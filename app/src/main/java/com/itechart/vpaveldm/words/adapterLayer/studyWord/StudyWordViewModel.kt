@@ -30,7 +30,7 @@ class StudyWordViewModel : ViewModel() {
     fun knowWord() {
         val word = words.removeAt(0)
         val newWord = word.copy(
-                date = plusDays(word.count + 1),
+                date = plusDays(word.count + 1).time,
                 count = word.count + 1
         )
         updateWordInDatabase(newWord, doOnSuccess = {
@@ -46,7 +46,7 @@ class StudyWordViewModel : ViewModel() {
     fun doNotKnowWord() {
         val word = words.removeAt(0)
         val newWord = word.copy(
-                date = Date(),
+                date = Date().time,
                 count = 0
         )
         words.add(newWord)

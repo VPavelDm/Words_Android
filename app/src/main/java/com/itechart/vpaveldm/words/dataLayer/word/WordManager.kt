@@ -67,7 +67,7 @@ object WordManager {
                 key = key,
                 owner = userName,
                 count = 0,
-                date = Date(),
+                date = Date().time,
                 word = word.word.toLowerCase(),
                 transcription = word.transcription.toLowerCase(),
                 translate = word.translate.toLowerCase()
