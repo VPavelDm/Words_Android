@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,6 +10,10 @@
         <variable
             name="handler"
             type="com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordAdapter" />
+
+        <variable
+            name="viewModel"
+            type="com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -30,6 +35,7 @@
         <Button
             android:id="@+id/addWordButton"
             style="@style/Widget.AppCompat.Button.Colored"
+            android:visibility="@{viewModel.addWordProgressBarVisible ? View.INVISIBLE : View.VISIBLE}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:onClick="@{() -> handler.clickAddWord()}"
@@ -37,7 +43,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addWordRV" />
+            app:layout_constraintTop_toBottomOf="@id/addWordRV"
+            tools:visibility="invisible" />
+
+        <ProgressBar
+            android:visibility="@{viewModel.addWordProgressBarVisible ? View.VISIBLE : View.INVISIBLE}"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            app:layout_constraintBottom_toBottomOf="@id/addWordButton"
+            app:layout_constraintEnd_toEndOf="@id/addWordButton"
+            app:layout_constraintStart_toStartOf="@id/addWordButton"
+            app:layout_constraintTop_toTopOf="@id/addWordButton" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

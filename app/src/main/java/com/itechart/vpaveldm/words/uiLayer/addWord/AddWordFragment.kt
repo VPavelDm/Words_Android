@@ -38,6 +38,7 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
         })
         viewModel.delegate = WeakReference(this)
         binding.handler = adapter
+        binding.viewModel = viewModel
         binding.addWordRV.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
