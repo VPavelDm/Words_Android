@@ -80,7 +80,15 @@ class AuthorizationModel {
                     .addOnSuccessListener {
                         user
                             .updateEmail(newEmail)
-                            .addOnSuccessListener { subscriber.onComplete() }
+                            .addOnSuccessListener {
+                                // Update email in realtime database
+                                val userManager = UserManager()
+                                // TODO: There are an error. If account is created but database isn't filled. Fix it
+                                userManager.saveUser(newEmail)
+                                    .subscribe({ subscriber.onComplete() }, { error ->
+                                        subscriber.tryOnError(error)
+                                    })
+                            }
                             .addOnFailureListener { error -> subscriber.tryOnError(error) }
                     }
                     .addOnFailureListener { error -> subscriber.tryOnError(error) }
