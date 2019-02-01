@@ -17,10 +17,10 @@ abstract class WordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun addExamples(vararg examples: Example)
 
-    @Query("SELECT * FROM words WHERE owner LIKE :user ORDER BY date DESC")
+    @Query("SELECT * FROM words WHERE account LIKE :user AND owner LIKE :user ORDER BY date DESC")
     abstract fun getWordsDS(user: String): DataSource.Factory<Int, Word>
 
-    @Query("SELECT * FROM words WHERE owner NOT LIKE :user ORDER BY date DESC")
+    @Query("SELECT * FROM words WHERE account LIKE :user AND owner NOT LIKE :user ORDER BY date DESC")
     abstract fun getSubscriptionsWordsDS(user: String): DataSource.Factory<Int, Word>
 
     @Query("SELECT * FROM wordExamples WHERE wordId LIKE :key")
@@ -29,16 +29,16 @@ abstract class WordDao {
     @Update
     abstract fun updateWord(word: Word)
 
-    @Query("SELECT COUNT(`key`) FROM words WHERE owner LIKE :userName")
+    @Query("SELECT COUNT(`key`) FROM words WHERE account LIKE :userName AND owner LIKE :userName")
     abstract fun getWordCount(userName: String): Int
 
-    @Query("SELECT COUNT(`key`) FROM words WHERE owner NOT LIKE :userName")
+    @Query("SELECT COUNT(`key`) FROM words WHERE account LIKE :userName AND owner NOT LIKE :userName")
     abstract fun getSubscriptionsWordCount(userName: String): Int
 
-    @Query("SELECT * FROM words WHERE date < :date AND owner LIKE :userName ORDER BY RANDOM() LIMIT 10")
+    @Query("SELECT * FROM words WHERE date < :date AND account LIKE :userName AND owner LIKE :userName ORDER BY RANDOM() LIMIT 10")
     abstract fun getWordsToStudy(userName: String, date: Date): List<Word>
 
-    @Query("SELECT * FROM words WHERE owner LIKE :userName")
+    @Query("SELECT * FROM words WHERE account LIKE :userName AND owner LIKE :userName")
     abstract fun getWords(userName: String): List<Word>
 
     @Delete

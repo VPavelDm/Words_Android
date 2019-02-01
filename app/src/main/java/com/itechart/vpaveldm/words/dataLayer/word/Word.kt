@@ -20,5 +20,7 @@ data class Word(
     var count: Int = 0,
     var owner: String = "",
     @Ignore
-    var examples: List<Example> = listOf()
+    var examples: List<Example> = listOf(),
+    @get:Exclude
+    var account: String = ""
 ) : Serializable

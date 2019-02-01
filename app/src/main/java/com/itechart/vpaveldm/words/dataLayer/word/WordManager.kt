@@ -71,7 +71,8 @@ object WordManager {
                 date = Date().timeIntervalSince1970,
                 word = word.word.toLowerCase(),
                 transcription = word.transcription.toLowerCase(),
-                translate = word.translate.toLowerCase()
+                translate = word.translate.toLowerCase(),
+                account = userName
             )
             addWord.examples.forEach { it.wordId = key }
             Application.wordDao.addWordWithExamples(addWord)
@@ -199,9 +200,11 @@ object WordManager {
 
     private fun convert(snapshot: DataSnapshot): Word? {
         val word = snapshot.getValue(Word::class.java) ?: return null
+        val userName = userManager.userNameAndID().first ?: return null
         snapshot.key?.let { wordKey ->
             word.key = wordKey
             word.examples.forEach { it.wordId = wordKey }
+            word.account = userName
             return word
         } ?: return null
     }
