@@ -17,10 +17,10 @@ abstract class WordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun addExamples(vararg examples: Example)
 
-    @Query("SELECT * FROM words WHERE account LIKE :user AND owner LIKE :user ORDER BY date DESC")
+    @Query("SELECT * FROM words WHERE account LIKE :user AND owner LIKE :user ORDER BY createDate DESC")
     abstract fun getWordsDS(user: String): DataSource.Factory<Int, Word>
 
-    @Query("SELECT * FROM words WHERE account LIKE :user AND owner NOT LIKE :user ORDER BY date DESC")
+    @Query("SELECT * FROM words WHERE account LIKE :user AND owner NOT LIKE :user ORDER BY createDate DESC")
     abstract fun getSubscriptionsWordsDS(user: String): DataSource.Factory<Int, Word>
 
     @Query("SELECT * FROM wordExamples WHERE wordId LIKE :key")
