@@ -4,9 +4,9 @@ import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
+import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
 import com.itechart.vpaveldm.words.dataLayer.word.Example
 import com.itechart.vpaveldm.words.dataLayer.word.Word
-import java.util.*
 
 @Dao
 abstract class WordDao {
@@ -36,7 +36,7 @@ abstract class WordDao {
     abstract fun getSubscriptionsWordCount(userName: String): Int
 
     @Query("SELECT * FROM words WHERE date < :date AND account LIKE :userName AND owner LIKE :userName ORDER BY RANDOM() LIMIT 10")
-    abstract fun getWordsToStudy(userName: String, date: Date): List<Word>
+    abstract fun getWordsToStudy(userName: String, date: Long): List<Word>
 
     @Query("SELECT * FROM words WHERE account LIKE :userName AND owner LIKE :userName")
     abstract fun getWords(userName: String): List<Word>
@@ -58,7 +58,7 @@ abstract class WordDao {
     @Transaction
     open fun getWordsWithExamplesToStudy(userName: String): List<Word> {
         val currentDate = plusDays(1).resetTime()
-        return getWordsToStudy(userName, currentDate).map { word ->
+        return getWordsToStudy(userName, currentDate.timeIntervalSince1970).map { word ->
             word.examples = getExamples(word.key)
             return@map word
         }
