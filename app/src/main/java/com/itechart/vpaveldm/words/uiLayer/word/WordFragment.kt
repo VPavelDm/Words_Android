@@ -1,9 +1,6 @@
 package com.itechart.vpaveldm.words.uiLayer.word
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.arch.paging.LivePagedListBuilder
-import android.arch.paging.PagedList
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,7 +14,6 @@ import com.itechart.vpaveldm.words.adapterLayer.word.WordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.word.WordViewModel
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentWordBinding
-import java.util.concurrent.Executors
 
 class WordFragment : Fragment(), IWordAdapter {
 
@@ -34,8 +30,12 @@ class WordFragment : Fragment(), IWordAdapter {
         listener = activity as IAuthorization
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWordBinding.inflate(inflater, container, false)
         binding.wordRecyclerView.apply {
             adapter = this@WordFragment.adapter
@@ -45,34 +45,22 @@ class WordFragment : Fragment(), IWordAdapter {
         val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
         touchHelper.attachToRecyclerView(binding.wordRecyclerView)
         binding.handler = viewModel
-        initPageList()
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
         listener.authorized()
+        fetchWords()
     }
 
     override fun onItemSwiped(word: Word, toAdd: Boolean) {
         viewModel.removeWord(word, toAdd)
     }
 
-    private fun initPageList() {
-        viewModel.getSubscriptionsWords { sourceFactory ->
-            val config = PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPageSize(10)
-                .build()
-            val pagedListData = LivePagedListBuilder<Int, Word>(sourceFactory, config)
-                .setFetchExecutor(Executors.newSingleThreadExecutor())
-                .build()
-            pagedListData.observe(this, Observer { pagedList ->
-                pagedList?.let {
-                    viewModel.emptyWordsTextViewVisible.set(it.size == 0)
-                    adapter.submitList(it)
-                }
-            })
+    private fun fetchWords() {
+        viewModel.getSubscriptionsWords { words ->
+            adapter.swapData(words)
         }
     }
 

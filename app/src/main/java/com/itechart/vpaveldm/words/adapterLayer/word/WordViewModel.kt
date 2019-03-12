@@ -1,10 +1,12 @@
 package com.itechart.vpaveldm.words.adapterLayer.word
 
 import android.arch.lifecycle.ViewModel
-import android.arch.paging.DataSource
 import android.databinding.ObservableBoolean
+import android.util.Log
+import com.itechart.vpaveldm.words.core.extension.disposedBy
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.dataLayer.word.WordManager
+import com.itechart.vpaveldm.words.domainLayer.WordInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -12,29 +14,24 @@ import io.reactivex.schedulers.Schedulers
 class WordViewModel : ViewModel() {
 
     private val disposables = CompositeDisposable()
+    private val interactor = WordInteractor()
 
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
 
-    init {
-        WordManager.getSubscriptionsWordCount()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .filter { it == 0 }
-            .doOnSuccess {
-                // This will be called if there aren't any words
-                progressBarVisible.set(false)
-                emptyWordsTextViewVisible.set(true)
-            }
-            .subscribe()
-    }
-
-    fun getSubscriptionsWords(callback: (DataSource.Factory<Int, Word>) -> Unit) {
-        val disposable = WordManager.getSubscriptionsWords()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { ds -> callback(ds) }
-        disposables.add(disposable)
+    fun getSubscriptionsWords(completion: (words: List<Word>) -> Unit) {
+        interactor.getSubscriptionsWords()
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { _, _ -> progressBarVisible.set(false) }
+            .subscribe({ words ->
+                if (words.isEmpty())
+                    emptyWordsTextViewVisible.set(true)
+                else
+                    completion(words)
+            }, { error ->
+                Log.i("myAppTAGError", "error = ${error.localizedMessage}")
+            })
+            .disposedBy(disposables)
     }
 
     fun removeWord(word: Word, toAdd: Boolean) {

@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.arch.paging.DataSource
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.UserError
 import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
@@ -12,7 +14,6 @@ import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.collections.HashMap
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
 import com.itechart.vpaveldm.words.core.extension.ValueEventListener as DelegateValueEventListener
@@ -21,42 +22,22 @@ object WordManager {
 
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
     private val userManager = UserManager()
-    private val executors = Executors.newSingleThreadExecutor()
 
-    init {
-        // Local database synchronization
-        // Called when program is started...
-        Log.i("appLifeCycle", "WordManager: Subscribed to notification updating")
-        userManager.userNameAndID().second?.let { userID ->
-            usersRef
-                .child(userID)
-                .child("notification")
-                .addChildEventListener(object : DelegateChildEventListener {
-                    override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
-                        val word = convert(snapshot) ?: return
-                        Log.i("appLifeCycle", "WordManager: get word in notification section: word = ${word.word}")
-                        executors.submit { Application.wordDao.addWordWithExamples(word) }
-                    }
-                })
-            Log.i("appLifeCycle", "WordManager: Subscribed to words updating")
-            usersRef
-                .child(userID)
-                .child("words")
-                .addListenerForSingleValueEvent(
-                    object : DelegateValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val words = snapshot.children.mapNotNull { convert(it) }.toTypedArray()
-                            Log.i("appLifeCycle", "WordManager: get words in words section: count = ${words.size}")
-                            executors.submit { Application.wordDao.addWordWithExamples(*words) }
-                        }
-                    })
-        }
-    }
+    fun getSubscriptionsWords(): Single<List<Word>> = Single.create { subscriber ->
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child("notification")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(snapshot: DatabaseError) {
+                    // TODO: Add error handling
+                }
 
-    fun getSubscriptionsWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: get subscriptions' words")
-        val userName = userManager.userNameAndID().first ?: ""
-        subscriber.onSuccess(Application.wordDao.getSubscriptionsWords(userName))
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val words = snapshot.children.mapNotNull { convert(it) }
+                    subscriber.onSuccess(words)
+                }
+            })
     }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
@@ -107,14 +88,6 @@ object WordManager {
         Application.wordDao.removeWordWithExamples(word)
         removeWordFromRemoteDB(word, "words")
         subscriber.onComplete()
-    }
-
-    fun getSubscriptionsWordCount(): Single<Int> = Single.create { subscriber ->
-        userManager.userNameAndID().first?.let { userName ->
-            val count = Application.wordDao.getSubscriptionsWordCount(userName)
-            Log.i("appLifeCycle", "WordManager: get subscriptions' words count = $count")
-            subscriber.onSuccess(count)
-        } ?: subscriber.onError(UserError())
     }
 
     fun getWordCount(): Single<Int> = Single.create { subscriber ->

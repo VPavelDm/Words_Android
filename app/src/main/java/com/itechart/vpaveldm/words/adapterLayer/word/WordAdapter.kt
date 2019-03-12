@@ -1,7 +1,5 @@
 package com.itechart.vpaveldm.words.adapterLayer.word
 
-import android.arch.paging.PagedListAdapter
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +10,8 @@ import com.itechart.vpaveldm.words.uiLayer.wordCard.CardItemTouchHelperAdapter
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
 
-class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, WordAdapter.WordHolder>(DIFF_UTIL),
+class WordAdapter(private val listener: IWordAdapter, private var words: List<Word> = listOf()) :
+    RecyclerView.Adapter<WordAdapter.WordHolder>(),
     CardItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHolder {
@@ -21,18 +20,22 @@ class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, W
     }
 
     override fun onBindViewHolder(holder: WordHolder, position: Int) {
-        val word = getItem(position) ?: return
-        holder.bind(word)
+        holder.bind(words[position])
     }
 
+    override fun getItemCount(): Int = words.size
+
     override fun onItemSwipedToRight(position: Int) {
-        val word = getItem(position) ?: return
-        listener.onItemSwiped(word, toAdd = true)
+        listener.onItemSwiped(words[position], toAdd = true)
     }
 
     override fun onItemSwipedToLeft(position: Int) {
-        val word = getItem(position) ?: return
-        listener.onItemSwiped(word, toAdd = false)
+        listener.onItemSwiped(words[position], toAdd = false)
+    }
+
+    fun swapData(words: List<Word>) {
+        this.words = words
+        notifyDataSetChanged()
     }
 
     class WordHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -48,15 +51,4 @@ class WordAdapter(private val listener: IWordAdapter) : PagedListAdapter<Word, W
 
 interface IWordAdapter {
     fun onItemSwiped(word: Word, toAdd: Boolean)
-}
-
-private val DIFF_UTIL = object : DiffUtil.ItemCallback<Word>() {
-    override fun areItemsTheSame(oldWord: Word, newWord: Word): Boolean {
-        return oldWord.key == newWord.key
-    }
-
-    override fun areContentsTheSame(oldWord: Word, newWord: Word): Boolean {
-        return oldWord == newWord
-    }
-
 }
