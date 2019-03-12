@@ -5,79 +5,70 @@ import android.arch.lifecycle.ViewModelProvider
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
-import com.itechart.vpaveldm.words.dataLayer.authorization.AuthorizationModel
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.itechart.vpaveldm.words.core.extension.disposedBy
+import com.itechart.vpaveldm.words.domainLayer.AuthorizationInteractor
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
 class AuthorizationViewModel(private val navController: NavController) : ViewModel() {
 
     val error = ObservableField<String>()
     val progressBarVisible = ObservableBoolean(false)
-    private val authModel = AuthorizationModel()
     private val disposables = CompositeDisposable()
+    private val authorizationInteractor = AuthorizationInteractor()
 
     fun signIn(login: String, password: String) {
-        val disposable = authModel.signIn(login, password)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({
-                    navController.popBackStack()
-                }, { error ->
-                    this.error.set(error.localizedMessage)
-                })
-        disposables.add(disposable)
+        authorizationInteractor.signIn(login, password)
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({
+                navController.popBackStack()
+            }, { error ->
+                this.error.set(error.localizedMessage)
+            })
+            .disposedBy(disposables)
     }
 
     fun signUp(login: String, password: String, confirmPassword: String) {
-        val disposable = authModel.signUp(login, password, confirmPassword)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({
-                    navController.navigate(R.id.action_registrationFragment_to_verificationFragment)
-                }, {
-                    error.set(it.localizedMessage)
-                })
-        disposables.add(disposable)
+        authorizationInteractor.signUp(login, password, confirmPassword)
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({
+                navController.navigate(R.id.action_registrationFragment_to_verificationFragment)
+            }, {
+                error.set(it.localizedMessage)
+            })
+            .disposedBy(disposables)
     }
 
     fun sendVerificationMail() {
-        val user = FirebaseAuth.getInstance().currentUser
-        user?.let {
-            authModel.verifyEmail(it)
-                    .subscribe({}, { error ->
-                        this.error.set(error.localizedMessage)
-                    })
-        }
+        authorizationInteractor.verifyEmail()
+            .subscribe({}, { error ->
+                this.error.set(error.localizedMessage)
+            })
+            .disposedBy(disposables)
     }
 
     fun checkVerification() {
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val disposable = authModel.checkVerification(user)
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({
-                    navController.popBackStack(R.id.wordFragment, false)
-                }, { error ->
-                    this.error.set(error.localizedMessage)
-                })
-        disposables.add(disposable)
+        authorizationInteractor.checkVerification()
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({
+                navController.popBackStack(R.id.wordFragment, false)
+            }, { error ->
+                this.error.set(error.localizedMessage)
+            })
+            .disposedBy(disposables)
     }
 
     fun changeEmailAddress(newLogin: String, password: String) {
-        val disposable = authModel.changeEmail(newLogin, password)
-                .doOnSubscribe { progressBarVisible.set(true) }
-                .doOnEvent { progressBarVisible.set(false) }
-                .subscribe({ navController.popBackStack() }, { error ->
-                    this.error.set(error.localizedMessage)
-                })
-        disposables.add(disposable)
+        authorizationInteractor.changeEmail(newLogin, password)
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({ navController.popBackStack() }, { error ->
+                this.error.set(error.localizedMessage)
+            })
+            .disposedBy(disposables)
     }
 
     override fun onCleared() {
