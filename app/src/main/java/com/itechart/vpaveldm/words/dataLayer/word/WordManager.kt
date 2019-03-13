@@ -84,7 +84,7 @@ object WordManager {
         val userID = userManager.userNameAndID().second ?: return@create
         usersRef
             .child(userID)
-            .child(WordSection.WORDS.name)
+            .child(WordSection.WORDS.description())
             .orderByChild("date")
             .endAt(plusDays(1).resetTime().timeIntervalSince1970.toDouble())
             .addListenerForSingleValueEvent(singleListener(subscriber))
@@ -94,7 +94,7 @@ object WordManager {
         val userID = userManager.userNameAndID().second ?: return@create
         usersRef
             .child(userID)
-            .child(section.name)
+            .child(section.description())
             .addListenerForSingleValueEvent(singleListener(subscriber))
     }
 

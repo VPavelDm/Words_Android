@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers
 class WordInteractor {
 
     fun getSubscriptionsWords(): Single<List<Word>> =
-        WordManager.getWords(WordSection.SUBSCRIBERS)
+        WordManager.getWords(WordSection.NOTIFICATION)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
