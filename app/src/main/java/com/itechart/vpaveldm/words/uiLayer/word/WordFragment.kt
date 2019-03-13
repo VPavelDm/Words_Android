@@ -1,5 +1,6 @@
 package com.itechart.vpaveldm.words.uiLayer.word
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -33,6 +34,7 @@ class WordFragment : Fragment(), IWordAdapter {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
+        fetchWords()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,7 +53,6 @@ class WordFragment : Fragment(), IWordAdapter {
     override fun onResume() {
         super.onResume()
         listener.authorized()
-        fetchWords()
     }
 
     override fun onItemSwiped(word: Word, toAdd: Boolean) {
@@ -59,9 +60,7 @@ class WordFragment : Fragment(), IWordAdapter {
     }
 
     private fun fetchWords() {
-        viewModel.getSubscriptionsWords { words ->
-            adapter.swapData(words)
-        }
+        viewModel.words.observe(this, Observer { adapter.swapData(words = it ?: return@Observer) })
     }
 
 }

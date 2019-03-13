@@ -1,7 +1,6 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
 import android.annotation.SuppressLint
-import android.arch.paging.DataSource
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -9,10 +8,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.UserError
+import com.itechart.vpaveldm.words.core.extension.plusDays
+import com.itechart.vpaveldm.words.core.extension.resetTime
 import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.SingleEmitter
 import java.util.*
 import kotlin.collections.HashMap
 import com.itechart.vpaveldm.words.core.extension.ChildEventListener as DelegateChildEventListener
@@ -22,23 +24,6 @@ object WordManager {
 
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
     private val userManager = UserManager()
-
-    fun getSubscriptionsWords(): Single<List<Word>> = Single.create { subscriber ->
-        val userID = userManager.userNameAndID().second ?: return@create
-        usersRef
-            .child(userID)
-            .child("notification")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(snapshot: DatabaseError) {
-                    // TODO: Add error handling
-                }
-
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val words = snapshot.children.mapNotNull { convert(it) }
-                    subscriber.onSuccess(words)
-                }
-            })
-    }
 
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         val (userName, userID) = userManager.userNameAndID()
@@ -63,81 +48,54 @@ object WordManager {
     }
 
     fun updateWord(word: Word): Completable = Completable.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: send 'update word' request to local db")
-        val updateWord = word.copy(
-            word = word.word.toLowerCase(),
-            transcription = word.transcription.toLowerCase(),
-            translate = word.translate.toLowerCase()
-        )
-        Application.wordDao.updateWord(updateWord)
-        updateWordAtRemoteDB(updateWord)
-        subscriber.onComplete()
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child("words")
+            .child(word.key)
+            .setValue(word)
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { subscriber.tryOnError(it) }
     }
 
     fun removeWordFromNotification(word: Word, toAdd: Boolean): Completable = Completable.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: send 'remove word from notification' request to local db")
-        Application.wordDao.removeWordWithExamples(word)
-        removeWordFromRemoteDB(word, "notification")
-        if (toAdd)
-            addWord(word).subscribe()
-        subscriber.onComplete()
-    }
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child("notification")
+            .child(word.key)
+            .setValue(null)
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { subscriber.tryOnError(it) }
+    }.andThen { if (toAdd) addWord(word) }
 
     fun removeWordFromProfile(word: Word): Completable = Completable.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: send 'remove word from profile' request to local db")
-        Application.wordDao.removeWordWithExamples(word)
-        removeWordFromRemoteDB(word, "words")
-        subscriber.onComplete()
-    }
-
-    fun getWordCount(): Single<Int> = Single.create { subscriber ->
-        userManager.userNameAndID().first?.let { userName ->
-            val count = Application.wordDao.getWordCount(userName)
-            Log.i("appLifeCycle", "WordManager: get my words count = $count")
-            subscriber.onSuccess(count)
-        } ?: subscriber.onError(UserError())
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child("words")
+            .child(word.key)
+            .setValue(null)
+            .addOnSuccessListener { subscriber.onComplete() }
+            .addOnFailureListener { subscriber.tryOnError(it) }
     }
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: get words to study")
-        userManager.userNameAndID().first?.let { userName ->
-            val words = Application.wordDao.getWordsWithExamplesToStudy(userName)
-            subscriber.onSuccess(words)
-        } ?: subscriber.onError(UserError())
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child(WordSection.WORDS.name)
+            .orderByChild("date")
+            .endAt(plusDays(1).resetTime().timeIntervalSince1970.toDouble())
+            .addListenerForSingleValueEvent(singleListener(subscriber))
     }
 
-    fun getWords(): Single<DataSource.Factory<Int, Word>> = Single.create { subscriber ->
-        Log.i("appLifeCycle", "WordManager: get all words")
-        userManager.userNameAndID().first?.let { userName ->
-            val dataSource = Application.wordDao.getWordsWithExamples(userName)
-            subscriber.onSuccess(dataSource)
-        } ?: subscriber.onError(UserError())
-    }
-
-    private fun removeWordFromRemoteDB(word: Word, section: String) {
-        Log.i("appLifeCycle", "WordManager: send 'remove word' request to remote db")
-        userManager.userNameAndID().second?.let { userID ->
-            usersRef
-                .child(userID)
-                .child(section)
-                .child(word.key)
-                .setValue(null)
-                .addOnSuccessListener { Log.i("appLifeCycle", "WordManager: remove word response is successful") }
-                .addOnFailureListener { Log.i("appLifeCycle", "WordManager: remove word response is fail") }
-        }
-    }
-
-    private fun updateWordAtRemoteDB(word: Word) {
-        Log.i("appLifeCycle", "WordManager: send 'update word' request to remote db")
-        userManager.userNameAndID().second?.let { userID ->
-            usersRef
-                .child(userID)
-                .child("words")
-                .child(word.key)
-                .setValue(word)
-                .addOnSuccessListener { Log.i("appLifeCycle", "WordManager: update word response is successful") }
-                .addOnFailureListener { Log.i("appLifeCycle", "WordManager: update word response is fail") }
-        }
+    fun getWords(section: WordSection): Single<List<Word>> = Single.create { subscriber ->
+        val userID = userManager.userNameAndID().second ?: return@create
+        usersRef
+            .child(userID)
+            .child(section.name)
+            .addListenerForSingleValueEvent(singleListener(subscriber))
     }
 
     @SuppressLint("CheckResult")
@@ -181,5 +139,17 @@ object WordManager {
             return word
         } ?: return null
     }
+
+    private fun singleListener(subscriber: SingleEmitter<List<Word>>): ValueEventListener =
+        object : ValueEventListener {
+            override fun onCancelled(snapshot: DatabaseError) {
+                subscriber.tryOnError(snapshot.toException())
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val words = snapshot.children.mapNotNull { convert(it) }
+                subscriber.onSuccess(words)
+            }
+        }
 
 }
