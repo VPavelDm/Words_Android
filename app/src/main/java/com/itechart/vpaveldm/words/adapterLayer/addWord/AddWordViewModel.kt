@@ -3,10 +3,11 @@ package com.itechart.vpaveldm.words.adapterLayer.addWord
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import com.itechart.vpaveldm.words.core.extension.disposedBy
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexTranslateManager
 import com.itechart.vpaveldm.words.dataLayer.word.Example
 import com.itechart.vpaveldm.words.dataLayer.word.Word
-import com.itechart.vpaveldm.words.dataLayer.word.WordManager
+import com.itechart.vpaveldm.words.domainLayer.WordInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -16,6 +17,7 @@ class AddWordViewModel : ViewModel() {
 
     private val yandexTranslateManager = YandexTranslateManager()
     private val disposables = CompositeDisposable()
+    private val interactor = WordInteractor()
 
     val translateObservable = ObservableField<String>("")
     val wordObservable = ObservableField<String>("")
@@ -34,9 +36,7 @@ class AddWordViewModel : ViewModel() {
             transcription = transcriptionObservable.get() ?: "",
             examples = examples
         )
-        val disposable = WordManager.addWord(newWord)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+        interactor.addWord(newWord)
             .doOnSubscribe { addWordProgressBarVisible.set(true) }
             .doOnEvent { addWordProgressBarVisible.set(false) }
             .subscribe {
@@ -45,7 +45,7 @@ class AddWordViewModel : ViewModel() {
                 transcriptionObservable.set("")
                 callback()
             }
-        disposables.add(disposable)
+            .disposedBy(disposables)
     }
 
     fun loadTranslate() {
