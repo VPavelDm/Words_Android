@@ -1,18 +1,17 @@
 package com.itechart.vpaveldm.words.dataLayer.word
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.itechart.vpaveldm.words.Application
 import com.itechart.vpaveldm.words.core.UserError
 import com.itechart.vpaveldm.words.core.extension.plusDays
 import com.itechart.vpaveldm.words.core.extension.resetTime
 import com.itechart.vpaveldm.words.core.extension.timeIntervalSince1970
 import com.itechart.vpaveldm.words.dataLayer.user.UserManager
 import io.reactivex.Completable
+import io.reactivex.CompletableEmitter
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import java.util.*
@@ -28,21 +27,14 @@ object WordManager {
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         val (userName, userID) = userManager.userNameAndID()
         if (userName != null && userID != null) {
-            Log.i("appLifeCycle", "WordManager: send 'add word' request to local db")
             val key = usersRef.child("$userID/words").push().key ?: return@create
             val addWord = word.copy(
                 key = key,
                 owner = userName,
                 count = 0,
-                date = Date().timeIntervalSince1970,
-                word = word.word.toLowerCase(),
-                transcription = word.transcription.toLowerCase(),
-                translate = word.translate.toLowerCase(),
-                account = userName
+                date = Date().timeIntervalSince1970
             )
-            addWord.examples.forEach { it.wordId = key }
-            Application.wordDao.addWordWithExamples(addWord)
-            sendWordToRemoteDB(addWord, word.owner.isEmpty())
+            sendWordToRemoteDB(subscriber, addWord, word.owner.isEmpty())
             subscriber.onComplete()
         } else subscriber.onError(UserError())
     }
@@ -99,13 +91,12 @@ object WordManager {
     }
 
     @SuppressLint("CheckResult")
-    private fun sendWordToRemoteDB(word: Word, doNotifySubscribers: Boolean) {
+    private fun sendWordToRemoteDB(subscriber: CompletableEmitter, word: Word, doNotifySubscribers: Boolean) {
         fun sendRequest(map: HashMap<String, Any>) {
             usersRef.updateChildren(map)
-                .addOnSuccessListener { Log.i("appLifeCycle", "WordManager: send word response is successful") }
-                .addOnFailureListener { Log.i("appLifeCycle", "WordManager: send word response is fail") }
+                .addOnSuccessListener { subscriber.onComplete() }
+                .addOnFailureListener { subscriber.tryOnError(it) }
         }
-        Log.i("appLifeCycle", "WordManager: send 'send word' request to remote db")
         val userID = userManager.userNameAndID().second
         val userUpdates = HashMap<String, Any>()
         if (userID != null) {
@@ -131,11 +122,8 @@ object WordManager {
 
     private fun convert(snapshot: DataSnapshot): Word? {
         val word = snapshot.getValue(Word::class.java) ?: return null
-        val userName = userManager.userNameAndID().first ?: return null
         snapshot.key?.let { wordKey ->
             word.key = wordKey
-            word.examples.forEach { it.wordId = wordKey }
-            word.account = userName
             return word
         } ?: return null
     }

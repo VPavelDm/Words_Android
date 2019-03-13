@@ -40,4 +40,9 @@ class WordInteractor {
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
+    fun addWord(word: Word): Completable =
+        WordManager.addWord(word)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
 }

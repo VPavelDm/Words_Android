@@ -1,10 +1,7 @@
 package com.itechart.vpaveldm.words
 
-import android.arch.persistence.room.Room
 import android.support.multidex.MultiDexApplication
 import com.google.firebase.database.FirebaseDatabase
-import com.itechart.vpaveldm.words.dataLayer.local.WordDao
-import com.itechart.vpaveldm.words.dataLayer.local.WordDatabase
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,7 +13,6 @@ class Application : MultiDexApplication() {
         initDictionaryService()
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         dictionaryApiKey = getString(R.string.yandex_dictionary_api_key)
-        wordDao = Room.databaseBuilder(applicationContext, WordDatabase::class.java, "database").build().wordDao()
     }
 
     private fun initDictionaryService() {
@@ -32,7 +28,6 @@ class Application : MultiDexApplication() {
             private set
         lateinit var dictionaryApiKey: String
             private set
-        lateinit var wordDao: WordDao
     }
 
 }
