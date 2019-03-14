@@ -10,7 +10,7 @@ import com.itechart.vpaveldm.words.uiLayer.wordCard.CardItemTouchHelperAdapter
 import kotlinx.android.synthetic.main.recycler_item_word.view.*
 
 
-class WordAdapter(private val listener: IWordAdapter, private var words: List<Word> = listOf()) :
+class WordAdapter(private val listener: IWordAdapter, private var words: ArrayList<Word> = arrayListOf()) :
     RecyclerView.Adapter<WordAdapter.WordHolder>(),
     CardItemTouchHelperAdapter {
 
@@ -26,15 +26,19 @@ class WordAdapter(private val listener: IWordAdapter, private var words: List<Wo
     override fun getItemCount(): Int = words.size
 
     override fun onItemSwipedToRight(position: Int) {
-        listener.onItemSwiped(words[position], toAdd = true)
+        val word = words.removeAt(position)
+        notifyItemRemoved(position)
+        listener.onItemSwiped(word, toAdd = true)
     }
 
     override fun onItemSwipedToLeft(position: Int) {
-        listener.onItemSwiped(words[position], toAdd = false)
+        val word = words.removeAt(position)
+        notifyItemRemoved(position)
+        listener.onItemSwiped(word, toAdd = false)
     }
 
     fun swapData(words: List<Word>) {
-        this.words = words
+        this.words = ArrayList(words)
         notifyDataSetChanged()
     }
 
