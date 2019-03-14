@@ -19,7 +19,7 @@ class WordViewModel : ViewModel() {
     val progressBarVisible = ObservableBoolean(false)
     val emptyWordsTextViewVisible = ObservableBoolean(false)
 
-    init {
+    fun sendRequestToGetSubscriptionsWords() {
         interactor.getSubscriptionsWords()
             .doOnSubscribe { progressBarVisible.set(true) }
             .doOnEvent { _, _ -> progressBarVisible.set(false) }

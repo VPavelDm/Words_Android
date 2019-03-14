@@ -50,6 +50,11 @@ class WordFragment : Fragment(), IWordAdapter {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.sendRequestToGetSubscriptionsWords()
+    }
+
     override fun onResume() {
         super.onResume()
         listener.authorized()
