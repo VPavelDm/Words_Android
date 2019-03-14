@@ -68,7 +68,7 @@ object WordManager {
             .setValue(null)
             .addOnSuccessListener { subscriber.onComplete() }
             .addOnFailureListener { subscriber.tryOnError(it) }
-    }.andThen { if (toAdd) addWord(word) }
+    }.andThen(Completable.defer { if (toAdd) addWord(word) else Completable.complete() })
 
     fun removeWordFromProfile(word: Word): Completable = Completable.create { subscriber ->
         val userID = userManager.userNameAndID().second ?: return@create
