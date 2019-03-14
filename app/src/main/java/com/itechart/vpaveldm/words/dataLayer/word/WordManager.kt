@@ -24,6 +24,15 @@ object WordManager {
     private val usersRef = FirebaseDatabase.getInstance().getReference("users")
     private val userManager = UserManager()
 
+    /**
+     * The method is used to keep the data synchronized
+     */
+    fun sync() {
+        val userID = userManager.userNameAndID().second ?: return
+        usersRef.child(userID).child(WordSection.WORDS.description()).keepSynced(true)
+        usersRef.child(userID).child(WordSection.NOTIFICATION.description()).keepSynced(true)
+    }
+
     fun addWord(word: Word): Completable = Completable.create { subscriber ->
         val (userName, userID) = userManager.userNameAndID()
         if (userName != null && userID != null) {
@@ -97,6 +106,7 @@ object WordManager {
                 .addOnSuccessListener { subscriber.onComplete() }
                 .addOnFailureListener { subscriber.tryOnError(it) }
         }
+
         val userID = userManager.userNameAndID().second
         val userUpdates = HashMap<String, Any>()
         if (userID != null) {
