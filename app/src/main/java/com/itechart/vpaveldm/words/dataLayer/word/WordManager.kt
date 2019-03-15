@@ -83,11 +83,12 @@ object WordManager {
 
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val userID = userManager.userNameAndID().second ?: return@create
+        val date = plusDays(1).resetTime().timeIntervalSince1970.toDouble()
         usersRef
             .child(userID)
             .child(WordSection.WORDS.description())
             .orderByChild("date")
-            .endAt(plusDays(1).resetTime().timeIntervalSince1970.toDouble())
+            .endAt(date)
             .addListenerForSingleValueEvent(singleListener(subscriber))
     }
 
@@ -130,7 +131,7 @@ object WordManager {
         }
     }
 
-    private fun convert(snapshot: DataSnapshot): Word? {
+    private fun migrationConvert(snapshot: DataSnapshot): Word? {
         val word = snapshot.getValue(Word::class.java) ?: return null
         snapshot.key?.let { wordKey ->
             word.key = wordKey
@@ -145,7 +146,7 @@ object WordManager {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                val words = snapshot.children.mapNotNull { convert(it) }
+                val words = snapshot.children.mapNotNull { migrationConvert(it) }
                 subscriber.onSuccess(words)
             }
         }
