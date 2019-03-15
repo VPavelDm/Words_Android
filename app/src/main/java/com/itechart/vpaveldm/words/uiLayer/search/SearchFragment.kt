@@ -30,21 +30,7 @@ class SearchFragment : Fragment(), ISubscribeUser {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
         binding.handler = viewModel
-        viewModel.error.observe(this, Observer { message ->
-            message?.let { context?.toast(message) }
-        })
-        viewModel.users.observe(this, Observer { users ->
-            users?.let {
-                binding.searchRV.apply {
-                    setHasFixedSize(true)
-                    layoutManager = LinearLayoutManager(this@SearchFragment.context)
-                    this@SearchFragment.adapter = UserAdapter(it, this@SearchFragment)
-                    adapter = this@SearchFragment.adapter
-                    addItemDecoration(ItemDivider(context))
-                }
-            }
-        })
-
+        subscribeToDataUpdates()
         return binding.root
     }
 
@@ -70,6 +56,25 @@ class SearchFragment : Fragment(), ISubscribeUser {
         viewModel.subscribe(user) {
             adapter.notifyItemChanged(position)
             if (user.isSubscriber) context!!.toast("Вы подписаны") else context!!.toast("Вы отписаны")
+        }
+    }
+
+    private fun subscribeToDataUpdates() {
+        viewModel.error.observe(this, Observer { message ->
+            message?.let { context?.toast(message) }
+        })
+        viewModel.users.observe(this, Observer { users ->
+            users?.let { setupRecyclerView(it) }
+        })
+    }
+
+    private fun setupRecyclerView(users: List<User>) {
+        binding.searchRV.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@SearchFragment.context)
+            this@SearchFragment.adapter = UserAdapter(users, this@SearchFragment)
+            adapter = this@SearchFragment.adapter
+            addItemDecoration(ItemDivider(context))
         }
     }
 
