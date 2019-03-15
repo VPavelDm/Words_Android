@@ -26,10 +26,12 @@ class ProfileFragment : Fragment(), IProfileAdapter {
         setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         fetchWords()
+        viewModel.sendRequestToGetSubscriptionsWords()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
         setupRecyclerView()
         attachItemTouchHelper()
         return binding.root
