@@ -19,7 +19,7 @@ class ProfileViewModel : ViewModel() {
 
     val words: LiveData<List<Word>> = wordsProvider
     val progressBarVisible = ObservableBoolean(false)
-    val emptyWordsTextViewVisible = ObservableBoolean(true)
+    val emptyWordsTextViewVisible = ObservableBoolean(false)
 
     fun sendRequestToGetSubscriptionsWords() {
         interactor.getWords()
