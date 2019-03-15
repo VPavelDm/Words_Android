@@ -29,24 +29,16 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
         binding = FragmentAddWordBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this).get(AddWordViewModel::class.java)
         adapter = AddWordAdapter(activity!!.applicationContext, viewModel)
-        translateViewModel = ViewModelProviders.of(activity!!).get(TranslateViewModel::class.java)
-        translateViewModel.translateProvider.observe(this, Observer { translate ->
-            translate?.let {
-                viewModel.translateObservable.set(it)
-                translateViewModel.translateProvider.value = null
-            }
-        })
+
+        subscribeToDataExchange()
+
         viewModel.delegate = WeakReference(this)
         binding.handler = adapter
         binding.viewModel = viewModel
-        binding.addWordRV.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-            adapter = this@AddWordFragment.adapter
-            itemAnimator = WordDefaultItemAnimator()
-        }
-        val touchHelper = ItemTouchHelper(ExampleTouchCallback(adapter))
-        touchHelper.attachToRecyclerView(binding.addWordRV)
+
+        setupRecyclerView()
+        attachItemTouchHelper()
+
         adapter.registerAdapterDataObserver(listener)
         return binding.root
     }
@@ -66,6 +58,30 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
             val position = adapter.itemCount - 1
             binding.addWordRV.scrollToPosition(position)
         }
+    }
+
+    private fun setupRecyclerView() {
+        binding.addWordRV.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@AddWordFragment.adapter
+            itemAnimator = WordDefaultItemAnimator()
+        }
+    }
+
+    private fun attachItemTouchHelper() {
+        val touchHelper = ItemTouchHelper(ExampleTouchCallback(adapter))
+        touchHelper.attachToRecyclerView(binding.addWordRV)
+    }
+
+    private fun subscribeToDataExchange() {
+        translateViewModel = ViewModelProviders.of(activity!!).get(TranslateViewModel::class.java)
+        translateViewModel.translateProvider.observe(this, Observer { translate ->
+            translate?.let {
+                viewModel.translateObservable.set(it)
+                translateViewModel.translateProvider.value = null
+            }
+        })
     }
 
 }
