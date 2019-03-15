@@ -24,13 +24,31 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
 
     private lateinit var binding: FragmentStudyWordBinding
     private lateinit var adapter: StudyWordAdapter
+    private lateinit var viewModel: StudyWordViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentStudyWordBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProviders.of(this).get(StudyWordViewModel::class.java)
-        viewModel.delegate = WeakReference(this)
+        setupViewModel()
         adapter = StudyWordAdapter(viewModel)
         binding.handler = viewModel
+        setupRecyclerView()
+        return binding.root
+    }
+
+    override fun startNextCardAnimation(callback: () -> Unit) {
+        val animation = prepareAnimation(callback)
+        binding.wordCard.startAnimation(animation)
+    }
+
+    override fun showWord(word: Word) {
+        adapter.swapWord(word)
+    }
+
+    override fun showTranslate() {
+        adapter.showAnswer()
+    }
+
+    private fun setupRecyclerView() {
         binding.studyWordRV.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -43,26 +61,22 @@ class StudyWordFragment : Fragment(), IStudyWordDelegate, Animation.AnimationLis
                 } else return@setOnTouchListener false
             }
         }
-        return binding.root
     }
 
-    override fun startNextCardAnimation(callback: () -> Unit) {
+    private fun setupViewModel() {
+        viewModel = ViewModelProviders.of(this).get(StudyWordViewModel::class.java)
+        viewModel.delegate = WeakReference(this)
+    }
+
+    private fun prepareAnimation(completion: () -> Unit): Animation {
         val animation = AnimationUtils.loadAnimation(context, R.anim.anim_fade_in_out)
         animation.setAnimationListener(object : AnimationListener() {
             override fun onAnimationRepeat(animation: Animation?) {
                 super.onAnimationRepeat(animation)
-                callback()
+                completion()
             }
         })
-        binding.wordCard.startAnimation(animation)
-    }
-
-    override fun showWord(word: Word) {
-        adapter.swapWord(word)
-    }
-
-    override fun showTranslate() {
-        adapter.showAnswer()
+        return animation
     }
 
 }
