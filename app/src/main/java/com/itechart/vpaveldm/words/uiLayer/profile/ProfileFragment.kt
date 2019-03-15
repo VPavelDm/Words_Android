@@ -30,13 +30,8 @@ class ProfileFragment : Fragment(), IProfileAdapter {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
-        binding.wordRecyclerView.apply {
-            adapter = this@ProfileFragment.adapter
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-        }
-        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
-        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
+        setupRecyclerView()
+        attachItemTouchHelper()
         return binding.root
     }
 
@@ -69,6 +64,19 @@ class ProfileFragment : Fragment(), IProfileAdapter {
 
     private fun fetchWords() {
         viewModel.words.observe(this, Observer { adapter.swapData(words = it ?: return@Observer) })
+    }
+
+    private fun setupRecyclerView() {
+        binding.wordRecyclerView.apply {
+            adapter = this@ProfileFragment.adapter
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun attachItemTouchHelper() {
+        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
+        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
     }
 
 }
