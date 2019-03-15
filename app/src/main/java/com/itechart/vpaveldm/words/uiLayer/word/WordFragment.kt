@@ -39,14 +39,9 @@ class WordFragment : Fragment(), IWordAdapter {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWordBinding.inflate(inflater, container, false)
-        binding.wordRecyclerView.apply {
-            adapter = this@WordFragment.adapter
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-        }
-        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
-        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
         binding.handler = viewModel
+        setupRecyclerView()
+        attachItemTouchHelper()
         return binding.root
     }
 
@@ -66,6 +61,19 @@ class WordFragment : Fragment(), IWordAdapter {
 
     private fun fetchWords() {
         viewModel.words.observe(this, Observer { adapter.swapData(words = it ?: return@Observer) })
+    }
+
+    private fun setupRecyclerView() {
+        binding.wordRecyclerView.apply {
+            adapter = this@WordFragment.adapter
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun attachItemTouchHelper() {
+        val touchHelper = ItemTouchHelper(WordItemTouchCallback(activity!!.applicationContext, adapter))
+        touchHelper.attachToRecyclerView(binding.wordRecyclerView)
     }
 
 }
