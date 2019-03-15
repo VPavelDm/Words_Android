@@ -79,13 +79,12 @@ class StudyWordViewModel : ViewModel() {
         interactor.updateWord(word)
             .doOnSubscribe { progressBarVisible.set(true) }
             .doOnError { progressBarVisible.set(false) }
-            .subscribe({
-                // Note that progress bar is still visible.. You have to hide it by yourself
-                doOnSuccess()
-            }, {
+            .subscribe({}, {
                 //TODO: Handle error
             })
             .disposedBy(disposables)
+        // Note that progress bar is still visible.. You have to hide it by yourself
+        doOnSuccess()
     }
 
     private fun getWords(doOnSuccess: () -> Unit) {
