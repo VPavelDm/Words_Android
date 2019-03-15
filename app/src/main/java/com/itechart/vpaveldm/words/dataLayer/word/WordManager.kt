@@ -97,6 +97,7 @@ object WordManager {
         usersRef
             .child(userID)
             .child(section.description())
+            .orderByChild("createDate")
             .addListenerForSingleValueEvent(singleListener(subscriber))
     }
 
@@ -146,7 +147,7 @@ object WordManager {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                val words = snapshot.children.mapNotNull { migrationConvert(it) }
+                val words = snapshot.children.mapNotNull { migrationConvert(it) }.reversed()
                 subscriber.onSuccess(words)
             }
         }
