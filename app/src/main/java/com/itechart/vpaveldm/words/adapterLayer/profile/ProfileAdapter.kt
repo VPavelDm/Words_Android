@@ -26,11 +26,11 @@ class ProfileAdapter(private val listener: IProfileAdapter, private var words: L
     override fun getItemCount(): Int = words.size
 
     override fun onItemSwipedToLeft(position: Int) {
-        listener.wordCardSwipedToRemove(words[position])
+        listener.wordCardSwipedToLeft(words[position])
     }
 
     override fun onItemSwipedToRight(position: Int) {
-        throw UnsupportedOperationException("Данная операция не поддерживается")
+        listener.wordCardSwipedToRight(words[position])
     }
 
     fun swapData(words: List<Word>) {
@@ -59,5 +59,6 @@ class ProfileAdapter(private val listener: IProfileAdapter, private var words: L
 
 interface IProfileAdapter {
     fun wordCardClicked(word: Word)
-    fun wordCardSwipedToRemove(word: Word)
+    fun wordCardSwipedToLeft(word: Word)
+    fun wordCardSwipedToRight(word: Word)
 }

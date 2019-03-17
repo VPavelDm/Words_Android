@@ -60,8 +60,12 @@ class ProfileFragment : Fragment(), IProfileAdapter {
         fragment.show(activity!!.supportFragmentManager, null)
     }
 
-    override fun wordCardSwipedToRemove(word: Word) {
+    override fun wordCardSwipedToLeft(word: Word) {
         viewModel.removeWord(word)
+    }
+
+    override fun wordCardSwipedToRight(word: Word) {
+        viewModel.editWord(word)
     }
 
     private fun fetchWords() {

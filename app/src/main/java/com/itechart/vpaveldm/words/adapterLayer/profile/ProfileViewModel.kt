@@ -46,6 +46,14 @@ class ProfileViewModel : ViewModel() {
             .disposedBy(disposables)
     }
 
+    fun editWord(word: Word) {
+        interactor.editWord(word)
+            .doOnSubscribe { progressBarVisible.set(true) }
+            .doOnEvent { progressBarVisible.set(false) }
+            .subscribe({}, {})
+            .disposedBy(disposables)
+    }
+
     fun logOut() {
         authManager.logOut()
     }

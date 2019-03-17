@@ -7,12 +7,15 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.itechart.vpaveldm.words.core.UserError
 import com.itechart.vpaveldm.words.core.error.UserSubscribeError
+import com.itechart.vpaveldm.words.dataLayer.word.Word
+import com.itechart.vpaveldm.words.dataLayer.word.WordSection.NOTIFICATION
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.Single.create
 
 class UserManager {
 
-    fun getUsers(name: String): Single<List<User>> = Single.create { subscriber ->
+    fun getUsers(name: String): Single<List<User>> = create { subscriber ->
         userNameAndID().first?.let { userName ->
             val userRef = FirebaseDatabase.getInstance().getReference("users")
             userRef
@@ -47,6 +50,30 @@ class UserManager {
             userRef
                 .child(userID)
                 .child("subscribers")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        subscriber.tryOnError(error.toException())
+                    }
+
+                    override fun onDataChange(usersSnapshot: DataSnapshot) {
+                        val subscribers = usersSnapshot.children.mapNotNull { convert(it) }
+                        subscriber.onSuccess(subscribers)
+                    }
+
+                })
+        } ?: subscriber.tryOnError(UserError())
+    }
+
+    /**
+     * Send request to get subscribers that has the word in notification section
+     */
+    fun getSubscribersWithWordInNotification(word: Word): Single<List<User>> = create { subscriber ->
+        val userRef = FirebaseDatabase.getInstance().getReference("users")
+        val section = NOTIFICATION.description()
+        userNameAndID().second?.let { userID ->
+            userRef
+                .orderByChild("$section/${word.key}/key")
+                .equalTo(word.key)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
                         subscriber.tryOnError(error.toException())

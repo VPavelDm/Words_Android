@@ -25,6 +25,11 @@ class WordInteractor {
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
+    fun editWord(word: Word): Completable =
+        WordManager.editWord(word)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
     fun updateWord(word: Word): Completable =
         WordManager.updateWord(word)
             .subscribeOn(Schedulers.newThread())

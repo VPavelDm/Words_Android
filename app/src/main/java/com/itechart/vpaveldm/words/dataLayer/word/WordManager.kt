@@ -81,6 +81,22 @@ object WordManager {
             .addOnFailureListener { subscriber.tryOnError(it) }
     }
 
+    fun editWord(word: Word): Completable = Completable.create { subscriber ->
+        val userID = userManager.userNameAndID().second ?: return@create
+        userManager.getSubscribersWithWordInNotification(word).subscribe({ subscribers ->
+            val userUpdates = HashMap<String, Any>()
+            subscribers.forEach {
+                userUpdates["/${it.key}/notification/${word.key}"] = word
+            }
+            userUpdates["/$userID/words/${word.key}"] = word
+            usersRef.updateChildren(userUpdates)
+                .addOnSuccessListener { subscriber.onComplete() }
+                .addOnFailureListener { subscriber.tryOnError(it) }
+        }, {
+            subscriber.tryOnError(it)
+        })
+    }
+
     fun getWordsToStudy(): Single<List<Word>> = Single.create { subscriber ->
         val userID = userManager.userNameAndID().second ?: return@create
         val date = plusDays(1).resetTime().timeIntervalSince1970.toDouble()
@@ -116,8 +132,7 @@ object WordManager {
             if (doNotifySubscribers) {
                 userManager.getSubscribers().subscribe { subscribers ->
                     subscribers.forEach {
-                        val key = usersRef.child("${it.key}/notification").push().key
-                        userUpdates["/${it.key}/notification/$key"] = word
+                        userUpdates["/${it.key}/notification/${word.key}"] = word
                     }
                     userUpdates["/$userID/words/${word.key}"] = word
                     usersRef.updateChildren(userUpdates)
