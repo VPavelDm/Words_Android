@@ -7,6 +7,7 @@ import android.databinding.ObservableField
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.itechart.vpaveldm.words.R
+import com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordViewModel
 import com.itechart.vpaveldm.words.dataLayer.authorization.AuthorizationModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -91,7 +92,11 @@ class AuthorizationViewModel(private val navController: NavController) : ViewMod
 class ViewModelFactory(private val navController: NavController) : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AuthorizationViewModel(navController) as T
+        return when(modelClass) {
+            AuthorizationViewModel::class.java -> AuthorizationViewModel(navController) as T
+            AddWordViewModel::class.java -> AddWordViewModel(navController) as T
+            else -> error("Implement ${modelClass.name} in when")
+        }
     }
 
 }

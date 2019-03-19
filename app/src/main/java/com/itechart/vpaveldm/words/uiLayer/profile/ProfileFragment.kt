@@ -7,10 +7,14 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.profile.IProfileAdapter
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileAdapter
 import com.itechart.vpaveldm.words.adapterLayer.profile.ProfileViewModel
+import com.itechart.vpaveldm.words.core.dataExchange.DataExchangeViewModel
+import com.itechart.vpaveldm.words.core.extension.getViewModel
 import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentProfileBinding
 import com.itechart.vpaveldm.words.uiLayer.wordCard.CardDialogFragment
@@ -19,14 +23,18 @@ class ProfileFragment : Fragment(), IProfileAdapter {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
+    private lateinit var navController: NavController
+    private lateinit var dataExchanger: DataExchangeViewModel<Word>
     private val adapter = ProfileAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        dataExchanger = getViewModel(activity!!)
         fetchWords()
         viewModel.sendRequestToGetSubscriptionsWords()
+        navController = Navigation.findNavController(activity!!, R.id.nav_host_fragment)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,7 +73,8 @@ class ProfileFragment : Fragment(), IProfileAdapter {
     }
 
     override fun wordCardSwipedToRight(word: Word) {
-        viewModel.editWord(word)
+        dataExchanger.put(word)
+        navController.navigate(R.id.action_profileFragment_to_addWordFragment2)
     }
 
     private fun fetchWords() {

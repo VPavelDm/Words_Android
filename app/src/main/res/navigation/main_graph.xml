@@ -47,7 +47,15 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.itechart.vpaveldm.words.uiLayer.profile.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_addWordFragment2"
+            app:destination="@id/addWordFragment2"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
     <fragment android:id="@+id/verificationFragment"
               android:name="com.itechart.vpaveldm.words.uiLayer.verification.VerificationFragment"
               android:label="VerificationFragment">
@@ -59,5 +67,9 @@
         android:id="@+id/changeEmailFragment"
         android:name="com.itechart.vpaveldm.words.uiLayer.changeEmail.ChangeEmailFragment"
         android:label="ChangeEmailFragment" />
+    <fragment
+        android:id="@+id/addWordFragment2"
+        android:name="com.itechart.vpaveldm.words.uiLayer.addWord.AddWordFragment"
+        android:label="AddWordFragment" />
 
 </navigation>

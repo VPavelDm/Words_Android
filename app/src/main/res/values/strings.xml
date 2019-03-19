@@ -10,6 +10,7 @@
     <string name="title_sign_in">Вход</string>
     <string name="title_confirm_password">Подтвердите пароль</string>
     <string name="title_add">Добавить</string>
+    <string name="title_edit">Изменить</string>
     <string name="title_enter_word">Введите слово</string>
     <string name="title_enter_transcription">Введите транскрипцию (Не обязательно)</string>
     <string name="title_enter_translate">Введите перевод</string>

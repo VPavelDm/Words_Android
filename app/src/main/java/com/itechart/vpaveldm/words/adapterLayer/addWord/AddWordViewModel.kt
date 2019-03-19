@@ -3,6 +3,7 @@ package com.itechart.vpaveldm.words.adapterLayer.addWord
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import androidx.navigation.NavController
 import com.itechart.vpaveldm.words.core.extension.disposedBy
 import com.itechart.vpaveldm.words.dataLayer.translate.YandexTranslateManager
 import com.itechart.vpaveldm.words.dataLayer.word.Example
@@ -13,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.ref.WeakReference
 
-class AddWordViewModel : ViewModel() {
+class AddWordViewModel(private val navController: NavController) : ViewModel() {
 
     private val yandexTranslateManager = YandexTranslateManager()
     private val disposables = CompositeDisposable()
@@ -44,6 +45,21 @@ class AddWordViewModel : ViewModel() {
                 translateObservable.set("")
                 transcriptionObservable.set("")
                 callback()
+            }
+            .disposedBy(disposables)
+    }
+
+    fun editWord(word: Word) {
+        val newWord = word.copy(
+            word = wordObservable.get() ?: "",
+            translate = translateObservable.get() ?: "",
+            transcription = transcriptionObservable.get() ?: ""
+        )
+        interactor.editWord(newWord)
+            .doOnSubscribe { addWordProgressBarVisible.set(true) }
+            .doOnEvent { addWordProgressBarVisible.set(false) }
+            .subscribe {
+                navController.popBackStack()
             }
             .disposedBy(disposables)
     }

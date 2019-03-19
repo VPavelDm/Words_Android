@@ -11,16 +11,17 @@ import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.addWord.ViewHolderType.*
 import com.itechart.vpaveldm.words.core.extension.toast
 import com.itechart.vpaveldm.words.dataLayer.word.Example
+import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddExampleBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordBinding
 import com.itechart.vpaveldm.words.databinding.RecyclerItemAddWordFooterBinding
 
 class AddWordAdapter(private val context: Context, private val viewModel: AddWordViewModel) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-        IExampleItemTouchHelperAdapter {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+    IExampleItemTouchHelperAdapter {
 
     private var examples = arrayListOf<Example>()
-    private var createdExampleCount = 0
+    private var word: Word? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -52,7 +53,7 @@ class AddWordAdapter(private val context: Context, private val viewModel: AddWor
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ExampleViewHolder -> {
-                holder.bind(examples[position - 1], createdExampleCount)
+                holder.bind(examples[position - 1], position)
             }
         }
     }
@@ -72,7 +73,6 @@ class AddWordAdapter(private val context: Context, private val viewModel: AddWor
 
     fun clickAddExample() {
         if (isExamplesFilled()) {
-            createdExampleCount += 1
             examples.add(Example())
             notifyItemInserted(itemCount - 1)
         } else {
@@ -82,13 +82,26 @@ class AddWordAdapter(private val context: Context, private val viewModel: AddWor
 
     fun clickAddWord() {
         if (isAllFieldsFilled()) {
-            viewModel.addWord(examples.toList()) {
-                createdExampleCount = 0
-                examples.clear()
-                notifyDataSetChanged()
+            if (word == null) {
+                viewModel.addWord(examples.toList()) {
+                    examples.clear()
+                    notifyDataSetChanged()
+                }
+            } else {
+                viewModel.editWord(word!!.copy(examples = examples))
             }
+
         } else
             context.toast(context.getString(R.string.error_title_fill_fields))
+    }
+
+    fun setWord(word: Word) {
+        this.word = word
+        this.examples = ArrayList(word.examples)
+        viewModel.wordObservable.set(word.word)
+        viewModel.transcriptionObservable.set(word.transcription)
+        viewModel.translateObservable.set(word.translate)
+        notifyDataSetChanged()
     }
 
     class ItemViewHolder(binding: RecyclerItemAddWordBinding) : RecyclerView.ViewHolder(binding.root)

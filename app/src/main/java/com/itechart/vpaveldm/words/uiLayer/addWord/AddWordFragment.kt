@@ -10,10 +10,17 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import com.itechart.vpaveldm.words.R
 import com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordAdapter
 import com.itechart.vpaveldm.words.adapterLayer.addWord.AddWordViewModel
 import com.itechart.vpaveldm.words.adapterLayer.addWord.IAddWordDelegate
 import com.itechart.vpaveldm.words.adapterLayer.chooseTranslate.TranslateViewModel
+import com.itechart.vpaveldm.words.adapterLayer.login.ViewModelFactory
+import com.itechart.vpaveldm.words.core.dataExchange.DataExchangeViewModel
+import com.itechart.vpaveldm.words.core.extension.getViewModel
+import com.itechart.vpaveldm.words.dataLayer.word.Word
 import com.itechart.vpaveldm.words.databinding.FragmentAddWordBinding
 import com.itechart.vpaveldm.words.uiLayer.chooseTranslate.ChooseTranslateFragment
 import java.lang.ref.WeakReference
@@ -22,12 +29,16 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
 
     private lateinit var translateViewModel: TranslateViewModel
     private lateinit var viewModel: AddWordViewModel
+    private lateinit var dataExchangeViewModel: DataExchangeViewModel<Word>
     private lateinit var binding: FragmentAddWordBinding
     private lateinit var adapter: AddWordAdapter
+    private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentAddWordBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProviders.of(this).get(AddWordViewModel::class.java)
+        navController = Navigation.findNavController(activity!!, R.id.nav_host_fragment)
+        viewModel = ViewModelProviders.of(this, ViewModelFactory(navController)).get(AddWordViewModel::class.java)
+        dataExchangeViewModel = getViewModel(activity!!)
         adapter = AddWordAdapter(activity!!.applicationContext, viewModel)
 
         subscribeToDataExchange()
@@ -82,6 +93,11 @@ class AddWordFragment : Fragment(), IAddWordDelegate {
                 translateViewModel.translateProvider.value = null
             }
         })
+        dataExchangeViewModel.data.observe(this, Observer { word -> word?.let {
+            binding.addWordButton.text = getString(R.string.title_edit)
+            adapter.setWord(word)
+            dataExchangeViewModel.clear()
+        } })
     }
 
 }
